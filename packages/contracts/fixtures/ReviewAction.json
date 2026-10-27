@@ -1,0 +1,19 @@
+[
+  {
+    "name": "duyệt kèm sửa tên",
+    "data": {
+      "documentId": "01JDOC0000000000000000001",
+      "reviewerId": "01JREV000000000000000001",
+      "action": "approve",
+      "corrections": [
+        {
+          "fieldPath": "fields.holderName.value",
+          "before": "Jane Q. Doe",
+          "after": "Jane Quinn Doe"
+        }
+      ],
+      "note": "Tổ chức cấp đã xác minh thủ công.",
+      "createdAt": "2026-10-27T10:00:00Z"
+    }
+  }
+]

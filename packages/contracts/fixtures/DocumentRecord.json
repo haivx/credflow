@@ -1,0 +1,110 @@
+[
+  {
+    "name": "CPR chuyển người duyệt vì tổ chức cấp",
+    "data": {
+      "id": "01JDOC0000000000000000001",
+      "staffId": "01JSTAFF000000000000000001",
+      "fileName": "cpr-sample-001.png",
+      "mimeType": "image/png",
+      "declaredDocType": "cpr_card",
+      "status": "needs_review",
+      "classification": {
+        "docType": "cpr_card",
+        "confidence": 0.97
+      },
+      "extraction": {
+        "docType": "cpr_card",
+        "fields": {
+          "holderName": {
+            "value": "Jane Q. Doe",
+            "confidence": 0.97,
+            "evidence": {
+              "quote": "Jane Q. Doe"
+            }
+          },
+          "issuerName": {
+            "value": "Lifeline Response Institute",
+            "confidence": 0.96,
+            "evidence": {
+              "quote": "Lifeline Response Institute"
+            }
+          },
+          "courseType": {
+            "value": "BLS Provider (Adult, Child and Infant)",
+            "confidence": 0.9,
+            "evidence": {
+              "quote": "Healthcare Provider BLS class (Adult, Child and Infant)"
+            }
+          },
+          "completionDate": {
+            "value": "2026-04-19",
+            "confidence": 0.98,
+            "evidence": {
+              "quote": "4/19/2026"
+            }
+          },
+          "expirationDate": {
+            "value": "2028-04-19",
+            "confidence": 0.97,
+            "evidence": {
+              "quote": "4/19/2028"
+            }
+          },
+          "validityText": {
+            "value": null,
+            "confidence": 0.9,
+            "evidence": null
+          },
+          "cardNumber": {
+            "value": null,
+            "confidence": 0.9,
+            "evidence": null
+          }
+        }
+      },
+      "ruleResults": [
+        {
+          "code": "ISSUER_NOT_ACCEPTED",
+          "passed": false,
+          "severity": "block",
+          "message": "Tổ chức cấp không nằm trong danh sách được chấp nhận của khách hàng này.",
+          "fieldRefs": ["issuerName"]
+        },
+        {
+          "code": "EXPIRED",
+          "passed": true,
+          "severity": "block",
+          "message": "Còn hạn đến 2028-04-19.",
+          "fieldRefs": ["expirationDate"]
+        }
+      ],
+      "routing": {
+        "decision": "needs_review",
+        "reasons": ["ISSUER_NOT_ACCEPTED"]
+      },
+      "versions": {
+        "pipeline": "0.1.0",
+        "prompt": "extract-cpr@1",
+        "model": "tbd",
+        "rules": "1"
+      },
+      "timingMs": {
+        "classify": 820,
+        "extract": 2310,
+        "rules": 3
+      },
+      "createdAt": "2026-10-27T09:00:00Z"
+    }
+  },
+  {
+    "name": "vừa upload",
+    "data": {
+      "id": "01JDOC0000000000000000002",
+      "staffId": "01JSTAFF000000000000000001",
+      "fileName": "scan.pdf",
+      "mimeType": "application/pdf",
+      "status": "uploaded",
+      "createdAt": "2026-10-27T09:01:00Z"
+    }
+  }
+]

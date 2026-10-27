@@ -1,0 +1,29 @@
+[
+  {
+    "name": "ca sạch",
+    "data": {
+      "id": "cpr-0001",
+      "file": "data/synth/cpr/cpr-0001.png",
+      "staff": {
+        "id": "01JSTAFF000000000000000001",
+        "legalName": "Jane Quinn Doe",
+        "aliases": ["Jane Smith"],
+        "role": "caregiver",
+        "clientIds": [],
+        "region": "CA"
+      },
+      "asOf": "2026-10-27",
+      "expected": {
+        "docType": "cpr_card",
+        "fields": {
+          "holderName": "Jane Q. Doe",
+          "completionDate": "2026-04-19",
+          "expirationDate": "2028-04-19"
+        },
+        "decision": "auto_approve"
+      },
+      "tags": ["clean"],
+      "split": "dev"
+    }
+  }
+]

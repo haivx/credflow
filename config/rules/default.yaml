@@ -1,0 +1,30 @@
+# Cấu hình rule MINH HOẠ cho một khách hàng giả định.
+# Không phải quy định pháp lý thật. Mỗi khách hàng có file riêng; schema: RulesConfig (packages/contracts).
+version: 1
+
+# Bất kỳ trường bắt buộc nào dưới ngưỡng này → không tự duyệt.
+minFieldConfidence: 0.85
+
+# Còn hạn nhưng hết hạn trong số ngày này → cảnh báo (info).
+expiringSoonDays: 30
+
+roles:
+  caregiver:
+    required: [cpr_card, tb_test, background_check, vaccination_record]
+  behavior_technician:
+    required: [cpr_card, professional_license, tb_test, background_check]
+
+# Dùng khi giấy không in ngày hết hạn (ví dụ TB test, hoặc thẻ chỉ ghi "Valid 2 years" thì đọc từ validityText trước).
+defaultValidityMonths:
+  cpr_card: 24
+  tb_test: 12
+  background_check: 24
+  vaccination_record: 12
+
+# Tổ chức cấp được chấp nhận. Tên đều hư cấu.
+acceptedIssuers:
+  cpr_card:
+    - Lifeline Response Institute
+    - Northbridge Safety Council
+  professional_license:
+    - Board of Behavioral Practice (SAMPLE)

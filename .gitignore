@@ -1,0 +1,30 @@
+# Env
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+.next/
+out/
+dist/
+*.tsbuildinfo
+.vercel/
+
+# Dữ liệu sinh ra và file upload (không commit, sinh lại được từ seed)
+data/
+uploads/
+eval/runs/
+
+# Không bao giờ commit giấy tờ thật (xem docs/data-policy.md)
+real-docs/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+.zed/
+
+# Claude Code: chỉ commit lệnh dùng chung
+.claude/*
+!.claude/commands/

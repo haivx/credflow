@@ -1,0 +1,158 @@
+[
+  {
+    "name": "thẻ CPR in ngày hết hạn",
+    "data": {
+      "docType": "cpr_card",
+      "fields": {
+        "holderName": {
+          "value": "Jane Q. Doe",
+          "confidence": 0.97,
+          "evidence": {
+            "quote": "Jane Q. Doe"
+          }
+        },
+        "issuerName": {
+          "value": "Lifeline Response Institute",
+          "confidence": 0.96,
+          "evidence": {
+            "quote": "Lifeline Response Institute"
+          }
+        },
+        "courseType": {
+          "value": "BLS Provider (Adult, Child and Infant)",
+          "confidence": 0.9,
+          "evidence": {
+            "quote": "Healthcare Provider BLS class (Adult, Child and Infant)"
+          }
+        },
+        "completionDate": {
+          "value": "2026-04-19",
+          "confidence": 0.98,
+          "evidence": {
+            "quote": "4/19/2026"
+          }
+        },
+        "expirationDate": {
+          "value": "2028-04-19",
+          "confidence": 0.97,
+          "evidence": {
+            "quote": "4/19/2028"
+          }
+        },
+        "validityText": {
+          "value": null,
+          "confidence": 0.9,
+          "evidence": null
+        },
+        "cardNumber": {
+          "value": null,
+          "confidence": 0.9,
+          "evidence": null
+        }
+      }
+    }
+  },
+  {
+    "name": "thẻ CPR chỉ ghi Valid 2 years",
+    "data": {
+      "docType": "cpr_card",
+      "fields": {
+        "holderName": {
+          "value": "Jane Q. Doe",
+          "confidence": 0.97,
+          "evidence": {
+            "quote": "Jane Q. Doe"
+          }
+        },
+        "issuerName": {
+          "value": "Lifeline Response Institute",
+          "confidence": 0.96,
+          "evidence": {
+            "quote": "Lifeline Response Institute"
+          }
+        },
+        "courseType": {
+          "value": "BLS Provider (Adult, Child and Infant)",
+          "confidence": 0.9,
+          "evidence": {
+            "quote": "Healthcare Provider BLS class (Adult, Child and Infant)"
+          }
+        },
+        "completionDate": {
+          "value": "2026-04-19",
+          "confidence": 0.98,
+          "evidence": {
+            "quote": "4/19/2026"
+          }
+        },
+        "expirationDate": {
+          "value": null,
+          "confidence": 0.9,
+          "evidence": null
+        },
+        "validityText": {
+          "value": "Valid 2 years",
+          "confidence": 0.92,
+          "evidence": {
+            "quote": "Valid 2 years"
+          }
+        },
+        "cardNumber": {
+          "value": null,
+          "confidence": 0.9,
+          "evidence": null
+        }
+      }
+    }
+  },
+  {
+    "name": "TB skin test âm tính",
+    "data": {
+      "docType": "tb_test",
+      "fields": {
+        "holderName": {
+          "value": "DOE, JANE",
+          "confidence": 0.93,
+          "evidence": {
+            "quote": "DOE, JANE"
+          }
+        },
+        "testType": {
+          "value": "skin_test",
+          "confidence": 0.9,
+          "evidence": {
+            "quote": "PPD / TST"
+          }
+        },
+        "testDate": {
+          "value": "2026-01-05",
+          "confidence": 0.95,
+          "evidence": {
+            "quote": "01/05/2026"
+          }
+        },
+        "readDate": {
+          "value": "2026-01-07",
+          "confidence": 0.94,
+          "evidence": {
+            "quote": "01/07/2026"
+          }
+        },
+        "result": {
+          "value": "negative",
+          "confidence": 0.96,
+          "evidence": {
+            "quote": "Negative (0 mm)"
+          }
+        },
+        "clinicName": {
+          "value": "Northbridge Community Clinic (SAMPLE)",
+          "confidence": 0.9,
+          "evidence": {
+            "quote": "Northbridge Community Clinic"
+          }
+        }
+      }
+    }
+  }
+]
