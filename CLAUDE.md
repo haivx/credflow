@@ -44,7 +44,7 @@ Lệnh tắt: `/tiep` (mở lại phiên, làm tiếp chỗ đang dở), `/next`
 
 ```
 apps/web/            Next.js 14: portal upload, hàng chờ duyệt, màn duyệt, dashboard
-apps/api/            NestJS: HTTP (main.ts) + BullMQ worker (worker.ts), gọi LLM (phân loại, trích xuất)
+apps/api/            NestJS 12 (ESM, build bằng SWC): HTTP (main.ts) + BullMQ worker (worker.ts), gọi LLM (phân loại, trích xuất)
 packages/contracts/  Zod schema dùng chung, nguồn sự thật cho kiểu dữ liệu (BẢN NHÁP đến khi chốt ở P0)
 packages/rules/      Rule engine thuần + đọc config
 config/rules/        Cấu hình rule theo khách hàng (YAML, validate bằng RulesConfig)
@@ -56,8 +56,9 @@ docs/                product.md, flows.md, doc-types.md, data-policy.md, roadmap
 ## Lệnh
 
 ```
-make setup      # pnpm install --frozen-lockfile + bật Postgres (docker compose)
-make dev        # API 127.0.0.1:8787 + web localhost:3000
+make setup      # pnpm install --frozen-lockfile + bật Postgres và Redis (docker compose)
+make dev        # API 127.0.0.1:8787 + worker (không mở cổng) + web localhost:3000
+make dev-api    # chỉ API (nest start --watch, SWC); make dev-worker, make dev-web tương tự
 make test       # vitest mọi package
 make typecheck  # tsc mọi package
 make lint       # eslint + prettier

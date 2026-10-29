@@ -9,5 +9,12 @@ services:
       - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+  # BullMQ cần noeviction: Redis tự xoá key khi đầy là mất job.
+  # Không bật AOF vì Postgres là nguồn sự thật (ADR 0001).
+  redis:
+    image: redis:7
+    command: redis-server --maxmemory-policy noeviction --appendonly no
+    ports:
+      - "127.0.0.1:6379:6379"
 volumes:
   pgdata:

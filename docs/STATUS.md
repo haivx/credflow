@@ -7,16 +7,16 @@
 
 ## Đang làm
 
-- (chưa có)
+- Plan 02 (`docs/plans/02-nest-api-skeleton.md`), đã duyệt, nhánh `feat/02-nest-api-skeleton`. Boilerplate xong (Nest 12 ESM + SWC + Vitest, Redis trong compose), **chưa commit**. Chưa kiểm Redis vì Docker daemon tắt.
 
 ## Đang học
 
 > Claude cập nhật sau **mỗi bước**, không chờ cuối phiên. Mở phiên mới gõ `/tiep` để làm tiếp.
 
-- **Mục 🎓:** (chưa có)
-- **Bước đã xong:** —
-- **Bước tiếp theo:** —
-- **Code đang dở / câu hỏi còn treo:** —
+- **Mục 🎓:** Module, controller, provider, DI trong Nest (plan 02, 6 bước).
+- **Bước đã xong:** chưa có (vừa giải thích bước 1).
+- **Bước tiếp theo:** bước 1 `apps/api/src/app.module.ts` (module gốc rỗng) + bước 2 `src/main.ts`.
+- **Code đang dở / câu hỏi còn treo:** `apps/api/src/` đang trống, nên `make dev-api` chưa chạy được cho đến khi xong bước 2.
 
 ## Tiếp theo
 
