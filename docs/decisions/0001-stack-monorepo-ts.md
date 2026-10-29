@@ -2,10 +2,6 @@
 
 Ngày: 2026-10-27 · Trạng thái: **Đề xuất** (Liam chốt ở P0) · Người quyết: Liam
 
-## Bối cảnh
-
-Dự án là case study cho vị trí fullstack / AI product engineer / FDE: cần chứng minh làm được fullstack Node và đưa AI vào một quy trình nghiệp vụ. Làm một mình cùng Claude Code, trong khoảng 5–6 tuần. Thế mạnh sẵn có: Next.js, TypeScript, Zod.
-
 ## Quyết định đề xuất
 
 1. **Một ngôn ngữ: TypeScript** cho web, API, rule engine, eval và bộ sinh dữ liệu. Python để sau nếu cần (ví dụ so sánh OCR ở P5).
