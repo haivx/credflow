@@ -14,9 +14,12 @@
 > Claude cập nhật sau **mỗi bước**, không chờ cuối phiên. Mở phiên mới gõ `/tiep` để làm tiếp.
 
 - **Mục 🎓:** Module, controller, provider, DI trong Nest (plan 02, 6 bước).
-- **Bước đã xong:** chưa có (vừa giải thích bước 1).
-- **Bước tiếp theo:** bước 1 `apps/api/src/app.module.ts` (module gốc rỗng) + bước 2 `src/main.ts`.
-- **Code đang dở / câu hỏi còn treo:** `apps/api/src/` đang trống, nên `make dev-api` chưa chạy được cho đến khi xong bước 2.
+- **Bước đã xong:** 1 `app.module.ts` (`@Module`), 2 `main.ts` (top-level await cho `create` + `listen`, bind `127.0.0.1:8787`). Đã học: decorator gắn metadata; floating promise / unhandled rejection; đọc `EADDRINUSE` bằng `lsof`.
+  3 `health/health.controller.ts` (`@Controller("health")` + `@Get()`) + `health.module.ts`, `GET /health` trả 200. Đã học: đọc log `RoutesResolver`/`RouterExplorer`; quên khai báo controller thì không lỗi, chỉ mất route (404).
+  4 `app-info/app-info.service.ts` + `app-info.module.ts` (providers + exports), inject vào `HealthController`, `/health` trả 200. Đã học: 3 tầng providers/exports/imports, `UnknownExportException`; tên tham số constructor không ảnh hưởng DI (Nest đọc kiểu); `import` ESM khác `imports` của `@Module`; provider khai báo ở một module sở hữu rồi export (khai báo lặp ở nhiều module → nhiều instance, hỏng với pool DB/cache).
+  5 `worker.ts` + `worker.module.ts`: `createApplicationContext`, `ctx.get(AppInfoService)` chạy đúng. Đã học: token của provider là chính class (chuỗi → `UnknownElementException`, và `get` trả `any`).
+- **Bước tiếp theo:** 6 `health/health.controller.spec.ts` bằng `Test.createTestingModule` + `useValue`. Câu treo: (a) bài thử xoá `exports` báo lỗi ở module nào; (b) vì sao worker tự thoát còn `main.ts` chạy mãi (event loop).
+- **Code đang dở / câu hỏi còn treo:** bước 1–3 chưa commit. Đề xuất sau: bật `no-floating-promises` (cần ESLint có type-check).
 
 ## Tiếp theo
 
