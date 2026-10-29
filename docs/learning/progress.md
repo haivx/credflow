@@ -6,7 +6,7 @@
 
 ## P0 · Nền tảng
 
-- [ ] **Module, controller, provider, DI trong Nest** · code: — · note: —
+- [ ] **Module, controller, provider, DI trong Nest** · code: `apps/api/src/{app.module,main,worker,worker.module}.ts`, `apps/api/src/health/`, `apps/api/src/app-info/` · note: `notes/p0-nest-di.md`
   - Tự kiểm: Nest biết inject gì vào constructor của một service bằng cách nào? Vì sao `tsx` không chạy được DI của Nest?
 - [ ] **Custom provider (token `DB` cho Drizzle)** · code: — · note: —
   - Tự kiểm: Khi nào cần `useFactory` + `@Inject(TOKEN)` thay vì để Nest tự inject theo class?
