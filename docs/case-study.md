@@ -1,6 +1,6 @@
 # Case study: CredFlow
 
-> Khung writeup, điền dần từ P2 và hoàn thiện ở P6. Viết bằng tiếng Anh khi hoàn thiện 
+> Khung writeup, điền dần từ P2 và hoàn thiện ở P6. Viết bằng tiếng Anh khi hoàn thiện.
 > Nguyên tắc: mọi con số phải lấy từ `eval/report.md` trên holdout; ghi rõ giới hạn.
 
 ## 1. Problem

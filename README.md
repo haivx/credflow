@@ -1,6 +1,6 @@
 # CredFlow
 
-> **English summary.** An AI-assisted credentialing pipeline for healthcare staffing and home-care companies. Staff upload certificates (CPR cards, professional licenses, TB tests, background checks, vaccination records) as photos or PDFs. A vision LLM classifies each document and extracts structured fields, each with an evidence quote from the page. A deterministic rule engine, configured per client, checks expiry, name match, accepted issuers and results. A document is auto-approved only when every blocking rule passes; everything else goes to a human review queue. The LLM reads, code decides: the model never approves anything. Every change to prompts, models or rules is measured on a synthetic golden set, and the headline metric is the false-approve rate (target: zero). All data is synthetic. Stack: Next.js 14, Hono on Node, Postgres + pg-boss, Zod contracts, TypeScript end to end.
+> **English summary.** An AI-assisted credentialing pipeline for healthcare staffing and home-care companies. Staff upload certificates (CPR cards, professional licenses, TB tests, background checks, vaccination records) as photos or PDFs. A vision LLM classifies each document and extracts structured fields, each with an evidence quote from the page. A deterministic rule engine, configured per client, checks expiry, name match, accepted issuers and results. A document is auto-approved only when every blocking rule passes; everything else goes to a human review queue. The LLM reads, code decides: the model never approves anything. Every change to prompts, models or rules is measured on a synthetic golden set, and the headline metric is the false-approve rate (target: zero). All data is synthetic. Stack: Next.js 14, NestJS on Node, Postgres + Drizzle, BullMQ + Redis, Zod contracts, TypeScript end to end.
 
 Hệ thống xử lý giấy tờ credentialing cho công ty dịch vụ chăm sóc sức khoẻ: AI phân loại và trích xuất, rule engine kiểm tra, ca không chắc chuyển cho người duyệt.
 
@@ -19,13 +19,14 @@ Hệ thống xử lý giấy tờ credentialing cho công ty dịch vụ chăm s
 | [`docs/plans/`](docs/plans/README.md) | Plan từng task |
 | [`docs/decisions/`](docs/decisions/) | ADR |
 | [`docs/case-study.md`](docs/case-study.md) | Khung writeup |
+| [`docs/learning/`](docs/learning/README.md) | Lộ trình học, checklist kiến thức để ôn tập |
 | [`CLAUDE.md`](CLAUDE.md) | Quy tắc làm việc cho Claude Code |
 
 ## Cấu trúc
 
 ```
 apps/web/            Next.js 14: upload, hàng chờ, màn duyệt, dashboard
-apps/api/            Hono: HTTP, job nền, gọi LLM
+apps/api/            NestJS: HTTP + BullMQ worker, gọi LLM
 packages/contracts/  Zod schema dùng chung
 packages/rules/      Rule engine thuần
 config/rules/        Cấu hình rule theo khách hàng (YAML)

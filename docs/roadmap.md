@@ -1,50 +1,56 @@
 # Roadmap
 
 > Nguồn sự thật về kế hoạch. Tiến độ hằng ngày ghi ở `docs/STATUS.md`, plan từng task ở `docs/plans/`.
-> Mỗi phase: mục tiêu · phạm vi · backend focus · tiêu chí hoàn thành · phụ thuộc. Phase chỉ xong khi đạt **đủ** tiêu chí.
-> **Backend focus** là phần kỹ năng backend gắn vào phase đó: tự viết ADR/contract, phần cốt lõi tự code hoặc đọc hiểu từng dòng, phần còn lại giao Claude Code.
-> Ước lượng tổng: 6–7 tuần (5–6 tuần sản phẩm + khoảng 1 tuần cho backend focus).
+> Mỗi phase: mục tiêu · phạm vi · 🎓 học được · tiêu chí hoàn thành · phụ thuộc. Phase chỉ xong khi đạt **đủ** tiêu chí.
+> **Mục tiêu cá nhân:** vừa build CredFlow vừa lên mức middle–intermediate Node.js. Mỗi mục 🎓 là phần **tự code**, Claude Code hướng dẫn (xem "Chế độ dạy" trong `CLAUDE.md`). Tiến độ học ghi ở `docs/learning/progress.md`.
+> Kiến thức vượt mức middle được ghi ở mục **Học nâng cao** cuối file, không làm trong MVP.
+> Ước lượng: 9–10 tuần, không có hạn chót. Ưu tiên hiểu chắc hơn làm nhanh.
 
-## P0 · Nền tảng và contract (2–3 ngày)
+## P0 · Nền tảng và contract (4–5 ngày)
 
-- **Mục tiêu:** chốt contract và stack, monorepo chạy được.
+- **Mục tiêu:** chốt contract và stack; API NestJS, worker, Postgres, Redis chạy được.
 - **Phạm vi:**
   - Liam review và chốt `packages/contracts` (đang là bản nháp), `docs/doc-types.md`, các quyết định còn mở ở `docs/product.md` mục 8.
-  - ADR 0001 chuyển từ "Đề xuất" sang "Chấp nhận" (hoặc sửa).
-  - Thêm Drizzle + schema DB đầu tiên (`documents`, `staff`, `review_actions`), migration, pg-boss.
-  - API: route `GET /health`, `GET /staff` (dữ liệu seed giả lập).
-- **Backend focus:**
-  - Ràng buộc nằm ở DB, không chỉ ở code: FK, `NOT NULL`, `CHECK` cho cột trạng thái, unique index cho `documents.checksum`.
-  - Config đọc từ env, validate bằng Zod, thiếu biến thì fail ngay khi khởi động.
-  - Tách `GET /health` (liveness) và `GET /ready` (kiểm Postgres, pg-boss).
-  - Một format lỗi thống nhất cho mọi API (RFC 9457 Problem Details).
-  - Integration test chạy với Postgres thật qua Testcontainers, không mock DB.
-- **Tiêu chí hoàn thành:** `make setup && make dev` chạy trên máy sạch; `make test`, `make typecheck`, `make lint` pass; ADR 0001 ở trạng thái Chấp nhận; có ít nhất 1 integration test dùng Postgres thật; insert vi phạm constraint bị DB từ chối (có test).
+  - Dựng `apps/api` bằng NestJS (hai entrypoint `main.ts`, `worker.ts`), docker compose thêm Redis (`noeviction`). Xem ADR 0001.
+  - Drizzle + schema DB đầu tiên (`documents`, `staff`, `review_actions`), migration, seed staff giả lập.
+  - API: `GET /health`, `GET /ready`, `GET /staff`.
+- **🎓 Học được:**
+  - Nest cơ bản: module, controller, provider, DI; custom provider (token `DB` cho Drizzle).
+  - Vòng đời request trong Nest: middleware → guard → pipe → handler → interceptor → exception filter.
+  - Config từ env validate bằng Zod; thiếu biến thì app không khởi động.
+  - Drizzle: schema, migration, query cơ bản. Ràng buộc ở DB: FK, `NOT NULL`, `CHECK`, unique index (vd `documents.checksum`).
+  - Zod validation pipe và exception filter trả lỗi một format `{ code, message, details? }`.
+  - `/health` (process còn sống) khác `/ready` (Postgres và Redis dùng được) thế nào.
+  - Integration test với Postgres thật (DB test trong docker compose) bằng supertest.
+- **Tiêu chí hoàn thành:** `make setup && make dev` chạy trên máy sạch; `make test`, `make typecheck`, `make lint` pass; `/ready` trả lỗi khi tắt Redis; có ít nhất 1 integration test dùng Postgres thật; insert vi phạm constraint bị DB từ chối (có test).
 - **Phụ thuộc:** không.
 
-## P1 · Lát cắt dọc cho thẻ CPR (5–7 ngày)
+## P1 · Lát cắt dọc cho thẻ CPR (7–9 ngày)
 
 - **Mục tiêu:** một loại giấy đi trọn từ upload đến kết quả. Biết sớm độ khó thật nằm ở đâu.
 - **Phạm vi:** upload một file (API + màn upload tối giản) → job → phân loại → trích xuất CPR kèm evidence → rule cho CPR (`MISSING_FIELD`, `MISSING_EVIDENCE`, `LOW_CONFIDENCE`, `DATE_INCONSISTENT`, `EXPIRED`, `EXPIRING_SOON`, `NAME_MISMATCH`, `ISSUER_NOT_ACCEPTED`) → routing → hiển thị kết quả dạng thô. Chốt model LLM (ADR). Prompt có version.
-- **Backend focus:**
-  - **Transactional enqueue:** ghi `documents` và tạo job pg-boss trong cùng một transaction. ADR giải thích vì sao cách này không cần outbox, và khi nào vẫn phải dùng outbox (queue nằm ngoài Postgres).
-  - **Upload idempotent:** hỗ trợ header `Idempotency-Key` và dedupe theo checksum; gửi lại cùng file trả về cùng `documentId`, không tạo job mới.
-  - **State machine cho document:** `uploaded → processing → extracted → needs_review | auto_approved | failed`, chặn transition sai ở code và DB.
-  - **Job an toàn khi chạy lại:** mỗi bước ghi kết quả bằng upsert theo `(documentId, step, version)`, chạy 2 lần không sinh dữ liệu trùng.
-  - **Gọi LLM như gọi service ngoài:** có timeout, retry giới hạn với backoff + jitter, phân loại lỗi retry được / không retry được, lỗi cuối cùng chuyển document sang `failed` kèm lý do.
-  - File lưu qua interface storage (local/S3) và đọc bằng stream, không load cả file vào memory.
-- **Tiêu chí hoàn thành:** 5 thẻ CPR giả lập làm tay (≥ 3 bố cục khác nhau) chạy đúng end-to-end; output LLM luôn parse qua Zod; rule engine có unit test cho từng mã rule; mỗi document lưu `versions` và `timingMs`; upload cùng file 2 lần chỉ tạo 1 document (có test); kill worker giữa chừng rồi chạy lại thì document vẫn xử lý xong đúng 1 lần; LLM giả lập lỗi 50% thì không document nào kẹt ở `processing`; có ADR về transactional enqueue.
+- **🎓 Học được:**
+  - **Stream:** nhận file upload bằng stream, tính sha256 trong lúc stream, ghi file qua interface storage (local trước, S3 sau). Vì sao không đọc cả file vào memory.
+  - **Dedupe upload:** unique index trên checksum; upload lại cùng file trả về cùng `documentId`.
+  - **BullMQ:** queue, worker chạy process riêng, `concurrency`, `attempts` + backoff, job lỗi đi đâu.
+  - **Dual-write:** commit DB rồi mới `queue.add` với `jobId = documentId`; sweep job (repeatable) đẩy lại document kẹt ở `uploaded`. Hiểu vì sao không gói được trong một transaction, và giới hạn của cách này.
+  - **Job idempotent:** worker kiểm trạng thái trước khi chạy; ghi kết quả bằng upsert theo `(documentId, step, version)`.
+  - **State machine đơn giản:** `uploaded → processing → extracted → needs_review | auto_approved | failed`, một hàm kiểm transition hợp lệ, cộng `CHECK` ở DB.
+  - **Gọi service ngoài (LLM):** timeout bằng `AbortController`; lỗi nào retry được (timeout, 429, 5xx), lỗi nào không (400, parse lỗi quá số lần); hết retry thì document sang `failed` kèm lý do.
+  - Parse output LLM bằng Zod; parse lỗi → retry giới hạn → `needs_review`.
+- **Tiêu chí hoàn thành:** 5 thẻ CPR giả lập làm tay (≥ 3 bố cục khác nhau) chạy đúng end-to-end; output LLM luôn parse qua Zod; rule engine có unit test cho từng mã rule; mỗi document lưu `versions` và `timingMs`; upload cùng file 2 lần chỉ tạo 1 document (có test); chạy cùng một job 2 lần không sinh dữ liệu trùng (có test); giả lập `queue.add` lỗi thì sweep job vẫn đưa document đi xử lý (có test); LLM giả lập lỗi 50% thì không document nào kẹt ở `processing`.
 - **Phụ thuộc:** P0.
 
 ## P2 · Dữ liệu giả lập và eval baseline (5–6 ngày)
 
 - **Mục tiêu:** có số liệu đầu tiên; từ đây mọi thay đổi đi qua `make eval`.
 - **Phạm vi:** `tools/synth`: template HTML cho CPR (3–5 bố cục, tham khảo `docs/research/layout-notes.md`), render PNG/PDF, nhiễu (xoay, mờ, chụp lệch, nén JPEG), sinh `GoldenCase` có seed. `eval/`: chạy pipeline trên golden set, tính `EvalMetrics` + cắt theo tag, ghi `eval/runs/` và `eval/report.md`, so với lần trước. Chia dev/holdout. 10 ca khó làm tay trong `eval/hard-cases/`.
-- **Backend focus:**
-  - Eval chạy song song có giới hạn concurrency (cấu hình được), tôn trọng rate limit của LLM provider.
-  - Mỗi eval run có `runId`, lưu đủ version (prompt, model, rule config, dataset seed) để tái lập.
-  - Cache kết quả LLM theo `(fileHash, promptVersion, model)` để chạy lại eval không tốn tiền khi chỉ đổi rule.
-  - Eval chạy dở bị ngắt thì chạy tiếp được, không làm lại từ đầu.
+- **🎓 Học được:**
+  - Viết CLI script bằng Node: đọc tham số, exit code, log tiến độ.
+  - Chạy song song có giới hạn (`p-limit`), so sánh với `Promise.all` không giới hạn; tôn trọng rate limit của provider.
+  - Random có seed để sinh lại đúng cùng dữ liệu.
+  - Cache kết quả LLM theo `(fileHash, promptVersion, model)`, chỉ đổi rule thì không gọi LLM lại.
+  - Chạy tiếp được sau khi bị ngắt: ghi kết quả từng ca, bỏ qua ca đã xong.
 - **Tiêu chí hoàn thành:** `make synth SEED=1` sinh lại đúng cùng bộ dữ liệu; `make eval` sinh `report.md` tự động; có baseline CPR ghi trong `docs/STATUS.md`; chạy lại eval chỉ đổi rule thì 0 lời gọi LLM mới; report ghi tổng thời gian và chi phí ước tính của run.
 - **Phụ thuộc:** P1.
 
@@ -52,49 +58,51 @@
 
 - **Mục tiêu:** rule cấu hình được theo khách hàng, routing an toàn.
 - **Phạm vi:** đủ 10 mã rule; chuẩn hoá và so khớp tên; tính hạn khi không in sẵn; nhiều file config theo khách hàng; yêu cầu bộ giấy theo vai trò (staff đã đủ bộ chưa).
-- **Backend focus:**
-  - Rule engine là pure function `(extraction, config, now) → RuleResult[]`, không đụng DB hay đồng hồ hệ thống, nên test được hoàn toàn.
-  - Thời gian xử lý nhất quán: lưu UTC, so sánh ngày theo timezone của khách hàng trong config, inject `now` để test.
-  - Config theo khách hàng có schema + version; mỗi kết quả routing ghi lại `configVersion` đã dùng.
-  - "Staff đã đủ bộ giấy chưa" tính bằng một query rõ ràng, có index phù hợp, kiểm bằng `EXPLAIN ANALYZE` trên dữ liệu seed lớn.
-- **Tiêu chí hoàn thành:** test cho mọi mã rule kể cả ca biên (ngày cuối tháng, năm nhuận, "LAST, FIRST"); `falseApproveRate = 0` trên golden set dev của CPR; config sai schema bị từ chối khi khởi động; rule engine không import gì từ tầng DB/HTTP (kiểm bằng lint rule hoặc dependency-cruiser); query đủ bộ giấy chạy dưới 50 ms với 10.000 staff seed.
+- **🎓 Học được:**
+  - Hàm thuần `(extraction, staff, config, asOf) → RuleResult[]`: vì sao truyền `asOf` vào thay vì gọi `Date.now()`, và vì sao nhờ vậy test được hoàn toàn.
+  - Ngày lịch là chuỗi `YYYY-MM-DD`; vì sao `Date` dễ lệch múi giờ; xử lý ca biên (cuối tháng, năm nhuận).
+  - Đọc và validate config YAML bằng Zod khi khởi động; mỗi kết quả ghi `rules` version đã dùng.
+  - Viết query SQL "staff đã đủ bộ giấy chưa" (JOIN, GROUP BY), thêm index, đọc `EXPLAIN` cơ bản (Seq Scan và Index Scan).
+  - Giữ ranh giới package bằng ESLint `no-restricted-imports`.
+- **Tiêu chí hoàn thành:** test cho mọi mã rule kể cả ca biên (ngày cuối tháng, năm nhuận, "LAST, FIRST"); `falseApproveRate = 0` trên golden set dev của CPR; config sai schema bị từ chối khi khởi động; `packages/rules` không import gì từ DB/HTTP/Nest (lint chặn); query đủ bộ giấy dùng index (có `EXPLAIN` trong plan).
 - **Phụ thuộc:** P2 (cần eval để đo).
 
 ## P4 · Hàng chờ và màn duyệt (5–6 ngày)
 
 - **Mục tiêu:** người duyệt xử lý một ca trong dưới 30 giây.
 - **Phạm vi:** hàng chờ (lọc theo lý do, sắp theo hạn); màn duyệt (ảnh + trường + evidence + rule không qua); sửa trường inline; duyệt / từ chối / yêu cầu nộp lại; lưu `ReviewAction` có `corrections`; trạng thái phía nhân viên. Highlight vùng chữ khi có `box`.
-- **Backend focus:**
-  - **Hai người duyệt cùng một ca:** "nhận ca" bằng `SELECT … FOR UPDATE SKIP LOCKED` (có thời hạn giữ ca), hành động duyệt dùng optimistic locking (cột `version`). ADR so sánh hai cách.
-  - Hàng chờ dùng keyset pagination theo `(dueDate, id)`, có index tương ứng.
-  - `review_actions` chỉ được insert, không update/delete (quyền DB hoặc trigger), là nền cho audit log sau MVP.
-  - Duyệt/từ chối cập nhật document và ghi `review_actions` trong một transaction.
-  - Presigned URL để xem ảnh có thời hạn ngắn, kiểm quyền trước khi cấp.
-- **Tiêu chí hoàn thành:** xử lý trọn 10 ca trong hàng chờ chỉ bằng UI; mọi chỗ sửa xuất hiện trong `review_actions`; báo cáo "trường hay bị sửa nhất" chạy được từ dữ liệu đó; test bắn 20 request duyệt song song cùng một ca thì đúng 1 thành công, còn lại nhận lỗi conflict rõ ràng; 2 reviewer mở hàng chờ cùng lúc không nhận trùng ca.
+- **🎓 Học được:**
+  - Transaction nhiều bảng: duyệt cập nhật `documents` và ghi `review_actions` cùng lúc, lỗi giữa chừng thì rollback; truyền `tx` qua nhiều service.
+  - **Optimistic locking** bằng cột `version`: `UPDATE … WHERE id = ? AND version = ?`, không có dòng nào bị ảnh hưởng thì trả `409 Conflict`.
+  - Pagination: offset và keyset `(dueDate, id)`, vì sao keyset ổn định hơn khi dữ liệu thay đổi.
+  - `review_actions` chỉ insert (repository không có hàm update/delete).
+  - Stream file ảnh qua endpoint có kiểm quyền.
+- **Tiêu chí hoàn thành:** xử lý trọn 10 ca trong hàng chờ chỉ bằng UI; mọi chỗ sửa xuất hiện trong `review_actions`; báo cáo "trường hay bị sửa nhất" chạy được từ dữ liệu đó; test gửi 2 request duyệt cùng `version` thì đúng 1 thành công, request còn lại nhận `409`.
 - **Phụ thuộc:** P3.
 
 ## P5 · Đủ 5 loại giấy và ca khó (6–8 ngày)
 
 - **Mục tiêu:** phủ đủ phạm vi MVP với số liệu đáng tin.
 - **Phạm vi:** template + prompt + rule cho `professional_license`, `tb_test`, `background_check`, `vaccination_record`; ca khó theo `docs/doc-types.md`; dashboard hết hạn (admin). Thử nghiệm so sánh vision thuần với OCR + LLM, quyết bằng ADR.
-- **Backend focus:**
-  - OpenTelemetry trace một document xuyên suốt: upload → job → từng bước pipeline → rule → routing; log có `traceId`, `documentId`, không log PII.
-  - Metrics: thời gian chờ queue, thời gian từng bước, tỉ lệ lỗi theo bước, số token và chi phí mỗi document.
-  - Load test (k6 hoặc script): upload 500 document liên tục, tìm bottleneck đầu tiên và ghi lại trước/sau khi sửa.
-  - Dashboard hết hạn dùng query có index, kiểm bằng `EXPLAIN ANALYZE`.
-- **Tiêu chí hoàn thành:** đạt chỉ số MVP ở `docs/product.md` mục 1 trên **holdout**; report có bảng theo loại giấy và theo tag; từ một document chậm tìm ra bước gây chậm chỉ bằng trace; có số liệu p95 thời gian xử lý mỗi document và chi phí trung bình mỗi document trong `docs/STATUS.md`.
+- **🎓 Học được:**
+  - Log có cấu trúc bằng pino (`nestjs-pino`): mỗi dòng log có `requestId`, `documentId`; không log PII.
+  - Truyền `documentId` từ API sang worker qua job data để nối log hai process.
+  - Đo thời gian từng bước, lưu `timingMs`, tính p95 bằng SQL.
+  - Mở rộng code cho loại giấy mới mà không sửa lung tung (một chỗ đăng ký loại giấy).
+- **Tiêu chí hoàn thành:** đạt chỉ số MVP ở `docs/product.md` mục 1 trên **holdout**; report có bảng theo loại giấy và theo tag; lọc log theo `documentId` thấy đủ hành trình của một document; có số liệu p95 thời gian xử lý mỗi document và chi phí trung bình mỗi document trong `docs/STATUS.md`.
 - **Phụ thuộc:** P4.
 
 ## P6 · Deploy, writeup, demo (3–4 ngày)
 
 - **Mục tiêu:** người lạ mở link là hiểu và dùng thử được.
 - **Phạm vi:** deploy demo (dữ liệu giả lập, có giới hạn chi phí); README tiếng Anh; `docs/case-study.md` hoàn chỉnh (vấn đề → kiến trúc → trade-off → số liệu eval → giới hạn); video demo 3 phút.
-- **Backend focus:**
-  - Secrets không nằm trong repo hay image; API key LLM có giới hạn chi tiêu phía provider.
-  - Migration chạy tự động trong pipeline deploy trước khi app mới nhận traffic; viết migration theo kiểu expand/contract.
-  - Worker tắt an toàn khi deploy (graceful shutdown, không bỏ dở job).
-  - Rate limit cho API demo công khai (theo IP) để chặn lạm dụng chi phí LLM.
-  - Case study có mục "Quyết định backend": transactional enqueue, idempotency, xử lý duyệt đồng thời, trace pipeline, kèm số liệu đo được.
+- **🎓 Học được:**
+  - Secrets và env khi deploy: không nằm trong repo hay image; giới hạn chi tiêu API key LLM.
+  - Dockerfile cho API và worker (multi-stage build).
+  - Chạy migration khi deploy, trước khi app mới nhận traffic.
+  - Graceful shutdown: `app.enableShutdownHooks()`, `worker.close()` chờ job đang chạy xong.
+  - Rate limit theo IP bằng `@nestjs/throttler`.
+  - Case study có mục "Quyết định backend": dual-write + sweep job, dedupe, optimistic locking, kèm giới hạn và cách nâng cấp.
 - **Tiêu chí hoàn thành:** máy mới clone, điền `.env`, `make setup && make dev` là chạy; link demo hoạt động; case study có bảng số liệu holdout; deploy bản mới trong lúc có job đang chạy không làm mất job; demo công khai bị chặn khi vượt rate limit.
 - **Phụ thuộc:** P5.
 
@@ -102,11 +110,31 @@
 
 Agent (xem `docs/product.md` mục 9), nhắc gia hạn, nhiều tenant, đăng nhập thật, audit log đầy đủ.
 
-**Backend focus sau MVP** (theo thứ tự ưu tiên):
+**Tính năng** (theo thứ tự ưu tiên):
 
-1. **Nhiều tenant:** cô lập dữ liệu bằng Postgres Row-Level Security, test chứng minh tenant A không đọc được dữ liệu tenant B qua API, query trực tiếp hay presigned URL.
-2. **Đăng nhập thật:** OIDC + RBAC (`admin`, `reviewer`, `staff`), kiểm quyền ở cả guard lẫn query.
-3. **Audit log đầy đủ:** append-only, hash chain để phát hiện sửa đổi, có endpoint kiểm tra toàn vẹn.
-4. **Nhắc gia hạn:** job định kỳ nhắc trước 60/30/7 ngày, chạy lại không gửi trùng.
-5. **Tích hợp ngoài:** webhook gửi đi có ký HMAC + retry + delivery log; circuit breaker cho dịch vụ xác minh license.
-6. **Agent:** chạy *bên trong* pipeline pg-boss (queue lo độ tin cậy, agent lo suy luận), có human-in-the-loop.
+1. **Đăng nhập thật:** OIDC + RBAC (`admin`, `reviewer`, `staff`), kiểm quyền bằng guard.
+2. **Nhắc gia hạn:** job định kỳ nhắc trước 60/30/7 ngày, chạy lại không gửi trùng.
+3. **Nhiều tenant:** mỗi bảng có `tenantId`, test chứng minh tenant A không đọc được dữ liệu tenant B.
+4. **Audit log đầy đủ.**
+5. **Agent:** chạy *bên trong* pipeline BullMQ (queue lo độ tin cậy, agent lo suy luận), có human-in-the-loop.
+
+## Học nâng cao
+
+Vượt mức middle; mỗi mục ghi chỗ trong CredFlow sẽ cần nó. Làm khi đã tick hết `progress.md` của MVP.
+
+| Kiến thức | Thay cho cách đang dùng | Chỗ dùng |
+| --- | --- | --- |
+| Transactional outbox + relay (polling, LISTEN/NOTIFY, CDC), dedupe khi nhiều relay | Commit rồi `queue.add` + sweep job | P1 upload |
+| AsyncLocalStorage / `nestjs-cls` transactional | Truyền `tx` tường minh | Mọi service |
+| `SELECT … FOR UPDATE SKIP LOCKED` + lease "nhận ca" | Optimistic locking | P4 hàng chờ |
+| Header `Idempotency-Key` | Dedupe theo checksum | P1 upload |
+| Testcontainers | DB test trong docker compose | Integration test |
+| OpenTelemetry trace + metrics | pino + `timingMs` | P5 |
+| Load test (k6), tìm bottleneck | — | P5 |
+| RFC 9457 Problem Details | `{ code, message, details? }` | Lỗi API |
+| Presigned URL | Endpoint stream file | P4, khi có S3 |
+| Bảng append-only bằng trigger/quyền DB, hash chain | Chặn ở tầng code | Audit log |
+| Postgres Row-Level Security | Lọc `tenantId` ở query | Nhiều tenant |
+| Migration expand/contract không downtime | Migration trước khi deploy | P6 |
+| Redis AOF, HA | Chấp nhận mất, sweep job | Vận hành |
+| Webhook ký HMAC + retry, circuit breaker | — | Tích hợp ngoài |

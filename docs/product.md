@@ -132,21 +132,21 @@ Xem `docs/flows.md`. Các màn chính:
 
 | Lớp | Lựa chọn | Trạng thái |
 | --- | --- | --- |
-| Monorepo | pnpm workspace, TypeScript strict | Đề xuất (ADR 0001) |
-| Web | Next.js 14 (App Router), Tailwind + shadcn/ui, TanStack Query | Đề xuất |
-| API | Hono trên Node | Đề xuất |
-| DB | Postgres 16 (docker compose), Drizzle ORM | Đề xuất |
-| Job queue | pg-boss (dùng Postgres, không cần Redis) | Đề xuất |
+| Monorepo | pnpm workspace, TypeScript strict | Chấp nhận (ADR 0001) |
+| Web | Next.js 14 (App Router), Tailwind + shadcn/ui, TanStack Query | Chấp nhận |
+| API | NestJS trên Node; HTTP và worker là hai entrypoint | Chấp nhận |
+| DB | Postgres 16 (docker compose), Drizzle ORM; nguồn sự thật cho trạng thái | Chấp nhận |
+| Job queue | BullMQ + Redis 7 (`noeviction`); dual-write xử lý bằng sweep job (ADR 0001) | Chấp nhận |
 | Lưu file | File system local (`DATA_DIR`), đổi sang S3-compatible khi deploy | Đề xuất |
 | LLM | Model có vision + structured output; model cụ thể chốt ở P1 | Mở |
-| Contract | Zod 4 trong `packages/contracts` | Đề xuất |
-| Eval | TypeScript (`eval/`) | Đề xuất |
+| Contract | Zod 4 trong `packages/contracts` | Chấp nhận |
+| Eval | TypeScript (`eval/`) | Chấp nhận |
 | Deploy | Chốt ở P6 | Mở |
 
 ### Quyết định còn mở (chốt ở P0, trừ khi ghi khác)
 
 1. Chốt contract bản nháp trong `packages/contracts`.
-2. Stack trong bảng trên (ADR 0001 đang ở trạng thái Đề xuất).
+2. ~~Stack trong bảng trên~~ Đã chốt 2026-10-29 (ADR 0001).
 3. Model LLM và nhà cung cấp (P1).
 4. Có cho phép **tự từ chối** ca chắc chắn hết hạn không? Mặc định: không, mọi ca không qua đều vào hàng chờ.
 5. Vision thuần hay OCR + LLM cho bản cuối (P5, quyết theo số liệu eval).
