@@ -1,17 +1,17 @@
-import { Classification, DocType } from "./document";
-import { Extraction } from "./extraction";
-import { EvalRun, GoldenCase } from "./eval";
-import { DocumentRecord, ReviewAction, RoutingDecision } from "./routing";
-import { RuleResult, RulesConfig } from "./rules";
-import { StaffProfile } from "./staff";
+import { Classification, DocType } from "./document.js";
+import { Extraction } from "./extraction.js";
+import { EvalRun, GoldenCase } from "./eval.js";
+import { DocumentRecord, ReviewAction, RoutingDecision } from "./routing.js";
+import { RuleResult, RulesConfig } from "./rules.js";
+import { StaffProfile } from "./staff.js";
 
-export * from "./common";
-export * from "./document";
-export * from "./extraction";
-export * from "./staff";
-export * from "./rules";
-export * from "./routing";
-export * from "./eval";
+export * from "./common.js";
+export * from "./document.js";
+export * from "./extraction.js";
+export * from "./staff.js";
+export * from "./rules.js";
+export * from "./routing.js";
+export * from "./eval.js";
 
 /** Các kiểu đi qua ranh giới I/O. Fixture trong fixtures/<Tên>.json phải parse được. */
 export const Schemas = {

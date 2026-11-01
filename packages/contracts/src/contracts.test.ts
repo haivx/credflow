@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { Extraction, Schemas, type SchemaName } from "./index";
+import { Extraction, Schemas, type SchemaName } from "./index.js";
 
 const FIXTURE_DIR = join(import.meta.dirname, "..", "fixtures");
 

@@ -1,6 +1,6 @@
 # CredFlow: lệnh phát triển. Recipe là POSIX sh.
 
-.PHONY: setup db-up db-down dev dev-api dev-worker dev-web test typecheck lint eval synth
+.PHONY: setup db-up db-down build-packages dev dev-packages dev-api dev-worker dev-web test typecheck lint eval synth
 
 # Cài deps từ lockfile, bật Postgres và Redis.
 setup:
@@ -13,20 +13,27 @@ db-up:
 db-down:
 	docker compose down
 
-# API (127.0.0.1:8787), worker (không mở cổng) và web (localhost:3000) chạy song song.
-dev:
-	@$(MAKE) -j3 dev-api dev-worker dev-web
+# packages/* build bằng tsc ra dist/: lúc chạy, node/vitest/tsx đọc dist (ADR 0003).
+build-packages:
+	pnpm --filter "./packages/*" build
 
-dev-api:
+# API (127.0.0.1:8787), worker (không mở cổng), web (localhost:3000) và tsc --watch cho packages chạy song song.
+dev:
+	@$(MAKE) -j4 dev-packages dev-api dev-worker dev-web
+
+dev-packages: build-packages
+	pnpm --filter "./packages/*" --parallel dev
+
+dev-api: build-packages
 	pnpm --filter @credflow/api dev
 
-dev-worker:
+dev-worker: build-packages
 	pnpm --filter @credflow/api dev:worker
 
-dev-web:
+dev-web: build-packages
 	pnpm --filter @credflow/web dev
 
-test:
+test: build-packages
 	pnpm -r --if-present test
 
 typecheck:
@@ -37,9 +44,9 @@ lint:
 	pnpm exec prettier --check .
 
 # Chạy golden set qua pipeline hiện tại → eval/report.md (stub đến P2).
-eval:
+eval: build-packages
 	pnpm --filter @credflow/eval run eval
 
 # Sinh giấy tờ giả lập + đáp án → data/synth/ (stub đến P2). SEED= tuỳ chọn.
-synth:
+synth: build-packages
 	pnpm --filter @credflow/synth run synth $(if $(SEED),--seed $(SEED))

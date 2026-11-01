@@ -116,3 +116,6 @@
 ## Học nâng cao
 
 Thêm dòng khi gặp trong lúc làm. Danh sách gốc ở cuối `docs/roadmap.md`.
+
+- [ ] **Đọc hiểu project Nest CommonJS (`require`, `bootstrap()`, Jest)** · gặp ở: plan 03, khi so ESM với CommonJS · note: —
+  - Tự kiểm: Trong project CommonJS, vì sao `main.ts` phải bọc trong `bootstrap()` và gọi kèm `.catch`? Import file của mình có cần đuôi `.js` không?

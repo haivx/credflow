@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { DocType } from "./document";
+import { DocType } from "./document.js";
 
 // BẢN NHÁP: Liam chốt ở P0. Thêm mã rule mới nghĩa là sửa contract.
 

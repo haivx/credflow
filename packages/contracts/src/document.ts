@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { Confidence } from "./common";
+import { Confidence } from "./common.js";
 
 // BẢN NHÁP: Liam chốt ở P0.
 

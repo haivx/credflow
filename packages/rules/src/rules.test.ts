@@ -1,7 +1,7 @@
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { RuleResult } from "@credflow/contracts";
-import { loadRulesConfig, route } from "./index";
+import { loadRulesConfig, route } from "./index.js";
 
 const CONFIG = join(
   import.meta.dirname,
