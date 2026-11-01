@@ -1,24 +1,27 @@
 # CredFlow: lệnh phát triển. Recipe là POSIX sh.
 
-.PHONY: setup db-up db-down dev dev-api dev-web test typecheck lint eval synth
+.PHONY: setup db-up db-down dev dev-api dev-worker dev-web test typecheck lint eval synth
 
-# Cài deps từ lockfile và bật Postgres.
+# Cài deps từ lockfile, bật Postgres và Redis.
 setup:
 	pnpm install --frozen-lockfile
 	$(MAKE) db-up
 
 db-up:
-	docker compose up -d db
+	docker compose up -d db redis
 
 db-down:
 	docker compose down
 
-# API (127.0.0.1:8787) và web (localhost:3000) chạy song song.
+# API (127.0.0.1:8787), worker (không mở cổng) và web (localhost:3000) chạy song song.
 dev:
-	@$(MAKE) -j2 dev-api dev-web
+	@$(MAKE) -j3 dev-api dev-worker dev-web
 
 dev-api:
 	pnpm --filter @credflow/api dev
+
+dev-worker:
+	pnpm --filter @credflow/api dev:worker
 
 dev-web:
 	pnpm --filter @credflow/web dev

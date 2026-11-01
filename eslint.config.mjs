@@ -23,6 +23,16 @@ export default tseslint.config(
       "react-hooks/exhaustive-deps": "warn",
     },
   },
+  // Module Nest là class rỗng có decorator `@Module`.
+  {
+    files: ["apps/api/**/*.ts"],
+    rules: {
+      "@typescript-eslint/no-extraneous-class": [
+        "error",
+        { allowWithDecorator: true },
+      ],
+    },
+  },
   // CLAUDE.md: TypeScript strict, không `any`.
   { rules: { "@typescript-eslint/no-explicit-any": "error" } },
   prettier,
