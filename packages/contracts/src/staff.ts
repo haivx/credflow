@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { Id } from "./common";
+import { Id } from "./common.js";
 
 // BẢN NHÁP: Liam chốt ở P0. Hồ sơ nhân viên là dữ liệu giả lập.
 

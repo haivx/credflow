@@ -1,6 +1,6 @@
 import * as z from "zod";
-import { IsoDate } from "./common";
-import { extractedField } from "./document";
+import { IsoDate } from "./common.js";
+import { extractedField } from "./document.js";
 
 // BẢN NHÁP: Liam chốt ở P0. Trường theo docs/doc-types.md.
 // Ngày luôn chuẩn hoá về YYYY-MM-DD; chữ gốc nằm trong evidence.quote.

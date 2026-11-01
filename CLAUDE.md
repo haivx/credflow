@@ -57,11 +57,12 @@ docs/                product.md, flows.md, doc-types.md, data-policy.md, roadmap
 
 ```
 make setup      # pnpm install --frozen-lockfile + bật Postgres và Redis (docker compose)
-make dev        # API 127.0.0.1:8787 + worker (không mở cổng) + web localhost:3000
+make dev        # API 127.0.0.1:8787 + worker (không mở cổng) + web localhost:3000 + tsc --watch cho packages
 make dev-api    # chỉ API (nest start --watch, SWC); make dev-worker, make dev-web tương tự
+make build-packages  # tsc packages/* → dist/ (test, dev, eval, synth tự chạy trước, ADR 0003)
 make test       # vitest mọi package
 make typecheck  # tsc mọi package
-make lint       # eslint + prettier
+make lint       # eslint (có type-check cho apps/api, packages) + prettier
 make eval       # chạy golden set → eval/report.md (P2)
 make synth      # sinh dữ liệu giả lập → data/synth/ (P2), SEED= tuỳ chọn
 ```

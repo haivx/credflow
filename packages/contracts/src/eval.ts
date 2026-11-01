@@ -1,8 +1,8 @@
 import * as z from "zod";
-import { Id, IsoDate, IsoTimestamp } from "./common";
-import { DocType } from "./document";
-import { Versions } from "./routing";
-import { StaffProfile } from "./staff";
+import { Id, IsoDate, IsoTimestamp } from "./common.js";
+import { DocType } from "./document.js";
+import { Versions } from "./routing.js";
+import { StaffProfile } from "./staff.js";
 
 // BẢN NHÁP: Liam chốt ở P2.
 

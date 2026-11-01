@@ -1,8 +1,8 @@
 import * as z from "zod";
-import { Id, IsoTimestamp } from "./common";
-import { Classification, DocType } from "./document";
-import { Extraction } from "./extraction";
-import { RuleCode, RuleResult } from "./rules";
+import { Id, IsoTimestamp } from "./common.js";
+import { Classification, DocType } from "./document.js";
+import { Extraction } from "./extraction.js";
+import { RuleCode, RuleResult } from "./rules.js";
 
 // BẢN NHÁP: Liam chốt ở P0.
 

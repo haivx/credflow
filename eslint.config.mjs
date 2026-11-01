@@ -33,6 +33,17 @@ export default tseslint.config(
       ],
     },
   },
+  // Lint có type-check: bắt promise bị bỏ quên (không await, không .catch).
+  {
+    files: ["apps/api/src/**/*.ts", "packages/*/src/**/*.ts"],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: { "@typescript-eslint/no-floating-promises": "error" },
+  },
   // CLAUDE.md: TypeScript strict, không `any`.
   { rules: { "@typescript-eslint/no-explicit-any": "error" } },
   prettier,
