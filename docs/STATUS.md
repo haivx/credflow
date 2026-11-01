@@ -2,12 +2,12 @@
 
 > Claude Code đọc file này đầu mỗi phiên và cập nhật cuối phiên (`/wrap`). Giữ ngắn, dưới 40 dòng.
 
-**Cập nhật:** 2026-10-29
+**Cập nhật:** 2026-11-01
 **Phase hiện tại:** P0 · Nền tảng và contract (`docs/roadmap.md`)
 
 ## Đang làm
 
-- Plan 02 (`docs/plans/02-nest-api-skeleton.md`), đã duyệt, nhánh `feat/02-nest-api-skeleton`. Boilerplate xong (Nest 12 ESM + SWC + Vitest, Redis trong compose), **chưa commit**. Chưa kiểm Redis vì Docker daemon tắt.
+- Plan 02 (`docs/plans/02-nest-api-skeleton.md`), đã duyệt, nhánh `feat/02-nest-api-skeleton`. Bước 1–6 đã commit (`a735697`). Đã kiểm Redis (`noeviction`, không AOF): plan 02 đủ tiêu chí.
 
 ## Đang học
 
@@ -19,8 +19,8 @@
   4 `app-info/app-info.service.ts` + `app-info.module.ts` (providers + exports), inject vào `HealthController`, `/health` trả 200. Đã học: 3 tầng providers/exports/imports, `UnknownExportException`; tên tham số constructor không ảnh hưởng DI (Nest đọc kiểu); `import` ESM khác `imports` của `@Module`; provider khai báo ở một module sở hữu rồi export (khai báo lặp ở nhiều module → nhiều instance, hỏng với pool DB/cache).
   5 `worker.ts` + `worker.module.ts`: `createApplicationContext`, `ctx.get(AppInfoService)` chạy đúng. Đã học: token của provider là chính class (chuỗi → `UnknownElementException`, và `get` trả `any`).
   6 `health/health.controller.spec.ts`: helper `createController(info)` + `useValue`, 2 test (giá trị từ bản giả; spread không cho service ghi đè `status`, đã thử đảo spread → đỏ). Đã học: class vừa là giá trị vừa là kiểu; SWC không kiểm type nên cần cả `make test` + `make typecheck`.
-- **Bước tiếp theo:** mục 🎓 xong, chờ Liam tự tick ở `progress.md` (note: `docs/learning/notes/p0-nest-di.md`). Plan 02 còn 1 tiêu chí: kiểm Redis `noeviction` (cần bật Docker).
-- **Code đang dở / câu hỏi còn treo:** bước 6 + note chưa commit. Đề xuất sau: bật `no-floating-promises` (cần ESLint có type-check).
+- **Bước tiếp theo:** mục 🎓 xong, chờ Liam tự tick ở `progress.md` (note: `docs/learning/notes/p0-nest-di.md`). Plan 02 xong, chờ merge rồi `/next` sang plan 03.
+- **Code đang dở / câu hỏi còn treo:** không có code dở. Đề xuất sau: bật `no-floating-promises` (cần ESLint có type-check).
 
 ## Tiếp theo
 

@@ -74,7 +74,7 @@ Mỗi bước Claude giải thích trước, Liam viết, Claude review rồi m�
 - [x] `apps/api` không còn Hono / `tsx`; dev và build chạy bằng SWC qua Nest CLI.
 - [x] `GET /health` trả `{ status, service, version }`, `version` lấy từ `AppInfoService`.
 - [x] `worker.ts` khởi động được bằng application context, không lắng nghe HTTP.
-- [ ] Redis chạy trong docker compose với `noeviction`, không AOF.
+- [x] Redis chạy trong docker compose với `noeviction`, không AOF. (Kiểm 2026-11-01: `CONFIG GET` ra `noeviction` / `appendonly no`.)
 - [x] `make test`, `make typecheck`, `make lint` pass; có ít nhất 1 unit test dùng `Test.createTestingModule`.
 - [x] `docs/learning/progress.md`: điền `code:` và `note:` cho dòng "Module, controller, provider, DI trong Nest" (Liam tự tick).
 - [x] `docs/STATUS.md` và mục Lệnh trong `CLAUDE.md` cập nhật.
