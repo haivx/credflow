@@ -8,16 +8,17 @@
 ## Đang làm
 
 - Plan 02, 03, 04 xong, đã merge (PR #1, #2, #3).
-- Plan 05 (`docs/plans/05-drizzle-staff.md`), nhánh `feat/05-drizzle-staff`: Drizzle + token `DB` + bảng `staff` + seed + `GET /staff`. Đủ tiêu chí, chưa commit/PR.
+- Plan 05 (`docs/plans/05-drizzle-staff.md`), nhánh `feat/05-drizzle-staff`: Drizzle + token `DB` + bảng `staff` + seed + `GET /staff`. Xong, đã merge (PR #4).
+- Plan 06 (`docs/plans/06-ready-integration-test.md`), nhánh `feat/06-ready-integration-test`: `/ready` + DB test + integration test. Đã duyệt, boilerplate xong, đang làm phần học (6 bước).
 
 ## Đang học
 
 > Claude cập nhật sau **mỗi bước**, không chờ cuối phiên. Mở phiên mới gõ `/tiep` để làm tiếp.
 
-- **Mục 🎓:** Drizzle schema + migration, custom provider token `DB` (plan 05, 6 bước) — xong. Note: `docs/learning/notes/p0-drizzle.md`.
-- **Bước đã xong:** schema `staff`, migration, `DbModule` + `dbProvider`, seed idempotent, `StaffModule` + `GET /staff`, test controller (13 test). Kiểm tay phát hiện API crash khi tắt DB (pool `'error'` không có listener) → đã thêm `pool.on("error")`.
-- **Bước tiếp theo:** Liam tự tick "Custom provider", "Drizzle schema và migration" ở `progress.md`. Commit + PR plan 05, rồi `/next`.
-- **Code đang dở / câu hỏi còn treo:** Liam "tạm hiểu" vì sao cần `@Inject(DB)`, sẽ hỏi lại khi làm nhiều. Tuỳ chọn: đổi `console.error` trong `db.provider.ts` sang `Logger` của Nest. Mục 🎓 "Nest DI" (plan 02) và "Config env" (plan 04) chờ Liam tự tick.
+- **Mục 🎓:** `/health` và `/ready`, Integration test với Postgres thật (plan 06, 6 bước).
+- **Bước đã xong:** boilerplate: deps `ioredis`/`supertest`, service `db-test` (5433, tmpfs), `make test-int`, `vitest.int.config.ts`, `test/global-setup.ts` (migrate + chặn DB không phải test, đã kiểm), scaffold `src/redis/`.
+- **Bước tiếp theo:** bước 1, chọn option ioredis trong `apps/api/src/redis/redis.provider.ts` (TODO).
+- **Code đang dở / câu hỏi còn treo:** Liam "tạm hiểu" vì sao cần `@Inject(DB)`. Tuỳ chọn: đổi `console.error` trong `db.provider.ts`/`redis.provider.ts` sang `Logger` của Nest.
 
 ## Tiếp theo
 
