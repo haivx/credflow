@@ -62,7 +62,8 @@ make dev-api    # chỉ API (nest start --watch, SWC); make dev-worker, make dev
 make build-packages  # tsc packages/* → dist/ (test, dev, eval, synth tự chạy trước, ADR 0003)
 make test       # vitest mọi package
 make typecheck  # tsc mọi package
-make lint       # eslint (có type-check cho apps/api, packages) + prettier
+make lint       # eslint (có type-check cho apps/api, packages) + prettier --check
+make format     # prettier --write: sửa định dạng khi make lint báo lỗi prettier
 make eval       # chạy golden set → eval/report.md (P2)
 make synth      # sinh dữ liệu giả lập → data/synth/ (P2), SEED= tuỳ chọn
 ```

@@ -1,6 +1,6 @@
 # CredFlow: lệnh phát triển. Recipe là POSIX sh.
 
-.PHONY: setup db-up db-down build-packages dev dev-packages dev-api dev-worker dev-web test typecheck lint eval synth
+.PHONY: setup db-up db-down build-packages dev dev-packages dev-api dev-worker dev-web test typecheck lint format eval synth
 
 # Cài deps từ lockfile, bật Postgres và Redis.
 setup:
@@ -42,6 +42,10 @@ typecheck:
 lint:
 	pnpm exec eslint .
 	pnpm exec prettier --check .
+
+# Sửa định dạng mọi file theo .prettierrc (make lint chỉ kiểm, không sửa).
+format:
+	pnpm exec prettier --write .
 
 # Chạy golden set qua pipeline hiện tại → eval/report.md (stub đến P2).
 eval: build-packages
