@@ -12,7 +12,7 @@
   - Tự kiểm: Khi nào cần `useFactory` + `@Inject(TOKEN)` thay vì để Nest tự inject theo class?
 - [ ] **Vòng đời request trong Nest** · code: — · note: —
   - Tự kiểm: Kể thứ tự middleware, guard, pipe, interceptor, filter. Kiểm quyền đặt ở đâu, validate body đặt ở đâu?
-- [ ] **Config từ env validate bằng Zod** · code: — · note: —
+- [ ] **Config từ env validate bằng Zod** · code: `apps/api/src/config/`, `apps/api/src/{app,worker}.module.ts`, `apps/api/src/main.ts` · note: `notes/p0-config-env.md`
   - Tự kiểm: Vì sao nên để app không khởi động được khi thiếu biến env, thay vì lỗi lúc chạy?
 - [ ] **Drizzle schema và migration** · code: — · note: —
   - Tự kiểm: Sửa schema xong thì sinh và chạy migration thế nào? Vì sao không sửa thẳng DB bằng tay?
