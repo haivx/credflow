@@ -8,13 +8,13 @@
 
 - [ ] **Module, controller, provider, DI trong Nest** · code: `apps/api/src/{app.module,main,worker,worker.module}.ts`, `apps/api/src/health/`, `apps/api/src/app-info/` · note: `notes/p0-nest-di.md`
   - Tự kiểm: Nest biết inject gì vào constructor của một service bằng cách nào? Vì sao `tsx` không chạy được DI của Nest?
-- [ ] **Custom provider (token `DB` cho Drizzle)** · code: — · note: —
+- [ ] **Custom provider (token `DB` cho Drizzle)** · code: `apps/api/src/db/db.provider.ts`, `apps/api/src/db/db.module.ts` · note: `notes/p0-drizzle.md`
   - Tự kiểm: Khi nào cần `useFactory` + `@Inject(TOKEN)` thay vì để Nest tự inject theo class?
 - [ ] **Vòng đời request trong Nest** · code: — · note: —
   - Tự kiểm: Kể thứ tự middleware, guard, pipe, interceptor, filter. Kiểm quyền đặt ở đâu, validate body đặt ở đâu?
 - [ ] **Config từ env validate bằng Zod** · code: `apps/api/src/config/`, `apps/api/src/{app,worker}.module.ts`, `apps/api/src/main.ts` · note: `notes/p0-config-env.md`
   - Tự kiểm: Vì sao nên để app không khởi động được khi thiếu biến env, thay vì lỗi lúc chạy?
-- [ ] **Drizzle schema và migration** · code: — · note: —
+- [ ] **Drizzle schema và migration** · code: `apps/api/src/db/schema.ts`, `apps/api/drizzle/`, `apps/api/drizzle.config.ts` · note: `notes/p0-drizzle.md`
   - Tự kiểm: Sửa schema xong thì sinh và chạy migration thế nào? Vì sao không sửa thẳng DB bằng tay?
 - [ ] **Ràng buộc ở DB (FK, NOT NULL, CHECK, unique)** · code: — · note: —
   - Tự kiểm: Code đã validate rồi thì vì sao vẫn cần ràng buộc ở DB?
