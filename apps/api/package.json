@@ -9,7 +9,10 @@
     "start": "node dist/main.js",
     "start:worker": "node dist/worker.js",
     "test": "vitest run --passWithNoTests",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
     "@credflow/contracts": "workspace:*",
@@ -18,8 +21,11 @@
     "@nestjs/config": "^12.0.1",
     "@nestjs/core": "^12.3.2",
     "@nestjs/platform-express": "^12.3.2",
+    "drizzle-orm": "^0.45.4",
+    "pg": "^8.23.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
+    "ulid": "^3.0.2",
     "zod": "4.6.5"
   },
   "devDependencies": {
@@ -27,6 +33,9 @@
     "@nestjs/testing": "^12.3.2",
     "@swc/cli": "^0.8.1",
     "@swc/core": "^1.16.20",
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "^0.31.11",
+    "tsx": "^4.23.15",
     "unplugin-swc": "^2.0.0",
     "vitest": "^4.1.12"
   }

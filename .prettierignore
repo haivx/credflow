@@ -4,3 +4,5 @@ pnpm-lock.yaml
 data/**
 **/*.md
 **/next-env.d.ts
+# Drizzle sinh ra (migration SQL + snapshot JSON)
+apps/api/drizzle/

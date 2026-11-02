@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { Id } from "./common.js";
 
-// BẢN NHÁP: Liam chốt ở P0. Hồ sơ nhân viên là dữ liệu giả lập.
+// Đã chốt 2026-11-02 (plan 05). Hồ sơ nhân viên là dữ liệu giả lập.
 
 export const StaffProfile = z
   .object({

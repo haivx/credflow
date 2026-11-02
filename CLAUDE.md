@@ -60,6 +60,9 @@ make setup      # pnpm install --frozen-lockfile + bật Postgres và Redis (doc
 make dev        # API 127.0.0.1:8787 + worker (không mở cổng) + web localhost:3000 + tsc --watch cho packages
 make dev-api    # chỉ API (nest start --watch, SWC); make dev-worker, make dev-web tương tự
 make build-packages  # tsc packages/* → dist/ (test, dev, eval, synth tự chạy trước, ADR 0003)
+make db-generate # drizzle-kit: sinh migration từ apps/api/src/db/schema.ts → apps/api/drizzle/
+make db-migrate  # chạy migration chưa áp vào DATABASE_URL
+make db-seed     # seed staff giả lập (idempotent)
 make test       # vitest mọi package
 make typecheck  # tsc mọi package
 make lint       # eslint (có type-check cho apps/api, packages) + prettier --check

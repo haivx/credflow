@@ -1,6 +1,6 @@
 # CredFlow: lệnh phát triển. Recipe là POSIX sh.
 
-.PHONY: setup db-up db-down build-packages dev dev-packages dev-api dev-worker dev-web test typecheck lint format eval synth
+.PHONY: setup db-up db-down db-generate db-migrate db-seed build-packages dev dev-packages dev-api dev-worker dev-web test typecheck lint format eval synth
 
 # Cài deps từ lockfile, bật Postgres và Redis.
 setup:
@@ -12,6 +12,18 @@ db-up:
 
 db-down:
 	docker compose down
+
+# Sinh file migration từ apps/api/src/db/schema.ts → apps/api/drizzle/ (commit file sinh ra).
+db-generate:
+	pnpm --filter @credflow/api db:generate
+
+# Chạy migration chưa áp vào DATABASE_URL (Postgres phải đang chạy: make db-up).
+db-migrate:
+	pnpm --filter @credflow/api db:migrate
+
+# Seed staff giả lập; chạy lại không sinh dòng trùng.
+db-seed: build-packages
+	pnpm --filter @credflow/api db:seed
 
 # packages/* build bằng tsc ra dist/: lúc chạy, node/vitest/tsx đọc dist (ADR 0003).
 build-packages:
