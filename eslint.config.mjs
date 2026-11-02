@@ -35,7 +35,11 @@ export default tseslint.config(
   },
   // Lint có type-check: bắt promise bị bỏ quên (không await, không .catch).
   {
-    files: ["apps/api/src/**/*.ts", "packages/*/src/**/*.ts"],
+    files: [
+      "apps/api/src/**/*.ts",
+      "apps/api/scripts/**/*.ts",
+      "packages/*/src/**/*.ts",
+    ],
     languageOptions: {
       parserOptions: {
         projectService: true,
