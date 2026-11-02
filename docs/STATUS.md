@@ -7,21 +7,21 @@
 
 ## Đang làm
 
-- Plan 02 xong, đã merge (PR #1).
-- Plan 03 (`docs/plans/03-build-packages-typed-lint.md`), nhánh `chore/03-build-packages-typed-lint`: packages build ra `dist/` (ADR 0003), bật `no-floating-promises`. Đủ tiêu chí, chờ PR.
+- Plan 02, 03 xong, đã merge (PR #1, #2).
+- Plan 04 (`docs/plans/04-config-env-zod.md`), nhánh `feat/04-config-env-zod`: config env bằng `@nestjs/config` + Zod. Đủ tiêu chí, chưa commit/PR. Thêm `make format`.
 
 ## Đang học
 
 > Claude cập nhật sau **mỗi bước**, không chờ cuối phiên. Mở phiên mới gõ `/tiep` để làm tiếp.
 
-- **Mục 🎓:** Module, controller, provider, DI trong Nest (plan 02, 6 bước).
-- **Bước đã xong:** 1 `app.module.ts` (`@Module`), 2 `main.ts` (top-level await cho `create` + `listen`, bind `127.0.0.1:8787`). Đã học: decorator gắn metadata; floating promise / unhandled rejection; đọc `EADDRINUSE` bằng `lsof`.
-  3 `health/health.controller.ts` (`@Controller("health")` + `@Get()`) + `health.module.ts`, `GET /health` trả 200. Đã học: đọc log `RoutesResolver`/`RouterExplorer`; quên khai báo controller thì không lỗi, chỉ mất route (404).
-  4 `app-info/app-info.service.ts` + `app-info.module.ts` (providers + exports), inject vào `HealthController`, `/health` trả 200. Đã học: 3 tầng providers/exports/imports, `UnknownExportException`; tên tham số constructor không ảnh hưởng DI (Nest đọc kiểu); `import` ESM khác `imports` của `@Module`; provider khai báo ở một module sở hữu rồi export (khai báo lặp ở nhiều module → nhiều instance, hỏng với pool DB/cache).
-  5 `worker.ts` + `worker.module.ts`: `createApplicationContext`, `ctx.get(AppInfoService)` chạy đúng. Đã học: token của provider là chính class (chuỗi → `UnknownElementException`, và `get` trả `any`).
-  6 `health/health.controller.spec.ts`: helper `createController(info)` + `useValue`, 2 test (giá trị từ bản giả; spread không cho service ghi đè `status`, đã thử đảo spread → đỏ). Đã học: class vừa là giá trị vừa là kiểu; SWC không kiểm type nên cần cả `make test` + `make typecheck`.
-- **Bước tiếp theo:** mục 🎓 xong, chờ Liam tự tick ở `progress.md` (note: `docs/learning/notes/p0-nest-di.md`). Sau plan 03: `/next` (dự kiến config env bằng Zod).
-- **Code đang dở / câu hỏi còn treo:** không có code dở.
+- **Mục 🎓:** Config từ env validate bằng Zod (plan 04, 5 bước) — xong.
+- **Bước đã xong:** 1 `config/env.schema.ts` (`envSchema` + `type Env`). Đã học: env luôn là chuỗi → `coerce`; `default` chỉ áp khi `undefined`, chuỗi rỗng `""` không phải `undefined` (`API_PORT=` → 0, `KEY=` lỗi với `.optional()`); ràng buộc cổng `.int().min(1).max(65535)`.
+  2 `config/env.schema.spec.ts`, 9 test (`it.each` cho các case cổng). Đã học: `safeParse` không throw (khác `parse`); kiểm `issues[].path` thay vì chỉ `success`; test không thể đỏ là vô giá trị.
+  3 `config/config.options.ts` (`ConfigModuleOptions`, `isGlobal`, `envFilePath` 4 cấp bằng `import.meta.dirname`, `validationSchema: envSchema`), `ConfigModule.forRoot` trong `AppModule` + `WorkerModule`; worker và `/health` chạy được. Đã học: `forRoot` là dynamic module; `__dirname` không có trong ESM (tsc vẫn xanh vì `@types/node`); đường dẫn tương đối theo cwd; Nest bỏ qua `.env` không tồn tại nên lỗi hiện ra là lỗi Zod.
+  4 `main.ts`: `app.get<ConfigService<Env, true>>`, `get(..., { infer: true })` cho `API_PORT`/`API_HOST`. Đã học: thiếu `infer` → `any` (tên key vẫn được kiểm); `import type`.
+  5 Kiểm fail-fast: `DATABASE_URL=` → API và worker exit 1; `API_PORT=9000` → nghe 9000. Đã học: biến môi trường thật thắng `.env`.
+- **Bước tiếp theo:** Liam tự tick ở `progress.md` (note: `docs/learning/notes/p0-config-env.md`). Commit + PR plan 04, rồi `/next` (dự kiến Drizzle + token `DB`).
+- **Code đang dở / câu hỏi còn treo:** Mục 🎓 "Nest DI" (plan 02) chờ Liam tự tick.
 
 ## Tiếp theo
 
@@ -42,3 +42,4 @@
 - 2026-10-27: tạo skeleton (docs, contract nháp, rule engine stub, khung web/api/eval/synth).
 - 2026-10-29: chốt NestJS + BullMQ (ADR 0001 viết lại); roadmap theo lộ trình học mức middle; thêm `docs/learning/` và chế độ dạy (plan 01).
 - 2026-11-01: plan 02 merge (PR #1); plan 03 build packages ra `dist/` + typed lint (ADR 0003).
+- 2026-11-02: plan 04 config env bằng `@nestjs/config` + Zod, đủ tiêu chí.

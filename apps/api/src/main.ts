@@ -1,7 +1,13 @@
 import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module.js";
+import type { Env } from "./config/env.schema.js";
+import { ConfigService } from "@nestjs/config";
 
 const app = await NestFactory.create(AppModule);
-await app.listen(8787, "127.0.0.1");
-console.log("api http://127.0.0.1:8787");
+const configService = app.get<ConfigService<Env, true>>(ConfigService);
+const apiPort = configService.get("API_PORT", { infer: true });
+const apiHost = configService.get("API_HOST", { infer: true });
+
+await app.listen(apiPort, apiHost);
+console.log(`api http://${apiHost}:${apiPort}`);
