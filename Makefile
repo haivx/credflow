@@ -2,13 +2,17 @@
 
 .PHONY: setup db-up db-down db-generate db-migrate db-seed build-packages dev dev-packages dev-api dev-worker dev-web test test-int typecheck lint format eval synth
 
-# Cài deps từ lockfile, bật Postgres và Redis.
+# Cài deps từ lockfile, bật Postgres và Redis, chạy migration, seed staff giả lập.
+# Chạy lại an toàn: migration đã áp thì bỏ qua, seed không sinh dòng trùng.
 setup:
 	pnpm install --frozen-lockfile
 	$(MAKE) db-up
+	$(MAKE) db-migrate
+	$(MAKE) db-seed
 
+# --wait: chờ healthcheck của Postgres và Redis xanh rồi mới trả về.
 db-up:
-	docker compose up -d db redis
+	docker compose up -d --wait db redis
 
 db-down:
 	docker compose down

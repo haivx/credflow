@@ -9,6 +9,12 @@ services:
       - "127.0.0.1:5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    # Healthcheck để `make db-up` (docker compose up --wait) chờ Postgres nhận kết nối rồi mới migrate.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U credflow -d credflow"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
   # Postgres riêng cho integration test (make test-int): dữ liệu trên tmpfs, bật lại là trống,
   # không bao giờ đụng dữ liệu dev. Healthcheck để `docker compose up --wait` chờ nhận kết nối.
   db-test:
