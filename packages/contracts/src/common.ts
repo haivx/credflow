@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-// BẢN NHÁP: Liam chốt ở P0. Primitive dùng chung, không có .meta({ id }).
+// Đã chốt 2026-11-03 (plan 07). Primitive dùng chung, không có .meta({ id }).
 
 /** Ngày lịch dạng YYYY-MM-DD (không có giờ, không có múi giờ). */
 export const IsoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);

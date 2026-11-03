@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { Confidence } from "./common.js";
 
-// BẢN NHÁP: Liam chốt ở P0.
+// Đã chốt 2026-11-03 (plan 07).
 
 /** 5 loại giấy của MVP (docs/doc-types.md). `unknown` = không nhận ra hoặc upload nhầm. */
 export const DocType = z
@@ -53,3 +53,4 @@ export const Classification = z
     confidence: Confidence,
   })
   .meta({ id: "Classification" });
+export type Classification = z.infer<typeof Classification>;

@@ -4,11 +4,11 @@ import { Classification, DocType } from "./document.js";
 import { Extraction } from "./extraction.js";
 import { RuleCode, RuleResult } from "./rules.js";
 
-// BẢN NHÁP: Liam chốt ở P0.
+// Đã chốt 2026-11-03 (plan 07).
 
 /**
  * Chỉ hai nhánh. Hệ thống không bao giờ tự từ chối: ca không qua rule
- * cũng chuyển cho người duyệt (quyết định còn mở, docs/product.md mục 8).
+ * (kể cả chắc chắn hết hạn) cũng chuyển cho người duyệt (docs/product.md mục 8).
  */
 export const RoutingDecision = z
   .object({
@@ -23,6 +23,8 @@ export const DocumentStatus = z
   .enum([
     "uploaded",
     "processing",
+    /** LLM đã phân loại và trích xuất xong, chưa chạy rule. */
+    "extracted",
     "auto_approved",
     "needs_review",
     "approved",
@@ -31,6 +33,7 @@ export const DocumentStatus = z
     "failed",
   ])
   .meta({ id: "DocumentStatus" });
+export type DocumentStatus = z.infer<typeof DocumentStatus>;
 
 /** Phiên bản của mọi thứ ảnh hưởng tới kết quả, để eval và audit tái lập được. */
 export const Versions = z
@@ -41,6 +44,7 @@ export const Versions = z
     rules: z.string(),
   })
   .meta({ id: "Versions" });
+export type Versions = z.infer<typeof Versions>;
 
 export const DocumentRecord = z
   .object({
@@ -48,6 +52,11 @@ export const DocumentRecord = z
     staffId: Id,
     fileName: z.string(),
     mimeType: z.string(),
+    sizeBytes: z.number().int().positive(),
+    /** sha256 hex chữ thường của nội dung file, dùng để dedupe upload. */
+    checksum: z.string().regex(/^[0-9a-f]{64}$/),
+    /** Vị trí file trong storage (local hoặc S3), tách khỏi tên file người dùng đặt. */
+    storageKey: z.string().min(1),
     /** Loại giấy nhân viên chọn lúc upload (có thể sai). */
     declaredDocType: DocType.optional(),
     status: DocumentStatus,
@@ -59,6 +68,7 @@ export const DocumentRecord = z
     timingMs: z.record(z.string(), z.number().min(0)).default({}),
     error: z.object({ step: z.string(), message: z.string() }).optional(),
     createdAt: IsoTimestamp,
+    updatedAt: IsoTimestamp,
   })
   .meta({ id: "DocumentRecord" });
 export type DocumentRecord = z.infer<typeof DocumentRecord>;
@@ -66,6 +76,7 @@ export type DocumentRecord = z.infer<typeof DocumentRecord>;
 /** Hành động của người duyệt. Mọi chỗ sửa được lưu lại làm dữ liệu eval. */
 export const ReviewAction = z
   .object({
+    id: Id,
     documentId: Id,
     reviewerId: Id,
     action: z.enum(["approve", "reject", "request_reupload"]),
