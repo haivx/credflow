@@ -51,3 +51,6 @@ describe("route", () => {
     expect(route([pass, info]).decision).toBe("auto_approve");
   });
 });
+
+import { it as itRed, expect as expectRed } from "vitest";
+itRed("ci red check", () => expectRed(1).toBe(2));
