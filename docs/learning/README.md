@@ -10,7 +10,7 @@ CredFlow vừa là sản phẩm vừa là lộ trình học lên mức middle–
 ## Cách học trong mỗi task
 
 1. **Giải thích:** trước khi code một mục 🎓, Claude Code giải thích ngắn: vấn đề là gì, các cách giải, vì sao chọn cách này, lỗi hay gặp.
-2. **Tự code:** bạn tự viết code. Claude chia nhỏ từng bước, gợi ý khi bị kẹt, review sau mỗi bước. Boilerplate (config, scaffold, file lặp lại) thì Claude làm.
+2. **Tự code (chế độ lai):** mỗi plan bạn tự viết một hàm/khối cốt lõi; Claude viết test trước, gợi ý khi kẹt, review. Phần còn lại Claude code rồi giải thích chỗ có kiến thức 🎓.
 3. **Ghi lại:** xong một kiến thức, Claude điền đường dẫn code vào dòng tương ứng trong `progress.md`, thêm note nếu là chủ đề lớn.
 4. **Tick:** bạn tự tick `[x]` khi trả lời được câu "Tự kiểm" **mà không nhìn code**. Claude không tick hộ.
 

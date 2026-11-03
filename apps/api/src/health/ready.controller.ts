@@ -1,16 +1,18 @@
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, HttpStatus, Res } from "@nestjs/common";
+import type { Response } from "express";
 import { ReadyService } from "./ready.service.js";
-import { ServiceUnavailableException } from "@nestjs/common";
 
 @Controller("ready")
 export class ReadyController {
   constructor(private readonly readyService: ReadyService) {}
 
+  // 503 là báo cáo trạng thái cho load balancer, không phải lỗi: set status rồi return,
+  // không throw, để exception filter không đổi body thành ApiError và không log như bug.
   @Get()
-  async ready() {
+  async ready(@Res({ passthrough: true }) res: Response) {
     const result = await this.readyService.check();
     if (result.status === "error") {
-      throw new ServiceUnavailableException(result);
+      res.status(HttpStatus.SERVICE_UNAVAILABLE);
     }
     return result;
   }

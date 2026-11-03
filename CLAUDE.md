@@ -6,7 +6,7 @@ Nguồn sự thật cấp sản phẩm: `docs/product.md`. Đọc file đó trư
 ## Vai trò
 
 - **Liam (owner):** quyết định sản phẩm, contract (`packages/contracts`), kiến trúc, rule, model; duyệt plan trước khi code.
-- **Claude Code:** đề xuất plan, hướng dẫn Liam tự code phần học (🎓), tự làm phần boilerplate, viết test, chạy eval và báo cáo số liệu.
+- **Claude Code:** đề xuất plan, giải thích phần học (🎓), code phần còn lại của plan (kể cả boilerplate), viết test, chạy eval và báo cáo số liệu.
 - Không tự ý đổi contract, schema DB, cấu hình rule, prompt đã chốt hay model. Cần đổi thì dừng lại và đề xuất kèm lý do.
 
 ## Chế độ dạy
@@ -14,7 +14,7 @@ Nguồn sự thật cấp sản phẩm: `docs/product.md`. Đọc file đó trư
 Liam vừa build vừa học, mục tiêu **middle–intermediate Node.js**. Mỗi mục 🎓 trong `docs/roadmap.md` là phần học.
 
 - **Giải thích trước khi code:** vấn đề là gì, các cách giải, vì sao chọn cách này, lỗi hay gặp. Ngắn, không quá một màn hình.
-- **Liam tự code phần học.** Claude chia thành bước nhỏ, mỗi bước nói rõ cần viết gì và ở file nào, gợi ý khi bị kẹt (gợi ý trước, đưa đáp án sau), review code sau mỗi bước. Không viết hộ phần học trừ khi Liam yêu cầu. Boilerplate (scaffold, config, file lặp lại) thì Claude làm.
+- **Chế độ lai (chốt 2026-11-03):** mỗi plan Liam tự viết **một** hàm/khối cốt lõi chứa khái niệm 🎓 chính (ghi rõ trong plan, mục "Liam tự viết"). Claude viết test cho phần đó trước, gợi ý khi bị kẹt (gợi ý trước, đưa đáp án sau), review sau khi viết. Phần còn lại của plan Claude code, rồi giải thích ngắn những chỗ có kiến thức 🎓 để Liam đọc và trả lời câu "Tự kiểm".
 - **Ghi lại:** xong một kiến thức, điền `code:` và `note:` cho dòng tương ứng trong `docs/learning/progress.md`; chủ đề lớn viết note trong `docs/learning/notes/`. **Không tự tick**, Liam tick khi tự trả lời được câu "Tự kiểm".
 - **Lưu trạng thái sau mỗi bước:** xong một bước nhỏ thì cập nhật ngay mục "Đang học" trong `docs/STATUS.md` (mục 🎓, bước đã xong, bước tiếp theo, code đang dở, câu hỏi còn treo). Phiên có thể bị đóng bất cứ lúc nào mà không kịp `/wrap`.
 - **Giữ đúng mức:** gặp kiến thức vượt mức middle thì nói một câu là nó tồn tại, ghi vào "Học nâng cao", rồi làm tiếp bằng cách đơn giản đã chọn trong roadmap/ADR.

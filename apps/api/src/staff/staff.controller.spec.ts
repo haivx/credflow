@@ -29,12 +29,12 @@ const newStaffProfile = {
 describe("StaffController", () => {
   it("return staff profiles", async () => {
     const controller = await createController([newStaffProfile]);
-    const response = await controller.list();
+    const response = await controller.list({});
     expect(response).toEqual([newStaffProfile]);
   });
   it("return error if no region provided", async () => {
     const staffWithoutRegion = { ...newStaffProfile, region: undefined };
     const controller = await createController([staffWithoutRegion]);
-    await expect(controller.list()).rejects.toThrow(ZodError);
+    await expect(controller.list({})).rejects.toThrow(ZodError);
   });
 });

@@ -16,3 +16,10 @@ export const StaffProfile = z
   })
   .meta({ id: "StaffProfile" });
 export type StaffProfile = z.infer<typeof StaffProfile>;
+
+/** Query của GET /staff. strictObject: key lạ thì báo lỗi, không lặng lẽ bỏ qua. */
+export const StaffListQuery = z.strictObject({
+  role: z.string().min(1).optional(),
+  region: z.string().min(1).optional(),
+});
+export type StaffListQuery = z.infer<typeof StaffListQuery>;
