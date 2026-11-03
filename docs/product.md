@@ -79,7 +79,7 @@ upload → [1] tiền xử lý → [2] phân loại (LLM) → [3] trích xuất 
 4. **Kiểm tra** (rule engine thuần, `packages/rules`): xem mục 5.
 5. **Routing** (code): chỉ `auto_approve` khi mọi rule `block` đều qua.
 
-Chạy bất đồng bộ qua job queue; trạng thái `uploaded → processing → auto_approved | needs_review | failed`. Mỗi bước ghi `timingMs` và `versions`.
+Chạy bất đồng bộ qua job queue; trạng thái `uploaded → processing → extracted → auto_approved | needs_review | failed`. Mỗi bước ghi `timingMs` và `versions`.
 
 **OCR hay vision?** MVP dùng LLM vision đọc thẳng ảnh (gọn, hiểu bố cục). Rủi ro: bịa giá trị không có trên giấy → bắt buộc `evidence.quote` + eval. Phương án so sánh ở P5: OCR (lấy toạ độ chữ) + LLM, so trên cùng golden set (quyết định còn mở, mục 8).
 
@@ -145,10 +145,10 @@ Xem `docs/flows.md`. Các màn chính:
 
 ### Quyết định còn mở (chốt ở P0, trừ khi ghi khác)
 
-1. Chốt contract bản nháp trong `packages/contracts`.
+1. ~~Chốt contract bản nháp trong `packages/contracts`~~ Đã chốt `common`, `document`, `routing`, `staff` 2026-11-03 (plan 07); `extraction`, `rules` chốt ở P1, `eval` ở P2.
 2. ~~Stack trong bảng trên~~ Đã chốt 2026-10-29 (ADR 0001).
 3. Model LLM và nhà cung cấp (P1).
-4. Có cho phép **tự từ chối** ca chắc chắn hết hạn không? Mặc định: không, mọi ca không qua đều vào hàng chờ.
+4. ~~Có cho phép **tự từ chối** ca chắc chắn hết hạn không?~~ Đã chốt 2026-11-03: **không**. Mọi ca không qua đều vào hàng chờ; người duyệt từ chối (hàng chờ lọc theo lý do, P4).
 5. Vision thuần hay OCR + LLM cho bản cuối (P5, quyết theo số liệu eval).
 6. Nơi deploy và lưu file khi demo (P6).
 

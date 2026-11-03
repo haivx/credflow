@@ -6,6 +6,9 @@
       "staffId": "01JSTAFF000000000000000001",
       "fileName": "cpr-sample-001.png",
       "mimeType": "image/png",
+      "sizeBytes": 184320,
+      "checksum": "1111111111111111111111111111111111111111111111111111111111111111",
+      "storageKey": "documents/01JDOC0000000000000000001",
       "declaredDocType": "cpr_card",
       "status": "needs_review",
       "classification": {
@@ -93,7 +96,8 @@
         "extract": 2310,
         "rules": 3
       },
-      "createdAt": "2026-10-27T09:00:00Z"
+      "createdAt": "2026-10-27T09:00:00Z",
+      "updatedAt": "2026-10-27T09:00:00Z"
     }
   },
   {
@@ -103,8 +107,27 @@
       "staffId": "01JSTAFF000000000000000001",
       "fileName": "scan.pdf",
       "mimeType": "application/pdf",
+      "sizeBytes": 184321,
+      "checksum": "2222222222222222222222222222222222222222222222222222222222222222",
+      "storageKey": "documents/01JDOC0000000000000000002",
       "status": "uploaded",
-      "createdAt": "2026-10-27T09:01:00Z"
+      "createdAt": "2026-10-27T09:01:00Z",
+      "updatedAt": "2026-10-27T09:01:00Z"
+    }
+  },
+  {
+    "name": "vừa upload, chưa có kết quả pipeline",
+    "data": {
+      "id": "01JDOC0000000000000000009",
+      "staffId": "01JSTAFF000000000000000001",
+      "fileName": "cpr-sample-009.jpg",
+      "mimeType": "image/jpeg",
+      "sizeBytes": 95211,
+      "checksum": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+      "storageKey": "documents/01JDOC0000000000000000009",
+      "status": "uploaded",
+      "createdAt": "2026-10-27T09:02:00Z",
+      "updatedAt": "2026-10-27T09:02:00Z"
     }
   }
 ]

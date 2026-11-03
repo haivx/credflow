@@ -1,7 +1,12 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { Extraction, Schemas, type SchemaName } from "./index.js";
+import {
+  DocumentRecord,
+  Extraction,
+  Schemas,
+  type SchemaName,
+} from "./index.js";
 
 const FIXTURE_DIR = join(import.meta.dirname, "..", "fixtures");
 
@@ -38,5 +43,21 @@ describe("Extraction", () => {
   it("từ chối docType không khớp với fields", () => {
     const bad = { docType: "tb_test", fields: { holderName: null } };
     expect(Extraction.safeParse(bad).success).toBe(false);
+  });
+});
+
+describe("DocumentRecord", () => {
+  it("từ chối checksum không phải sha256 hex chữ thường", () => {
+    const cases = readFileSync(
+      join(FIXTURE_DIR, "DocumentRecord.json"),
+      "utf8",
+    );
+    const [first] = JSON.parse(cases) as [FixtureCase];
+    const doc = first.data as Record<string, unknown>;
+    for (const checksum of ["abc", "A".repeat(64), "g".repeat(64)]) {
+      expect(DocumentRecord.safeParse({ ...doc, checksum }).success).toBe(
+        false,
+      );
+    }
   });
 });

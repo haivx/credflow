@@ -16,7 +16,7 @@
   - Tự kiểm: Vì sao nên để app không khởi động được khi thiếu biến env, thay vì lỗi lúc chạy?
 - [x] **Drizzle schema và migration** · code: `apps/api/src/db/schema.ts`, `apps/api/drizzle/`, `apps/api/drizzle.config.ts` · note: `notes/p0-drizzle.md`
   - Tự kiểm: Sửa schema xong thì sinh và chạy migration thế nào? Vì sao không sửa thẳng DB bằng tay?
-- [ ] **Ràng buộc ở DB (FK, NOT NULL, CHECK, unique)** · code: — · note: —
+- [ ] **Ràng buộc ở DB (FK, NOT NULL, CHECK, unique)** · code: `apps/api/src/db/schema.ts`, `apps/api/drizzle/0001_complete_firelord.sql`, `apps/api/test/db-constraints.int-spec.ts` · note: `notes/p0-db-constraints.md`
   - Tự kiểm: Code đã validate rồi thì vì sao vẫn cần ràng buộc ở DB?
 - [ ] **Zod validation pipe** · code: — · note: —
   - Tự kiểm: Vì sao dự án dùng Zod pipe mà không dùng class-validator?
