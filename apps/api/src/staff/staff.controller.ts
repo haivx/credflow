@@ -6,9 +6,12 @@ import {
   Query,
 } from "@nestjs/common";
 import { StaffListQuery, StaffProfile } from "@credflow/contracts";
+import { Roles } from "../auth/decorators.js";
 import { ZodValidationPipe } from "../common/zod-validation.pipe.js";
 import { StaffService } from "./staff.service.js";
 
+// Hồ sơ staff chỉ cho người duyệt và admin xem (ADR 0004).
+@Roles("reviewer", "admin")
 @Controller("staff")
 export class StaffController {
   constructor(private readonly staffService: StaffService) {}

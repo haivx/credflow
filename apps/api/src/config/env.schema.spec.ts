@@ -31,6 +31,8 @@ describe("envSchema", () => {
       API_PORT: 8787,
       API_HOST: "127.0.0.1",
       DATA_DIR: "./data",
+      SESSION_TTL_DAYS: 7,
+      COOKIE_SECURE: false,
     });
   });
 
@@ -72,6 +74,30 @@ describe("envSchema", () => {
     expect(result.success).toBe(false);
     expect(result.error?.issues.map((i) => i.path)).toEqual([
       ["ANTHROPIC_API_KEY"],
+    ]);
+  });
+
+  it.each([
+    ["false", false],
+    ["true", true],
+    ["0", false],
+  ])("parses COOKIE_SECURE=%j as %s", (value, expected) => {
+    const result = envSchema.safeParse({
+      ...baseValidEnv,
+      COOKIE_SECURE: value,
+    });
+
+    expect(result.data?.COOKIE_SECURE).toBe(expected);
+  });
+
+  it("rejects SESSION_TTL_DAYS below 1", () => {
+    const result = envSchema.safeParse({
+      ...baseValidEnv,
+      SESSION_TTL_DAYS: "0",
+    });
+
+    expect(result.error?.issues.map((i) => i.path)).toEqual([
+      ["SESSION_TTL_DAYS"],
     ]);
   });
 });

@@ -1,4 +1,4 @@
-import type { StaffProfile } from "@credflow/contracts";
+import type { StaffProfile, UserRole } from "@credflow/contracts";
 
 // Staff giả lập (docs/data-policy.md): tên và khách hàng đều hư cấu.
 // Id cố định để `make db-seed` chạy lại không sinh dòng trùng.
@@ -92,5 +92,40 @@ export const seedStaff: StaffProfile[] = [
     role: "behavior_technician",
     clientIds: [CLIENT_BAYLEAF],
     region: "WA",
+  },
+];
+
+/**
+ * Mật khẩu dev chung cho mọi user giả lập (ADR 0004). Chỉ dùng trên máy dev và demo dữ liệu giả lập;
+ * deploy demo (P6) phải đổi qua env.
+ */
+export const SEED_PASSWORD = "credflow-dev";
+
+interface SeedUser {
+  id: string;
+  email: string;
+  role: UserRole;
+  staffId: string | null;
+}
+
+// Mỗi vai trò một user. User staff gắn với staff seed đầu tiên (Maren Ostrowe).
+export const seedUsers: SeedUser[] = [
+  {
+    id: "01M6CRWH00M3S97971WJSR6NY0",
+    email: "staff@example.test",
+    role: "staff",
+    staffId: "01M6CRWH00M3S97971WJSR6NWZ",
+  },
+  {
+    id: "01M6CRWH00M3S97971WJSR6NY1",
+    email: "reviewer@example.test",
+    role: "reviewer",
+    staffId: null,
+  },
+  {
+    id: "01M6CRWH00M3S97971WJSR6NY2",
+    email: "admin@example.test",
+    role: "admin",
+    staffId: null,
   },
 ];

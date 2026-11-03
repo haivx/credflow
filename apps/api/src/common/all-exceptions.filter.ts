@@ -12,6 +12,8 @@ import { getPgErrorCode } from "./pg-error.js";
 /** HttpException không mang body ApiError thì suy code từ status. Không có trong bảng → INTERNAL. */
 const CODE_BY_STATUS: Partial<Record<number, ErrorCode>> = {
   400: "VALIDATION_FAILED",
+  401: "UNAUTHORIZED",
+  403: "FORBIDDEN",
   404: "NOT_FOUND",
   409: "CONFLICT",
 };

@@ -42,7 +42,7 @@ Yêu cầu: Node ≥ 22.13, pnpm 11.9, Docker (có `docker compose`).
 
 ```bash
 cp .env.example .env   # giá trị mặc định chạy được ngay với docker compose
-make setup             # cài deps, bật Postgres + Redis, chạy migration, seed 10 staff giả lập
+make setup             # cài deps, bật Postgres + Redis, chạy migration, seed 10 staff + 3 user giả lập
 make dev               # API 127.0.0.1:8787 + worker + web localhost:3000
 ```
 
@@ -54,8 +54,16 @@ Kiểm nhanh khi `make dev` đang chạy:
 | --- | --- |
 | `http://127.0.0.1:8787/health` | `200`, process còn sống |
 | `http://127.0.0.1:8787/ready` | `200`, Postgres và Redis dùng được |
-| `http://127.0.0.1:8787/staff` | `200`, danh sách 10 staff giả lập |
+| `http://127.0.0.1:8787/staff` | `401` khi chưa đăng nhập (cần vai trò reviewer hoặc admin) |
 | `http://localhost:3000` | trang web |
+
+Đăng nhập bằng user giả lập (`staff@`, `reviewer@`, `admin@example.test`, mật khẩu dev `credflow-dev`):
+
+```bash
+curl -c jar -H 'content-type: application/json' \
+  -d '{"email":"reviewer@example.test","password":"credflow-dev"}' http://127.0.0.1:8787/auth/login
+curl -b jar http://127.0.0.1:8787/staff   # 200, danh sách 10 staff
+```
 
 Test:
 

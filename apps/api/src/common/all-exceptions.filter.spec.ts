@@ -2,8 +2,10 @@ import {
   type ArgumentsHost,
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Logger,
   NotFoundException,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { ApiError, StaffProfile } from "@credflow/contracts";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -68,6 +70,17 @@ describe("AllExceptionsFilter", () => {
       expect(body).toEqual({
         code: "NOT_FOUND",
         message: "Không tìm thấy staff",
+      });
+    });
+
+    it("UnauthorizedException → 401 UNAUTHORIZED, ForbiddenException → 403 FORBIDDEN", () => {
+      expect(run(new UnauthorizedException("Chưa đăng nhập"))).toEqual({
+        status: 401,
+        body: { code: "UNAUTHORIZED", message: "Chưa đăng nhập" },
+      });
+      expect(run(new ForbiddenException("Không có quyền"))).toEqual({
+        status: 403,
+        body: { code: "FORBIDDEN", message: "Không có quyền" },
       });
     });
 

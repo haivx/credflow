@@ -21,11 +21,14 @@ export function createTestDb(): { db: Db; close: () => Promise<void> } {
  * TRUNCATE riêng `staff` bị Postgres từ chối vì `documents` đang tham chiếu nó.
  */
 export async function truncateAll(db: Db) {
-  await db.execute(sql`TRUNCATE review_actions, documents, staff`);
+  await db.execute(
+    sql`TRUNCATE sessions, review_actions, documents, users, staff`,
+  );
 }
 
 type NewStaff = typeof schema.staff.$inferInsert;
 type NewDocument = typeof schema.documents.$inferInsert;
+type NewUser = typeof schema.users.$inferInsert;
 
 let seq = 0;
 /** Số tăng dần để mỗi lần gọi make* ra id/checksum khác nhau. */
@@ -59,6 +62,22 @@ export function makeDocument(
     storageKey: `documents/01TESTDOC${n}`,
     checksum: createHash("sha256").update(`doc-${n}`).digest("hex"),
     sizeBytes: 1024,
+    ...overrides,
+  };
+}
+
+/**
+ * User hợp lệ cho test ràng buộc DB. Mặc định là reviewer (không cần staffId).
+ * passwordHash là chuỗi giả: test đăng nhập dùng `createUser` trong test/auth.ts (hash thật).
+ */
+export function makeUser(overrides: Partial<NewUser> = {}): NewUser {
+  const n = next();
+  return {
+    id: `01TESTUSER${n}`,
+    email: `user-${n}@example.test`,
+    passwordHash: "scrypt$16384$8$1$00$00",
+    role: "reviewer",
+    staffId: null,
     ...overrides,
   };
 }

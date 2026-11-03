@@ -1,7 +1,10 @@
 import { Controller, Get, HttpStatus, Res } from "@nestjs/common";
 import type { Response } from "express";
 import { ReadyService } from "./ready.service.js";
+import { Public } from "../auth/decorators.js";
 
+// Probe của hệ thống deploy, không có cookie.
+@Public()
 @Controller("ready")
 export class ReadyController {
   constructor(private readonly readyService: ReadyService) {}

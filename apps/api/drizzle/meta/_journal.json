@@ -15,6 +15,13 @@
       "when": 1793675112346,
       "tag": "0001_complete_firelord",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793716108982,
+      "tag": "0002_powerful_living_tribunal",
+      "breakpoints": true
     }
   ]
 }
