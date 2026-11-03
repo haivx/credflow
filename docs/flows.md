@@ -12,7 +12,7 @@
 | S4 | Dashboard compliance | Admin | P5 |
 | S5 | Xem cấu hình rule (chỉ đọc) | Admin | P5 |
 
-Header có bộ chọn "đang đóng vai" (staff / reviewer / admin + người dùng giả lập). MVP không có đăng nhập.
+Đăng nhập bằng email + mật khẩu (user giả lập seed sẵn, mỗi vai trò ít nhất một user). Header hiện user đang đăng nhập và nút đăng xuất. Mỗi vai trò chỉ vào được màn của mình; staff chỉ thấy giấy của chính mình (ADR 0004).
 
 ## F0. Admin cấu hình rule
 

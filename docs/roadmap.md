@@ -29,8 +29,9 @@
 ## P1 · Lát cắt dọc cho thẻ CPR (7–9 ngày)
 
 - **Mục tiêu:** một loại giấy đi trọn từ upload đến kết quả. Biết sớm độ khó thật nằm ở đâu.
-- **Phạm vi:** upload một file (API + màn upload tối giản) → job → phân loại → trích xuất CPR kèm evidence → rule cho CPR (`MISSING_FIELD`, `MISSING_EVIDENCE`, `LOW_CONFIDENCE`, `DATE_INCONSISTENT`, `EXPIRED`, `EXPIRING_SOON`, `NAME_MISMATCH`, `ISSUER_NOT_ACCEPTED`) → routing → hiển thị kết quả dạng thô. Chốt model LLM (ADR). Prompt có version.
+- **Phạm vi:** đăng nhập cơ bản (email + mật khẩu, session, 3 vai trò; ADR 0004; màn login gộp với màn upload) → upload một file (API + màn upload tối giản) → job → phân loại → trích xuất CPR kèm evidence → rule cho CPR (`MISSING_FIELD`, `MISSING_EVIDENCE`, `LOW_CONFIDENCE`, `DATE_INCONSISTENT`, `EXPIRED`, `EXPIRING_SOON`, `NAME_MISMATCH`, `ISSUER_NOT_ACCEPTED`) → routing → hiển thị kết quả dạng thô. Chốt model LLM (ADR). Prompt có version.
 - **🎓 Học được:**
+  - **Đăng nhập cơ bản:** lưu mật khẩu bằng hash có salt (`crypto.scrypt`), vì sao không dùng sha256 cho mật khẩu; session lưu ở DB so với JWT; cookie `httpOnly`, `SameSite`, `Secure`; guard toàn cục + metadata (`@Public`, `@Roles`) đọc bằng `Reflector`; 401 khác 403.
   - **Stream:** nhận file upload bằng stream, tính sha256 trong lúc stream, ghi file qua interface storage (local trước, S3 sau). Vì sao không đọc cả file vào memory.
   - **Dedupe upload:** unique index trên checksum; upload lại cùng file trả về cùng `documentId`.
   - **BullMQ:** queue, worker chạy process riêng, `concurrency`, `attempts` + backoff, job lỗi đi đâu.
@@ -39,7 +40,7 @@
   - **State machine đơn giản:** `uploaded → processing → extracted → needs_review | auto_approved | failed`, một hàm kiểm transition hợp lệ, cộng `CHECK` ở DB.
   - **Gọi service ngoài (LLM):** timeout bằng `AbortController`; lỗi nào retry được (timeout, 429, 5xx), lỗi nào không (400, parse lỗi quá số lần); hết retry thì document sang `failed` kèm lý do.
   - Parse output LLM bằng Zod; parse lỗi → retry giới hạn → `needs_review`.
-- **Tiêu chí hoàn thành:** 5 thẻ CPR giả lập làm tay (≥ 3 bố cục khác nhau) chạy đúng end-to-end; output LLM luôn parse qua Zod; rule engine có unit test cho từng mã rule; mỗi document lưu `versions` và `timingMs`; upload cùng file 2 lần chỉ tạo 1 document (có test); chạy cùng một job 2 lần không sinh dữ liệu trùng (có test); giả lập `queue.add` lỗi thì sweep job vẫn đưa document đi xử lý (có test); LLM giả lập lỗi 50% thì không document nào kẹt ở `processing`.
+- **Tiêu chí hoàn thành:** 5 thẻ CPR giả lập làm tay (≥ 3 bố cục khác nhau) chạy đúng end-to-end; output LLM luôn parse qua Zod; rule engine có unit test cho từng mã rule; mỗi document lưu `versions` và `timingMs`; route không gắn `@Public` mà chưa đăng nhập thì 401, sai vai trò thì 403 (có test); upload cùng file 2 lần chỉ tạo 1 document (có test); chạy cùng một job 2 lần không sinh dữ liệu trùng (có test); giả lập `queue.add` lỗi thì sweep job vẫn đưa document đi xử lý (có test); LLM giả lập lỗi 50% thì không document nào kẹt ở `processing`.
 - **Phụ thuộc:** P0.
 
 ## P2 · Dữ liệu giả lập và eval baseline (5–6 ngày)
@@ -113,7 +114,7 @@ Agent (xem `docs/product.md` mục 9), nhắc gia hạn, nhiều tenant, đăng 
 
 **Tính năng** (theo thứ tự ưu tiên):
 
-1. **Đăng nhập thật:** OIDC + RBAC (`admin`, `reviewer`, `staff`), kiểm quyền bằng guard.
+1. **SSO/OIDC:** thay đăng nhập email + mật khẩu của MVP (ADR 0004); giữ nguyên guard và vai trò.
 2. **Nhắc gia hạn:** job định kỳ nhắc trước 60/30/7 ngày, chạy lại không gửi trùng.
 3. **Nhiều tenant:** mỗi bảng có `tenantId`, test chứng minh tenant A không đọc được dữ liệu tenant B.
 4. **Audit log đầy đủ.**
@@ -129,6 +130,9 @@ Vượt mức middle; mỗi mục ghi chỗ trong CredFlow sẽ cần nó. Làm 
 | AsyncLocalStorage / `nestjs-cls` transactional | Truyền `tx` tường minh | Mọi service |
 | `SELECT … FOR UPDATE SKIP LOCKED` + lease "nhận ca" | Optimistic locking | P4 hàng chờ |
 | Header `Idempotency-Key` | Dedupe theo checksum | P1 upload |
+| OIDC/SSO, refresh token, xoay session | Email + mật khẩu, session cố định 7 ngày | P1 đăng nhập |
+| CSRF token (double-submit) | `SameSite=Lax` + API chỉ nhận JSON | P1 đăng nhập |
+| Chặn brute-force login (khoá tạm, rate limit theo tài khoản) | Chưa chặn; rate limit theo IP ở P6 | P1 đăng nhập |
 | Testcontainers | DB test trong docker compose | Integration test |
 | OpenTelemetry trace + metrics | pino + `timingMs` | P5 |
 | Load test (k6), tìm bottleneck | — | P5 |
