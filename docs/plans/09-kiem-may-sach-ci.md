@@ -1,6 +1,6 @@
 # 09 · Kiểm máy sạch + CI, đóng P0
 
-Phase: P0 · Trạng thái: Đã duyệt · Ngày: 2026-11-03
+Phase: P0 · Trạng thái: Xong · Ngày: 2026-11-03
 
 ## Context
 
@@ -64,15 +64,23 @@ CI là lần kiểm máy sạch thứ hai, và tự lặp lại ở mọi PR sau
 
 ## Tiêu chí xong
 
-- [ ] Clone mới + làm đúng README (`cp .env.example .env`, `make setup`, `make dev`) chạy được, smoke check đủ 5 điểm.
-- [ ] `make setup` chạy lại lần hai không lỗi, không sinh dữ liệu trùng.
-- [ ] CI chạy lint, typecheck, test, test-int; xanh trên PR này; đỏ khi test hỏng.
-- [ ] README, `CLAUDE.md` (mục Lệnh) cập nhật; comment contract khớp `product.md`.
-- [ ] Đủ mọi tiêu chí P0 → roadmap và STATUS ghi P0 xong, phase hiện tại P1.
+- [x] Clone mới + làm đúng README (`cp .env.example .env`, `make setup`, `make dev`) chạy được, smoke check đủ 5 điểm.
+- [x] `make setup` chạy lại lần hai không lỗi, không sinh dữ liệu trùng.
+- [x] CI chạy lint, typecheck, test, test-int; xanh trên PR này; đỏ khi test hỏng.
+- [x] README, `CLAUDE.md` (mục Lệnh) cập nhật; comment contract khớp `product.md`.
+- [x] Đủ mọi tiêu chí P0 → roadmap và STATUS ghi P0 xong, phase hiện tại P1.
 
 ## Kết quả kiểm
 
-(điền khi làm)
+Kiểm 2026-11-03, máy macOS (Docker Compose v5.1.4, Node 24):
+- Clone mới vào scratchpad, thư mục `credflow-clean` (compose project riêng, volume `pgdata` mới). Stack dev tắt tạm, giữ volume; kiểm xong bật lại, DB dev còn 10 staff.
+- `cp .env.example .env` → `make setup`: 13s (pnpm store đã có sẵn trên máy), `--wait` chờ db + redis healthy, migration áp, seed `inserted 10, skipped 0`.
+- `make dev`: `/health` 200, `/ready` 200 (`db: up`, `redis: up`), `GET /staff` 10 dòng, worker log `worker started`, `localhost:3000` 200.
+- `make setup` lần hai: không lỗi, seed `inserted 0, skipped 10`.
+- Xoá `.env` → `make test-int`: 3 file, 18 test pass (test-int không cần `.env`, giống CI).
+- Chỗ vấp tìm thấy: chỉ hai chỗ đã đoán trước (thiếu migrate/seed, thiếu `--wait` + healthcheck `db`). Migration `apps/api/drizzle/` đã được commit, không thiếu.
+- CI: PR #8 xanh, 1m42s. PR nháp #9 thêm test hỏng → CI đỏ ở `make test`, `test-int` bị bỏ qua; đã đóng PR và xoá nhánh.
+- Runner báo: nhãn `ubuntu-latest` chuyển sang Ubuntu 26 từ 2026-10-19. Không cần làm gì; nếu vỡ thì ghim `ubuntu-24.04`.
 
 ## Rủi ro / câu hỏi
 

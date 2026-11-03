@@ -8,6 +8,7 @@
 
 ## P0 · Nền tảng và contract (4–5 ngày)
 
+- **Trạng thái:** Xong 2026-11-03 (plan 02–09).
 - **Mục tiêu:** chốt contract và stack; API NestJS, worker, Postgres, Redis chạy được.
 - **Phạm vi:**
   - Liam review và chốt `packages/contracts` (đang là bản nháp), `docs/doc-types.md`, các quyết định còn mở ở `docs/product.md` mục 8.
