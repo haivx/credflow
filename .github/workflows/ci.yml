@@ -1,0 +1,37 @@
+# CI: mỗi PR và mỗi push lên main chạy đúng các lệnh make như máy dev.
+# Integration test dùng docker compose (có sẵn trên runner ubuntu), không dùng `services:` của Actions,
+# để CI và máy dev đi cùng một đường. Không cần .env: test-int tự đặt env (apps/api/test/test-env.ts).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Đẩy commit mới lên cùng nhánh thì huỷ run cũ (đỡ tốn phút Actions).
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      # Không đặt `version`: action đọc `packageManager` trong package.json.
+      - uses: pnpm/action-setup@v6
+        with:
+          cache: true
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - run: pnpm install --frozen-lockfile
+      - run: make build-packages
+      - run: make lint
+      - run: make typecheck
+      - run: make test
+      - run: make test-int
