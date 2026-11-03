@@ -1,11 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import type { INestApplication } from "@nestjs/common";
 import request from "supertest";
-import { sql } from "drizzle-orm";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { AppModule } from "../src/app.module.js";
 import { type Db, DB } from "../src/db/db.provider.js";
 import { staff } from "../src/db/schema.js";
+import { truncateAll } from "./db.js";
 
 describe("GET /staff integrations", () => {
   let app: INestApplication;
@@ -25,7 +25,7 @@ describe("GET /staff integrations", () => {
   });
 
   beforeEach(async () => {
-    await db.execute(sql`TRUNCATE staff`);
+    await truncateAll(db);
     await db.insert(staff).values([
       {
         id: "01TEST0000000000000000000B",

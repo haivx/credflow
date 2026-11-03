@@ -8,6 +8,13 @@
       "when": 1793589726617,
       "tag": "0000_plain_gamma_corps",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793675112346,
+      "tag": "0001_complete_firelord",
+      "breakpoints": true
     }
   ]
 }
