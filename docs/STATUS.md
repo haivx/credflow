@@ -7,8 +7,8 @@
 
 ## Đang làm
 
-- Plan 02–09 xong, đã merge (PR #1–#8). P0 xong.
-- Plan 10 (`docs/plans/10-dang-nhap-co-ban.md`), nhánh `feat/10-basic-auth`: code xong, `make lint/typecheck/test/test-int` pass, kiểm tay đạt. Chưa commit/PR. Spec sửa (đăng nhập cơ bản vào MVP), ADR 0004 Chấp nhận.
+- Plan 02–10 xong, đã merge (PR #1–#8, #10). P0 xong.
+- Plan 10 đăng nhập cơ bản: merge PR #10 (CI xanh) 2026-11-03.
 - Plan 11 (sau plan 10): upload stream + sha256 + dedupe. Đã chốt: busboy; giới hạn 10 MB; checksum unique toàn cục, trùng của staff khác → 409; `staffId` lấy từ user đăng nhập.
 
 ## Đang học
@@ -16,7 +16,7 @@
 > Claude cập nhật sau **mỗi bước**, không chờ cuối phiên. Mở phiên mới gõ `/tiep` để làm tiếp.
 
 - **Mục 🎓:** Đăng nhập cơ bản (plan 10). Liam không tự viết phần nào; Claude code hết. Note `notes/p1-auth-session.md`, 3 dòng mới trong `progress.md` (chưa tick).
-- **Bước tiếp theo:** Liam đọc note, trả lời "Tự kiểm" → commit + PR plan 10 → plan 11 upload.
+- **Bước tiếp theo:** Liam đọc note, tự tick 3 dòng auth khi trả lời được "Tự kiểm". Viết plan 11 upload (nhánh `feat/11-upload-stream`).
 - **Câu hỏi còn treo:** Liam "tạm hiểu" vì sao cần `@Inject(DB)`. Tuỳ chọn: log `/ready` in thêm `error.cause`. Có bật branch protection (bắt CI xanh mới merge) không.
 
 ## Tiếp theo
