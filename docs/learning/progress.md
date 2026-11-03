@@ -22,9 +22,9 @@
   - Tự kiểm: Vì sao dự án dùng Zod pipe mà không dùng class-validator?
 - [ ] **Exception filter và format lỗi thống nhất** · code: — · note: —
   - Tự kiểm: Một lỗi Zod và một lỗi unique violation từ Postgres đi qua filter thì client nhận được gì?
-- [ ] **`/health` và `/ready`** · code: — · note: —
+- [x] **`/health` và `/ready`** · code: `apps/api/src/health/`, `apps/api/src/redis/` · note: `notes/p0-ready-integration-test.md`
   - Tự kiểm: Redis chết thì `/health` và `/ready` trả gì? Hệ thống deploy dùng mỗi endpoint vào việc gì?
-- [ ] **Integration test với Postgres thật (supertest)** · code: — · note: —
+- [x] **Integration test với Postgres thật (supertest)** · code: `apps/api/test/`, `apps/api/vitest.int.config.ts`, `docker-compose.yml` (`db-test`) · note: `notes/p0-ready-integration-test.md`
   - Tự kiểm: Mock DB thì bỏ sót loại lỗi nào mà test với DB thật bắt được? Làm sao để các test không dính dữ liệu của nhau?
 
 ## P1 · Lát cắt CPR

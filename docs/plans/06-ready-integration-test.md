@@ -1,6 +1,6 @@
 # 06 · `/ready` + DB test + integration test đầu tiên
 
-Phase: P0 · Trạng thái: Đã duyệt · Ngày: 2026-11-02
+Phase: P0 · Trạng thái: Xong · Ngày: 2026-11-02
 
 ## Context
 
@@ -81,16 +81,18 @@ Mỗi bước: Claude giải thích ngắn → Liam viết → Claude review.
 
 ## Tiêu chí xong
 
-- [ ] `GET /ready` trả `200`/`503` đúng bảng trên; tắt Redis thì `503` trong ≤ 2s, API không crash, bật lại tự về `200`.
-- [ ] `/health` không phụ thuộc DB/Redis.
-- [ ] `make test-int` chạy integration test trên Postgres test thật (cổng 5433), có test `GET /staff` và `GET /ready` (cả Redis up và down); không đụng dữ liệu DB dev.
-- [ ] `global-setup.ts` từ chối chạy khi `DATABASE_URL` không phải DB test.
-- [ ] `make test`, `make typecheck`, `make lint` pass; `make test` không cần docker.
-- [ ] `CLAUDE.md` mục Lệnh cập nhật; `progress.md` điền `code:`/`note:`; `STATUS.md` cập nhật.
+- [x] `GET /ready` trả `200`/`503` đúng bảng trên; tắt Redis thì `503` trong ≤ 2s, API không crash, bật lại tự về `200`.
+- [x] `/health` không phụ thuộc DB/Redis.
+- [x] `make test-int` chạy integration test trên Postgres test thật (cổng 5433), có test `GET /staff` và `GET /ready` (cả Redis up và down); không đụng dữ liệu DB dev.
+- [x] `global-setup.ts` từ chối chạy khi `DATABASE_URL` không phải DB test.
+- [x] `make test`, `make typecheck`, `make lint` pass; `make test` không cần docker.
+- [x] `CLAUDE.md` mục Lệnh cập nhật; `progress.md` điền `code:`/`note:`; `STATUS.md` cập nhật.
 
 ## Rủi ro / câu hỏi
 
 1. `@nestjs/config`: biến môi trường của process thắng giá trị trong `.env`, nên `env` của vitest đè được `DATABASE_URL`. Kiểm lại lúc làm bước 5; nếu không đúng thì truyền qua `ConfigModule` khác cho test (không đổi code app).
 2. `withTimeout` bằng `Promise.race` không huỷ `ping()` đang treo; với `enableOfflineQueue: false` thì lệnh fail ngay nên không tích tụ. Nếu vẫn tích tụ thì xem lại option ở bước 1.
 3. Worker chưa dùng Redis; `RedisModule` chỉ import vào API. Connection cho BullMQ (cần `maxRetriesPerRequest: null`) tạo riêng ở P1.
-4. Không cần ADR: Redis + ioredis nằm trong stack đã chốt (ADR 0001 ghi BullMQ + Redis); DB test trong compose đúng roadmap. Lý do chọn ghi ở note học.
+4. Kiểm 2026-11-02: tắt Redis/DB → `/ready` 503 ~4ms, `/health` 200, bật lại → 200; `make test-int` 3 test pass, chạy lại vẫn pass; DB dev giữ 10 staff. Test override dùng option `{}` thì `ping()` và `quit()` treo → test timeout (lý do test phải dùng đúng option của app).
+5. Drizzle bọc lỗi DB (`Failed query: select 1`), nguyên nhân ở `error.cause`; log `/ready` chưa in `cause` (để sau).
+6. Không cần ADR: Redis + ioredis nằm trong stack đã chốt (ADR 0001 ghi BullMQ + Redis); DB test trong compose đúng roadmap. Lý do chọn ghi ở note học.
