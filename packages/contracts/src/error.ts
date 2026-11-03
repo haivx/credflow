@@ -1,10 +1,12 @@
 import * as z from "zod";
 
-// Đã chốt 2026-11-03 (plan 08). Format lỗi duy nhất của API.
+// Đã chốt 2026-11-03 (plan 08; UNAUTHORIZED, FORBIDDEN thêm ở plan 10). Format lỗi duy nhất của API.
 
 /** Mã lỗi ổn định cho client. HTTP status do API map từ mã này. */
 export const ErrorCode = z.enum([
   "VALIDATION_FAILED",
+  "UNAUTHORIZED",
+  "FORBIDDEN",
   "NOT_FOUND",
   "CONFLICT",
   "INTERNAL",

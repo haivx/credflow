@@ -28,7 +28,7 @@ Giảm phần lớn việc đọc và gõ tay của compliance, nhưng **không 
 | Người duyệt (reviewer, HR/compliance) | Xử lý hàng chờ: xem giấy cạnh trường đã trích xuất, sửa, duyệt, từ chối, yêu cầu nộp lại |
 | Admin | Cấu hình rule theo khách hàng, xem dashboard compliance |
 
-MVP không làm đăng nhập thật: chọn vai trò và người dùng giả lập ở header.
+MVP có đăng nhập cơ bản: email + mật khẩu, session lưu ở DB, cookie `httpOnly`; mỗi user có đúng một vai trò (ADR 0004). User là dữ liệu giả lập seed sẵn; không có đăng ký, quên mật khẩu, SSO/OIDC.
 
 ### Nguyên tắc sản phẩm
 
@@ -42,7 +42,7 @@ MVP không làm đăng nhập thật: chọn vai trò và người dùng giả l
 
 **Trong:** 5 loại giấy (CPR, giấy phép hành nghề, xét nghiệm TB, kiểm tra lý lịch, tiêm chủng); upload PDF/ảnh; phân loại; trích xuất kèm bằng chứng; rule engine; routing; hàng chờ và màn duyệt; lưu chỗ sửa; dashboard hết hạn; bộ sinh dữ liệu giả lập; eval harness; deploy demo.
 
-**Ngoài:** đăng nhập/phân quyền thật, nhiều tenant, gửi email/SMS thật, tích hợp HRIS, xác minh trực tiếp với tổ chức cấp, giấy tờ tuỳ thân (bằng lái, ID), agent (xem mục 9), mobile app.
+**Ngoài:** SSO/OIDC, đăng ký tài khoản, quên mật khẩu, nhiều tenant, gửi email/SMS thật, tích hợp HRIS, xác minh trực tiếp với tổ chức cấp, giấy tờ tuỳ thân (bằng lái, ID), agent (xem mục 9), mobile app.
 
 ### Chỉ số thành công (trên golden set holdout)
 
@@ -137,6 +137,7 @@ Xem `docs/flows.md`. Các màn chính:
 | API | NestJS trên Node; HTTP và worker là hai entrypoint | Chấp nhận |
 | DB | Postgres 16 (docker compose), Drizzle ORM; nguồn sự thật cho trạng thái | Chấp nhận |
 | Job queue | BullMQ + Redis 7 (`noeviction`); dual-write xử lý bằng sweep job (ADR 0001) | Chấp nhận |
+| Đăng nhập | Email + mật khẩu (scrypt), session trong Postgres, cookie `httpOnly`; guard toàn cục + `@Roles` | Chấp nhận (ADR 0004) |
 | Lưu file | File system local (`DATA_DIR`), đổi sang S3-compatible khi deploy | Đề xuất |
 | LLM | Model có vision + structured output; model cụ thể chốt ở P1 | Mở |
 | Contract | Zod 4 trong `packages/contracts` | Chấp nhận |

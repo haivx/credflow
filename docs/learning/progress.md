@@ -29,6 +29,13 @@
 
 ## P1 · Lát cắt CPR
 
+- [ ] **Lưu mật khẩu và session token** · code: `apps/api/src/auth/password.ts`, `apps/api/src/auth/session-token.ts`, `apps/api/src/auth/auth.service.ts` · note: `notes/p1-auth-session.md`
+  - Tự kiểm: Vì sao dùng sha256 cho session token được mà cho mật khẩu thì không? Salt chống được kiểu tấn công nào?
+- [ ] **Session + cookie** · code: `apps/api/src/auth/auth.controller.ts`, `apps/api/src/db/schema.ts` (`sessions`), `apps/api/src/app.module.ts` (`cookie-parser`) · note: `notes/p1-auth-session.md`
+  - Tự kiểm: Cookie thiếu `httpOnly` thì kẻ tấn công làm được gì? Đăng xuất với session khác gì với JWT?
+- [ ] **Guard + metadata, 401/403** · code: `apps/api/src/auth/{auth.guard,roles.guard,decorators,auth.module}.ts`, `apps/api/test/auth.int-spec.ts` · note: `notes/p1-auth-session.md`
+  - Tự kiểm: Quên gắn decorator lên route mới thì chuyện gì xảy ra? Vì sao `RolesGuard` phải chạy sau `AuthGuard`?
+
 - [ ] **Stream khi upload và tính sha256** · code: — · note: —
   - Tự kiểm: Upload file 50 MB mà đọc cả file vào `Buffer` thì có vấn đề gì? Tính hash trong lúc stream thế nào?
 - [ ] **Interface storage (local / S3)** · code: — · note: —

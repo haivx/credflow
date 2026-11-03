@@ -9,7 +9,12 @@ import {
   timestamp,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { DocType, DocumentStatus, ReviewAction } from "@credflow/contracts";
+import {
+  DocType,
+  DocumentStatus,
+  ReviewAction,
+  UserRole,
+} from "@credflow/contracts";
 import type {
   Classification,
   Extraction,
@@ -38,6 +43,56 @@ export const staff = pgTable("staff", {
     .defaultNow()
     .notNull(),
 });
+
+/** Tài khoản đăng nhập (ADR 0004). User vai trò `staff` gắn đúng một hồ sơ staff. */
+export const users = pgTable(
+  "users",
+  {
+    id: text("id").primaryKey(),
+    email: text("email").notNull(),
+    // Dạng `scrypt$N$r$p$<salt>$<hash>` (apps/api/src/auth/password.ts), không bao giờ là mật khẩu thô.
+    passwordHash: text("password_hash").notNull(),
+    role: text("role").$type<UserRole>().notNull(),
+    staffId: text("staff_id").references(() => staff.id, {
+      onDelete: "restrict",
+    }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    uniqueIndex("users_email_unique").on(t.email),
+    // API chuẩn hoá email về chữ thường; CHECK để unique index không bị lách bằng chữ hoa.
+    check("users_email_lower_check", sql`${t.email} = lower(${t.email})`),
+    check("users_role_check", sql`${t.role} IN (${sqlList(UserRole.options)})`),
+    // Staff phải có hồ sơ staff; reviewer và admin thì không.
+    check(
+      "users_staff_id_check",
+      sql`(${t.role} = 'staff') = (${t.staffId} IS NOT NULL)`,
+    ),
+  ],
+);
+
+/** Session đăng nhập. Chỉ lưu sha256 của token: DB lộ ra thì token cũng không dùng được. */
+export const sessions = pgTable(
+  "sessions",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    tokenHash: text("token_hash").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    uniqueIndex("sessions_token_hash_unique").on(t.tokenHash),
+    index("sessions_user_id_idx").on(t.userId),
+    check("sessions_token_hash_check", sql`${t.tokenHash} ~ '^[0-9a-f]{64}$'`),
+  ],
+);
 
 export const documents = pgTable(
   "documents",
@@ -102,8 +157,9 @@ export const reviewActions = pgTable(
     documentId: text("document_id")
       .references(() => documents.id, { onDelete: "restrict" })
       .notNull(),
-    // Chưa có FK: chưa có bảng reviewer (đăng nhập thật để sau MVP).
-    reviewerId: text("reviewer_id").notNull(),
+    reviewerId: text("reviewer_id")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
     action: text("action").$type<ReviewAction["action"]>().notNull(),
     corrections: jsonb("corrections")
       .$type<ReviewAction["corrections"]>()

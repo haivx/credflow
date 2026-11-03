@@ -1,3 +1,4 @@
+import { AuthUser } from "./auth.js";
 import { Classification, DocType } from "./document.js";
 import { ApiError } from "./error.js";
 import { Extraction } from "./extraction.js";
@@ -14,6 +15,7 @@ export * from "./rules.js";
 export * from "./routing.js";
 export * from "./eval.js";
 export * from "./error.js";
+export * from "./auth.js";
 
 /** Các kiểu đi qua ranh giới I/O. Fixture trong fixtures/<Tên>.json phải parse được. */
 export const Schemas = {
@@ -29,5 +31,6 @@ export const Schemas = {
   GoldenCase,
   EvalRun,
   ApiError,
+  AuthUser,
 } as const;
 export type SchemaName = keyof typeof Schemas;

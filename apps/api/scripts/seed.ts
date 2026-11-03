@@ -4,7 +4,8 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { envSchema } from "../src/config/env.schema.js";
 import * as schema from "../src/db/schema.js";
-import { seedStaff } from "./seed-data.js";
+import { hashPassword } from "../src/auth/password.js";
+import { SEED_PASSWORD, seedStaff, seedUsers } from "./seed-data.js";
 
 // Script chạy một lần rồi thoát: không cần Nest, tự nạp .env ở gốc repo (scripts/ → apps/api → apps → gốc).
 // Biến môi trường thật vẫn thắng .env.
@@ -28,8 +29,19 @@ try {
   console.log(
     `seed staff: inserted ${inserted.length}, skipped ${seedStaff.length - inserted.length}`,
   );
+
+  // Staff phải có trước: users.staff_id là FK sang staff. Trùng id hoặc email thì bỏ qua.
+  const passwordHash = await hashPassword(SEED_PASSWORD);
+  const insertedUsers = await db
+    .insert(schema.users)
+    .values(seedUsers.map((u) => ({ ...u, passwordHash })))
+    .onConflictDoNothing()
+    .returning({ id: schema.users.id });
+  console.log(
+    `seed users: inserted ${insertedUsers.length}, skipped ${seedUsers.length - insertedUsers.length}`,
+  );
 } catch (err) {
-  console.error("seed staff failed:", err);
+  console.error("seed failed:", err);
   // Không dùng process.exit(1): thoát ngay sẽ cắt ngang pool.end() trong finally.
   process.exitCode = 1;
 } finally {

@@ -15,6 +15,13 @@ export const envSchema = z.object({
   REDIS_URL: z.url("REDIS_URL must be a valid URL"),
   API_HOST: z.string().min(1, "API_HOST is required").default("127.0.0.1"),
   DATA_DIR: z.string().min(1, "DATA_DIR is required").default("./data"),
+  SESSION_TTL_DAYS: z.coerce
+    .number()
+    .int()
+    .min(1, "SESSION_TTL_DAYS must be at least 1")
+    .default(7),
+  // stringbool: "false" → false. z.coerce.boolean() sẽ biến chuỗi "false" thành true.
+  COOKIE_SECURE: z.stringbool().default(false),
 });
 
 export type Env = z.infer<typeof envSchema>;

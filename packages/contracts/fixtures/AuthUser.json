@@ -1,0 +1,20 @@
+[
+  {
+    "name": "staff gắn với hồ sơ staff",
+    "data": {
+      "id": "01JUSR000000000000000001",
+      "email": "staff@example.test",
+      "role": "staff",
+      "staffId": "01M6CRWH00M3S97971WJSR6NWZ"
+    }
+  },
+  {
+    "name": "reviewer không có staffId",
+    "data": {
+      "id": "01JUSR000000000000000002",
+      "email": "reviewer@example.test",
+      "role": "reviewer",
+      "staffId": null
+    }
+  }
+]

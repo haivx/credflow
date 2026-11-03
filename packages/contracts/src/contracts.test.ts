@@ -3,10 +3,12 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   ApiError,
+  AuthUser,
   DocumentRecord,
   Extraction,
   Schemas,
   type SchemaName,
+  LoginRequest,
   StaffListQuery,
 } from "./index.js";
 
@@ -83,5 +85,44 @@ describe("StaffListQuery", () => {
   it("từ chối role rỗng và key lạ", () => {
     expect(StaffListQuery.safeParse({ role: "" }).success).toBe(false);
     expect(StaffListQuery.safeParse({ foo: "1" }).success).toBe(false);
+  });
+});
+
+describe("LoginRequest", () => {
+  it("nhận email + mật khẩu", () => {
+    expect(
+      LoginRequest.safeParse({ email: "a@example.test", password: "x" })
+        .success,
+    ).toBe(true);
+  });
+
+  it("từ chối email sai, mật khẩu rỗng và key lạ", () => {
+    expect(
+      LoginRequest.safeParse({ email: "khong-phai-email", password: "x" })
+        .success,
+    ).toBe(false);
+    expect(
+      LoginRequest.safeParse({ email: "a@example.test", password: "" }).success,
+    ).toBe(false);
+    expect(
+      LoginRequest.safeParse({
+        email: "a@example.test",
+        password: "x",
+        role: "admin",
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe("AuthUser", () => {
+  it("từ chối vai trò ngoài UserRole", () => {
+    expect(
+      AuthUser.safeParse({
+        id: "u1",
+        email: "a@example.test",
+        role: "root",
+        staffId: null,
+      }).success,
+    ).toBe(false);
   });
 });

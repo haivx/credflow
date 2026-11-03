@@ -7,15 +7,16 @@
 
 ## Đang làm
 
-- Plan 02–08 xong, đã merge (PR #1–#7).
-- Plan 09 (`docs/plans/09-kiem-may-sach-ci.md`), nhánh `chore/09-clean-machine-ci`: `make setup` đủ migrate + seed, healthcheck `db`, CI GitHub Actions, kiểm máy sạch đạt. PR #8, CI xanh, chờ Liam merge.
+- Plan 02–09 xong, đã merge (PR #1–#8). P0 xong.
+- Plan 10 (`docs/plans/10-dang-nhap-co-ban.md`), nhánh `feat/10-basic-auth`: code xong, `make lint/typecheck/test/test-int` pass, kiểm tay đạt. Chưa commit/PR. Spec sửa (đăng nhập cơ bản vào MVP), ADR 0004 Chấp nhận.
+- Plan 11 (sau plan 10): upload stream + sha256 + dedupe. Đã chốt: busboy; giới hạn 10 MB; checksum unique toàn cục, trùng của staff khác → 409; `staffId` lấy từ user đăng nhập.
 
 ## Đang học
 
 > Claude cập nhật sau **mỗi bước**, không chờ cuối phiên. Mở phiên mới gõ `/tiep` để làm tiếp.
 
-- **Mục 🎓:** chưa có (plan 09 không có 🎓). 🎓 của P0 làm hết; Liam tự tick ở `progress.md` các dòng còn chưa tick khi trả lời được "Tự kiểm".
-- **Bước tiếp theo:** merge PR #8 → `/next` chọn task đầu P1 (stream upload + sha256 hoặc chốt contract `extraction`/`rules`).
+- **Mục 🎓:** Đăng nhập cơ bản (plan 10). Liam không tự viết phần nào; Claude code hết. Note `notes/p1-auth-session.md`, 3 dòng mới trong `progress.md` (chưa tick).
+- **Bước tiếp theo:** Liam đọc note, trả lời "Tự kiểm" → commit + PR plan 10 → plan 11 upload.
 - **Câu hỏi còn treo:** Liam "tạm hiểu" vì sao cần `@Inject(DB)`. Tuỳ chọn: log `/ready` in thêm `error.cause`. Có bật branch protection (bắt CI xanh mới merge) không.
 
 ## Tiếp theo
@@ -41,4 +42,5 @@
 - 2026-11-03: plan 06 `/ready` (Postgres + Redis, timeout), DB test `db-test`, `make test-int`, integration test đầu tiên.
 - 2026-11-03: plan 08 `ApiError` + Zod pipe + exception filter (pg 23505/23503 → 409), `/staff?role=`, `/staff/:id`; `/ready` 503 không throw nữa.
 - 2026-11-03: plan 09 `make setup` đủ migrate + seed, CI (lint, typecheck, test, test-int), kiểm máy sạch đạt → P0 xong.
+- 2026-11-03: plan 10 đăng nhập cơ bản (ADR 0004): `users`/`sessions`, scrypt, cookie session, `AuthGuard`/`RolesGuard` toàn cục, FK `review_actions.reviewer_id`.
 - 2026-11-03: plan 07 chốt contract Document/ReviewAction (+ `checksum`, `extracted`; không tự từ chối), bảng `documents`/`review_actions`, 7 test ràng buộc DB.
