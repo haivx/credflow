@@ -2,10 +2,12 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  ApiError,
   DocumentRecord,
   Extraction,
   Schemas,
   type SchemaName,
+  StaffListQuery,
 } from "./index.js";
 
 const FIXTURE_DIR = join(import.meta.dirname, "..", "fixtures");
@@ -59,5 +61,27 @@ describe("DocumentRecord", () => {
         false,
       );
     }
+  });
+});
+
+describe("ApiError", () => {
+  it("từ chối mã lỗi ngoài ErrorCode", () => {
+    expect(ApiError.safeParse({ code: "TEAPOT", message: "x" }).success).toBe(
+      false,
+    );
+  });
+});
+
+describe("StaffListQuery", () => {
+  it("nhận query rỗng và query có role, region", () => {
+    expect(StaffListQuery.safeParse({}).success).toBe(true);
+    expect(
+      StaffListQuery.safeParse({ role: "nurse", region: "north" }).success,
+    ).toBe(true);
+  });
+
+  it("từ chối role rỗng và key lạ", () => {
+    expect(StaffListQuery.safeParse({ role: "" }).success).toBe(false);
+    expect(StaffListQuery.safeParse({ foo: "1" }).success).toBe(false);
   });
 });

@@ -1,0 +1,19 @@
+[
+  {
+    "name": "lỗi validate có details",
+    "data": {
+      "code": "VALIDATION_FAILED",
+      "message": "Dữ liệu không hợp lệ",
+      "details": [
+        {
+          "path": ["role"],
+          "message": "Too small: expected string to have >=1 characters"
+        }
+      ]
+    }
+  },
+  {
+    "name": "không tìm thấy, không có details",
+    "data": { "code": "NOT_FOUND", "message": "Không tìm thấy staff" }
+  }
+]
