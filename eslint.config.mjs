@@ -38,6 +38,7 @@ export default tseslint.config(
     files: [
       "apps/api/src/**/*.ts",
       "apps/api/scripts/**/*.ts",
+      "apps/api/test/**/*.ts",
       "packages/*/src/**/*.ts",
     ],
     languageOptions: {

@@ -1,6 +1,6 @@
 # CredFlow: lệnh phát triển. Recipe là POSIX sh.
 
-.PHONY: setup db-up db-down db-generate db-migrate db-seed build-packages dev dev-packages dev-api dev-worker dev-web test typecheck lint format eval synth
+.PHONY: setup db-up db-down db-generate db-migrate db-seed build-packages dev dev-packages dev-api dev-worker dev-web test test-int typecheck lint format eval synth
 
 # Cài deps từ lockfile, bật Postgres và Redis.
 setup:
@@ -47,6 +47,11 @@ dev-web: build-packages
 
 test: build-packages
 	pnpm -r --if-present test
+
+# Integration test của apps/api trên Postgres test (cổng 5433, tmpfs) và Redis thật.
+test-int: build-packages
+	docker compose up -d --wait db-test redis
+	pnpm --filter @credflow/api test:int
 
 typecheck:
 	pnpm -r --if-present typecheck

@@ -11,5 +11,12 @@
     "emitDecoratorMetadata": true,
     "types": ["node"]
   },
-  "include": ["src", "scripts", "vitest.config.ts", "drizzle.config.ts"]
+  "include": [
+    "src",
+    "scripts",
+    "test",
+    "vitest.config.ts",
+    "vitest.int.config.ts",
+    "drizzle.config.ts"
+  ]
 }
