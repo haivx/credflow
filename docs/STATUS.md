@@ -15,9 +15,9 @@
 
 > Claude cập nhật sau **mỗi bước**, không chờ cuối phiên. Mở phiên mới gõ `/tiep` để làm tiếp.
 
-- **Mục 🎓:** (không có 🎓 mới) Plan 12e, nhánh `fix/12e-log-no-params`.
-- **Đã xong:** `formatErrorForLog` + lỗi thật trong `error-log.int-spec.ts`; lint A14 (`.stack`, `sql.raw`, `no-console`); `console` → `Logger`; 2 ca C1 thiếu key. Watchlist + note CHECK/NULL.
-- **Bước tiếp theo:** PR 12e chờ Liam merge. Rồi plan 12 BullMQ.
+- **Mục 🎓:** (không có 🎓 mới) 12f (A8) đang chờ merge; 12g (A2) đã duyệt, chưa code.
+- **Đã xong:** PR 12f mở trên nhánh `chore/12f-architecture-zones`. A8 🟡. Auto-delete nhánh đã bật. Kịch bản 6 có bằng chứng một phần (Liam thấy prompt khi Edit `tools/lint/`).
+- **Bước tiếp theo:** Liam merge PR #18 + bật ruleset (2 required check: `check`, `architecture-zones`) → Claude chạy kịch bản còn lại của 12f (1–9), mở PR đổi A8 ✅ → tạo nhánh 12g từ `main`, code theo `docs/plans/12g-zod-boundaries.md`. Sau đó plan 12 BullMQ.
 - **Câu hỏi còn treo:** Liam "tạm hiểu" vì sao cần `@Inject(DB)`. Có bật branch protection (bắt CI xanh mới merge) không.
 
 ## Tiếp theo
@@ -25,6 +25,7 @@
 1. P1: contract `extraction`, `rules` chốt ở P1; model LLM chốt ở P1 (ADR).
 2. Task đầu P1 chọn bằng `/next`.
 3. **Plan 12 BullMQ phải ghi `versions` khi chuyển document sang `processing`** (CHECK A6 `documents_versions_after_processing`: `failed` không có `versions` bị DB từ chối). Worker nạp `RulesConfig` + gọi `assertRulesReady` lúc khởi động (12c). Log của worker và cột `documents.error` dùng `formatErrorForLog` (12e), không ghi `err.message` thô.
+4. **Plan 12: job data đọc từ Redis phải parse bằng schema trong `packages/contracts`.** `Worker<T>`/`Job<T>` chỉ là khai báo kiểu, không kiểm gì lúc chạy, và lint `no-unsafe-*` không thấy được.
 
 ## Vướng / câu hỏi mở
 

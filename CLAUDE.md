@@ -23,7 +23,7 @@ Liam vừa build vừa học, mục tiêu **middle–intermediate Node.js**. M�
 
 1. **Đầu phiên:** đọc `docs/STATUS.md` (đang ở đâu, kể cả mục "Đang học") và phase hiện tại trong `docs/roadmap.md`. Liam hỏi "đang ở đâu", "làm tiếp" hoặc gõ `/tiep` → tóm tắt từ STATUS + git rồi đề xuất bước tiếp.
 2. **Task mới:** vào plan mode, viết plan vào `docs/plans/NN-<slug>.md` (mục tiêu, file sẽ sửa, contract bị ảnh hưởng, tiêu chí xong), cuối plan là **verification plan** (`docs/agent/templates/VERIFICATION_PLAN.md`). Chờ Liam duyệt cả hai rồi mới code.
-3. **Code:** PR nhỏ, review được tại ranh giới (contract, rule engine, prompt, routing). Test đi cùng code.
+3. **Code:** PR nhỏ, review được tại ranh giới (contract, rule engine, prompt, routing). Test đi cùng code. File trong vùng kiến trúc (`docs/agent/architecture-zones.txt`) chỉ sửa bằng tool Edit/Write, không bằng script: chỉ tool mới hiện prompt để Liam duyệt. `main` chỉ nhận qua PR có CI xanh; **Liam tự merge**, Claude không merge.
 4. **Kiểm chứng:** thay đổi hành vi → chạy skill `verify`, viết evidence report (`docs/agent/templates/EVIDENCE_REPORT.md`), dán mục Tóm tắt vào tin nhắn cuối và PR. Chi tiết ở mục "Kiểm chứng" bên dưới.
 5. **Eval gate (từ P2):** mọi thay đổi về prompt, model, rule hoặc ngưỡng phải chạy `make eval` và dán bảng metric (so với lần trước) vào PR.
 6. **Cuối phiên:** cập nhật `docs/STATUS.md`. Quyết định kỹ thuật mới hoặc lệch `docs/product.md` → thêm ADR `docs/decisions/NNNN-<slug>.md`. Đổi spec sản phẩm: sửa `product.md` trước.
@@ -69,7 +69,7 @@ config/rules/        Cấu hình rule theo khách hàng (YAML, validate bằng R
 eval/                Harness eval, hard-cases/ (ca khó làm tay, giả lập), report.md
 tools/synth/         Bộ sinh giấy tờ giả lập + đáp án
 docs/                product.md, flows.md, doc-types.md, data-policy.md, roadmap.md, STATUS.md, plans/, decisions/, research/, learning/, agent/ (rule kiểm chứng, guardrails, mẫu)
-.claude/             commands/ (/tiep, /next, /wrap), skills/verify/ (quy trình kiểm chứng, FEATURE_MAP.md)
+.claude/             commands/ (/tiep, /next, /wrap), skills/verify/ (quy trình kiểm chứng, FEATURE_MAP.md), settings.json (deny + ask dùng chung, guardrail A8)
 ```
 
 ## Lệnh

@@ -134,6 +134,7 @@ Vượt mức middle; mỗi mục ghi chỗ trong CredFlow sẽ cần nó. Làm 
 | Upload thẳng lên S3 bằng presigned URL, dọn file mồ côi định kỳ | Stream qua API xuống đĩa local | P1 upload, P6 deploy |
 | OIDC/SSO, refresh token, xoay session | Email + mật khẩu, session cố định 7 ngày | P1 đăng nhập |
 | CSRF token (double-submit) | `SameSite=Lax` + API chỉ nhận JSON | P1 đăng nhập |
+| Token riêng cho agent (fine-grained PAT, không admin, không merge) | Claude dùng chung token `gh` admin của Liam, chặn bằng deny rule theo chữ (plan 12f) | Quy trình agent, guardrail A8 |
 | Chặn brute-force login (khoá tạm, rate limit theo tài khoản) | Chưa chặn; rate limit theo IP ở P6 | P1 đăng nhập |
 | Testcontainers | DB test trong docker compose | Integration test |
 | OpenTelemetry trace + metrics | pino + `timingMs` | P5 |

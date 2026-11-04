@@ -1,0 +1,32 @@
+# Vùng kiến trúc (guardrail A8): nguồn sự thật duy nhất.
+# Nguyên tắc: thứ gì tắt được guardrail thì thuộc guardrail.
+# Mỗi dòng một pattern glob (`**` qua nhiều thư mục), tính từ gốc repo.
+# Thêm/bớt dòng thì sửa cả `permissions.ask` trong .claude/settings.json;
+# tools/lint/architecture-zones.test.mjs đỏ nếu hai nơi lệch nhau.
+
+# Contract, DB, rule, prompt
+packages/contracts/src/**
+config/rules/**
+apps/api/src/prompts/**
+apps/api/src/db/schema.ts
+apps/api/drizzle/**
+
+# Guardrail và thứ tắt được guardrail
+eslint.config.mjs
+tools/lint/**
+.github/**
+Makefile
+**/vitest*.config.ts
+**/package.json
+**/tsconfig*.json
+apps/api/test/db-constraints.int-spec.ts
+apps/api/test/error-log.int-spec.ts
+packages/rules/src/route.invariants.test.ts
+packages/rules/src/purity.test.ts
+
+# Quy trình cho agent
+CLAUDE.md
+docs/agent/**
+.claude/settings.json
+.claude/skills/verify/**
+.claude/hooks/**

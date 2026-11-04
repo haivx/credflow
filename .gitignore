@@ -29,6 +29,8 @@ real-docs/
 .claude/*
 !.claude/commands/
 !.claude/skills/
+!.claude/hooks/
+!.claude/settings.json
 
 # Kết quả verify skill (log, screenshot, report, cookie jar)
 .verify/
