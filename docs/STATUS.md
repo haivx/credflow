@@ -15,9 +15,9 @@
 
 > Claude cập nhật sau **mỗi bước**, không chờ cuối phiên. Mở phiên mới gõ `/tiep` để làm tiếp.
 
-- **Mục 🎓:** ESLint selector (AST) cho guardrail A3 (plan 12a, nhánh `chore/12a-guardrail-lint`, chưa commit).
-- **Đã xong:** plugin eslint-comments, block A9/A5/A3 trong `eslint.config.mjs`, `tools/lint/guardrails.test.mjs` (18/18 xanh), `purity.test.ts` (3 xanh + 3 todo, đã thấy đỏ), `make lint` chạy thêm test lint, GUARDRAILS A3/A5/A9 ✅. Kịch bản 1–5 đã đỏ đúng message.
-- **Bước tiếp theo:** PR plan 12a chờ CI + Liam merge (Liam đã thử tay `console` trong engine → lint đỏ đúng). Sau đó plan 12 BullMQ theo mẫu mới.
+- **Mục 🎓:** (không có 🎓 mới) Test bất biến bằng cách sinh mọi tổ hợp (plan 12b, nhánh `test/12b-route-invariants`, xếp chồng trên 12a).
+- **Đã xong:** `route.invariants.test.ts` 5 ca xanh; 4 cách sửa sai (a, b, b', c) đều đỏ đúng bất biến. GUARDRAILS A4 🟡, Watchlist "mã rule trùng".
+- **Bước tiếp theo:** Liam merge PR #13 (vẫn OPEN trên GitHub), rồi PR 12b. Plan 12c (`route([])` → `needs_review` + `NO_RULES_EVALUATED`, kiểm `RulesConfig` khi nạp) chờ Liam duyệt. Sau đó plan 12 BullMQ.
 - **Câu hỏi còn treo:** Liam "tạm hiểu" vì sao cần `@Inject(DB)`. Tuỳ chọn: log `/ready` in thêm `error.cause`. Có bật branch protection (bắt CI xanh mới merge) không.
 
 ## Tiếp theo
