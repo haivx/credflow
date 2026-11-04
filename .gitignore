@@ -25,6 +25,10 @@ real-docs/
 .vscode/
 .zed/
 
-# Claude Code: chỉ commit lệnh dùng chung
+# Claude Code: chỉ commit lệnh và skill dùng chung
 .claude/*
 !.claude/commands/
+!.claude/skills/
+
+# Kết quả verify skill (log, screenshot, report, cookie jar)
+.verify/
