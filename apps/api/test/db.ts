@@ -4,6 +4,8 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "../src/db/schema.js";
 import type { Db } from "../src/db/db.provider.js";
+import type { DocumentStatus } from "@credflow/contracts";
+import { contractFixture } from "./contract-fixtures.js";
 import { assertTestDatabase, testEnv } from "./test-env.js";
 
 // Helper cho integration test chạm thẳng DB (không cần dựng app Nest).
@@ -80,4 +82,55 @@ export function makeUser(overrides: Partial<NewUser> = {}): NewUser {
     staffId: null,
     ...overrides,
   };
+}
+
+/**
+ * Document hợp lệ đầy đủ cho một status (theo CHECK A6, A7, C1, C2, C4, C5).
+ * Kết quả pipeline lấy từ fixture của packages/contracts, không viết tay.
+ */
+export function makeProcessedDocument(
+  staffId: string,
+  status: DocumentStatus,
+  overrides: Partial<NewDocument> = {},
+): NewDocument {
+  const sample = contractFixture(
+    "DocumentRecord",
+    "CPR chuyển người duyệt vì tổ chức cấp",
+  );
+  const blockPassed = contractFixture("RuleResult", "rule block qua");
+  const blockFailed = contractFixture("RuleResult", "rule block không qua");
+  const infoFailed = contractFixture("RuleResult", "rule info không qua");
+  const autoApprove = contractFixture("RoutingDecision", "tự duyệt");
+  const needsReview = contractFixture("RoutingDecision", "chuyển người duyệt");
+
+  const processed = { versions: sample.versions };
+  const extracted = {
+    ...processed,
+    classification: sample.classification,
+    extraction: sample.extraction,
+  };
+  const reviewed = {
+    ...extracted,
+    ruleResults: [blockFailed, blockPassed],
+    routing: needsReview,
+  };
+  const byStatus: Record<DocumentStatus, Partial<NewDocument>> = {
+    uploaded: {},
+    processing: processed,
+    extracted,
+    auto_approved: {
+      ...extracted,
+      ruleResults: [blockPassed, infoFailed],
+      routing: autoApprove,
+    },
+    needs_review: reviewed,
+    approved: reviewed,
+    rejected: reviewed,
+    reupload_requested: reviewed,
+    failed: {
+      ...processed,
+      error: { step: "extract", message: "LLM timeout (SAMPLE)" },
+    },
+  };
+  return makeDocument(staffId, { status, ...byStatus[status], ...overrides });
 }

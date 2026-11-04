@@ -1,0 +1,32 @@
+[
+  {
+    "name": "rule block qua",
+    "data": {
+      "code": "EXPIRED",
+      "passed": true,
+      "severity": "block",
+      "message": "Còn hạn đến 2028-04-19.",
+      "fieldRefs": ["expirationDate"]
+    }
+  },
+  {
+    "name": "rule block không qua",
+    "data": {
+      "code": "ISSUER_NOT_ACCEPTED",
+      "passed": false,
+      "severity": "block",
+      "message": "Tổ chức cấp không nằm trong danh sách được chấp nhận của khách hàng này.",
+      "fieldRefs": ["issuerName"]
+    }
+  },
+  {
+    "name": "rule info không qua",
+    "data": {
+      "code": "EXPIRING_SOON",
+      "passed": false,
+      "severity": "info",
+      "message": "Hết hạn trong 30 ngày.",
+      "fieldRefs": ["expirationDate"]
+    }
+  }
+]

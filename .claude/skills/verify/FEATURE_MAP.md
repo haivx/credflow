@@ -68,6 +68,7 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
   - bộ rule thiếu rule `block` cho loại giấy được yêu cầu, hoặc mã trùng → worker không khởi động (`assertRulesReady`, gọi ở plan 12)
   - file hỏng → `failed` kèm `error.step`; lỗi LLM sau retry → `needs_review`
   - mỗi document có `versions { pipeline, prompt, model, rules }` và `timingMs`
+  - ghi trạng thái thiếu dữ liệu (failed không error, auto_approved có rule block trượt…) → DB từ chối 23514 → 500 `INTERNAL`, log có tên constraint (CHECK plan 12d, `test/db-constraints.int-spec.ts`)
 - **Fixture:** `TODO(verify)`: giấy giả lập SAMPLE từ `tools/synth/`, ca khó ở `eval/hard-cases/`
 - **Golden kỳ vọng:** `TODO(verify)`: `make eval` (P2)
 - **Mức rủi ro:** T3 khi đổi prompt / model / rule / ngưỡng

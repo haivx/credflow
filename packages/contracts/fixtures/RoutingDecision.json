@@ -1,0 +1,10 @@
+[
+  {
+    "name": "tự duyệt",
+    "data": { "decision": "auto_approve", "reasons": [] }
+  },
+  {
+    "name": "chuyển người duyệt",
+    "data": { "decision": "needs_review", "reasons": ["ISSUER_NOT_ACCEPTED"] }
+  }
+]

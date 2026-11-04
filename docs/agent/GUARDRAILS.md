@@ -46,8 +46,9 @@ Trạng thái: ✅ đã có gờ · 🟡 có một phần · ⏳ chờ code tồ
 | A3 | Rule engine là hàm thuần: không I/O, không framework, không đồng hồ, không `Math.random`, không `console` | `eslint.config.mjs` block "A3" (`no-restricted-imports`/`-globals`, `no-restricted-syntax` = `A5_NO_DATE` + `A3_PURE`; trừ `config.ts`, test); `packages/rules/src/purity.test.ts` (`route()`; `evaluateRules` là `it.todo` tới khi CPR rule có code); `tools/lint/guardrails.test.mjs` | ✅ | plan 12a |
 | A4 | Chỉ `auto_approve` khi mọi rule `block` qua | `packages/rules/src/route.invariants.test.ts` (3 bất biến trên mọi danh sách dài 0–4; `route([])` → `needs_review` + `NO_RULES_EVALUATED`); `assertRulesReady` (mỗi loại giấy được yêu cầu có rule block, mã không trùng; gọi lúc khởi động worker ở plan 12); eval `falseApproveRate` chờ P2 | 🟡 | test: plan 12b, 12c · eval: P2 |
 | A5 | Ngày lịch là `YYYY-MM-DD`, không dùng `Date` (chỉ `packages/*`; `apps/*` cần timestamp thật) | contract `IsoDate`; `eslint.config.mjs` block "A5" (`A5_NO_DATE`: `new Date`, `Date()`, `Date.now`; trừ test, `config.ts`) | ✅ | plan 12a |
-| A6 | Document đã qua `processing` phải có `versions` | DB CHECK `documents_versions_after_processing` | ⏳ | Bước 4 |
-| A7 | Document `failed` phải có `error` | DB CHECK `documents_failed_has_error` | ⏳ | Bước 4 |
+| A6 | Document đã qua `processing` phải có `versions` | DB CHECK `documents_versions_after_processing` (migration 0003); `test/db-constraints.int-spec.ts`. Worker phải ghi `versions` ngay khi vào `processing` (plan 12) | ✅ | plan 12d |
+| A7 | Document `failed` phải có `error` | DB CHECK `documents_failed_has_error` (migration 0003); `test/db-constraints.int-spec.ts` | ✅ | plan 12d |
+| A13 | Trạng thái kết quả không thể có thì DB từ chối: `auto_approved` cần routing auto không lý do (C1) + rule đã chấm, không rule block trượt (C2); `extracted`/`auto_approved` có classification + extraction (C4); `uploaded` không mang kết quả cũ, xử lý lại đi sang `processing` (C5). **Đổi `RuleResult`/`RoutingDecision` → xem lại CHECK C1, C2** | DB CHECK `documents_auto_approved_routing`, `documents_auto_approved_no_block_fail`, `documents_extracted_has_result`, `documents_uploaded_is_clean`; test dựng dữ liệu từ `packages/contracts/fixtures` (đổi contract → test đỏ). 23514 → 500 INTERNAL, log có `code`/`constraint`/`table`, không có `detail` (F1) | ✅ | plan 12d |
 | A8 | Không tự đổi vùng kiến trúc (contracts, schema DB, `config/rules`, prompt, lint config, `docs/agent`) | branch protection (CI xanh + Liam duyệt); CI cảnh báo khi PR chạm các đường dẫn này | ⏳ | Bước 5 |
 | A9 | `eslint-disable` phải có lý do, không có disable thừa | `eslint.config.mjs` block "A9" (`comments.recommended` + `require-description`, `linterOptions.reportUnusedDisableDirectives: "error"`) | ✅ | plan 12a |
 | A10 | LLM không bao giờ quyết định duyệt | module LLM chỉ trả `Extraction`; lint cấm module LLM import nơi ghi status / `route()` | ⏳ | plan 12 |
@@ -62,4 +63,4 @@ chọn task tiếp theo, đánh giá trade-off. Những luật này ở lại CL
 
 | Ngày | Sai ở đâu | Số lần gặp | Rule cứng đề xuất |
 |---|---|---|---|
-| | | | |
+| 2026-11-04 | C3 (`needs_review` → `routing` NOT NULL) chưa bật: ca LLM lỗi → `needs_review` chưa có mã trong `RuleCode` | 0 | bật CHECK `documents_needs_review_routing` khi contract có mã cho ca LLM lỗi → `needs_review` |

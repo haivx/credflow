@@ -146,6 +146,40 @@ export const documents = pgTable(
     ),
     check("documents_size_bytes_check", sql`${t.sizeBytes} > 0`),
     check("documents_checksum_check", sql`${t.checksum} ~ '^[0-9a-f]{64}$'`),
+    // Guardrail (docs/agent/GUARDRAILS.md, plan 12d): trạng thái không thể có thì DB từ chối (23514 → 500).
+    // A6: qua processing là phải có versions (worker ghi versions ngay khi vào processing).
+    check(
+      "documents_versions_after_processing",
+      sql`${t.status} IN ('uploaded', 'processing') OR ${t.versions} IS NOT NULL`,
+    ),
+    // A7: failed phải có error.
+    check(
+      "documents_failed_has_error",
+      sql`${t.status} <> 'failed' OR ${t.error} IS NOT NULL`,
+    ),
+    // C1 (A4): auto_approved phải có routing auto_approve, không lý do.
+    // Đổi RoutingDecision → xem lại CHECK này.
+    check(
+      "documents_auto_approved_routing",
+      // COALESCE: routing NULL hoặc thiếu key thì biểu thức ra NULL, mà CHECK coi NULL là qua.
+      sql`${t.status} <> 'auto_approved' OR COALESCE(${t.routing} ->> 'decision' = 'auto_approve' AND jsonb_array_length(${t.routing} -> 'reasons') = 0, false)`,
+    ),
+    // C2 (A4): auto_approved phải có rule đã chấm và không rule block nào trượt.
+    // Đổi RuleResult → xem lại CHECK này.
+    check(
+      "documents_auto_approved_no_block_fail",
+      sql`${t.status} <> 'auto_approved' OR (jsonb_array_length(${t.ruleResults}) > 0 AND NOT jsonb_path_exists(${t.ruleResults}, '$[*] ? (@.severity == "block" && @.passed == false)'))`,
+    ),
+    // C4: extracted/auto_approved phải có kết quả LLM.
+    check(
+      "documents_extracted_has_result",
+      sql`${t.status} NOT IN ('extracted', 'auto_approved') OR (${t.classification} IS NOT NULL AND ${t.extraction} IS NOT NULL)`,
+    ),
+    // C5: uploaded không mang kết quả cũ. Xử lý lại đi sang processing, không về uploaded.
+    check(
+      "documents_uploaded_is_clean",
+      sql`${t.status} <> 'uploaded' OR (${t.classification} IS NULL AND ${t.extraction} IS NULL AND ${t.routing} IS NULL AND ${t.versions} IS NULL AND ${t.error} IS NULL AND ${t.ruleResults} = '[]'::jsonb)`,
+    ),
   ],
 );
 
