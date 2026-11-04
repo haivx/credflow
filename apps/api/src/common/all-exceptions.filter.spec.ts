@@ -5,7 +5,9 @@ import {
   ForbiddenException,
   Logger,
   NotFoundException,
+  PayloadTooLargeException,
   UnauthorizedException,
+  UnsupportedMediaTypeException,
 } from "@nestjs/common";
 import { ApiError, StaffProfile } from "@credflow/contracts";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -82,6 +84,15 @@ describe("AllExceptionsFilter", () => {
         status: 403,
         body: { code: "FORBIDDEN", message: "Không có quyền" },
       });
+    });
+
+    it("PayloadTooLargeException → 413, UnsupportedMediaTypeException → 415", () => {
+      expect(run(new PayloadTooLargeException("Quá lớn")).body.code).toBe(
+        "PAYLOAD_TOO_LARGE",
+      );
+      expect(run(new UnsupportedMediaTypeException("Sai loại")).body.code).toBe(
+        "UNSUPPORTED_MEDIA_TYPE",
+      );
     });
 
     it("ConflictException → 409 CONFLICT", () => {

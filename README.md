@@ -65,6 +65,13 @@ curl -c jar -H 'content-type: application/json' \
 curl -b jar http://127.0.0.1:8787/staff   # 200, danh sách 10 staff
 ```
 
+Upload một giấy (đăng nhập bằng `staff@example.test`; chỉ PDF/PNG/JPEG, tối đa 10 MB, file lưu dưới `data/files/`):
+
+```bash
+curl -b jar -F file=@sample.pdf -F declaredDocType=cpr_card http://127.0.0.1:8787/documents
+# 201 {"documentId":"...","status":"uploaded","duplicate":false}; gửi lại cùng file → 200, duplicate: true
+```
+
 Test:
 
 ```bash

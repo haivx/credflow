@@ -10,6 +10,7 @@ import {
   type SchemaName,
   LoginRequest,
   StaffListQuery,
+  UploadDocumentFields,
 } from "./index.js";
 
 const FIXTURE_DIR = join(import.meta.dirname, "..", "fixtures");
@@ -124,5 +125,20 @@ describe("AuthUser", () => {
         staffId: null,
       }).success,
     ).toBe(false);
+  });
+});
+
+describe("UploadDocumentFields", () => {
+  it("cho phép bỏ trống declaredDocType", () => {
+    expect(UploadDocumentFields.safeParse({}).success).toBe(true);
+  });
+
+  it("từ chối loại giấy lạ và field thừa (staffId không được gửi từ form)", () => {
+    expect(
+      UploadDocumentFields.safeParse({ declaredDocType: "passport" }).success,
+    ).toBe(false);
+    expect(UploadDocumentFields.safeParse({ staffId: "s1" }).success).toBe(
+      false,
+    );
   });
 });

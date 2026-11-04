@@ -54,3 +54,9 @@ export const Classification = z
   })
   .meta({ id: "Classification" });
 export type Classification = z.infer<typeof Classification>;
+
+/** Field text đi kèm file trong multipart POST /documents. `staffId` không có ở đây: API lấy từ session. */
+export const UploadDocumentFields = z
+  .strictObject({ declaredDocType: DocType.optional() })
+  .meta({ id: "UploadDocumentFields" });
+export type UploadDocumentFields = z.infer<typeof UploadDocumentFields>;

@@ -130,6 +130,8 @@ Vượt mức middle; mỗi mục ghi chỗ trong CredFlow sẽ cần nó. Làm 
 | AsyncLocalStorage / `nestjs-cls` transactional | Truyền `tx` tường minh | Mọi service |
 | `SELECT … FOR UPDATE SKIP LOCKED` + lease "nhận ca" | Optimistic locking | P4 hàng chờ |
 | Header `Idempotency-Key` | Dedupe theo checksum | P1 upload |
+| Dedupe theo `(staff_id, checksum)`, không lộ "file đã có người nộp" | Checksum unique toàn cục, staff khác → 409 (ADR 0005) | P1 upload |
+| Upload thẳng lên S3 bằng presigned URL, dọn file mồ côi định kỳ | Stream qua API xuống đĩa local | P1 upload, P6 deploy |
 | OIDC/SSO, refresh token, xoay session | Email + mật khẩu, session cố định 7 ngày | P1 đăng nhập |
 | CSRF token (double-submit) | `SameSite=Lax` + API chỉ nhận JSON | P1 đăng nhập |
 | Chặn brute-force login (khoá tạm, rate limit theo tài khoản) | Chưa chặn; rate limit theo IP ở P6 | P1 đăng nhập |

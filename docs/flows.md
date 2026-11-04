@@ -22,8 +22,11 @@
 
 ## F1. Nhân viên upload giấy
 
-1. S1: chọn loại giấy (tuỳ chọn) → kéo thả PDF/ảnh (giới hạn dung lượng, chỉ PDF/PNG/JPEG).
-2. API lưu file, tạo `DocumentRecord {status: uploaded}`, đẩy job, trả về ngay.
+1. S1: chọn loại giấy (tuỳ chọn) → kéo thả PDF/ảnh (tối đa 10 MB, chỉ PDF/PNG/JPEG; loại file nhận theo nội dung, không theo đuôi).
+2. API stream file xuống storage, tính sha256, tạo `DocumentRecord {status: uploaded}`, đẩy job, trả về ngay (ADR 0005).
+   - Đã nộp đúng file này rồi (cùng sha256) → trả document cũ, không tạo mới.
+   - File đó đã thuộc nhân viên khác → báo lỗi 409.
+   - Quá 10 MB → 413; không phải PDF/PNG/JPEG → 415.
 3. S1 hiện trạng thái: Đang xử lý → Đã duyệt / Đang chờ duyệt / Cần nộp lại (kèm lý do người duyệt ghi).
 
 ## F2. Xử lý tự động (job nền)
