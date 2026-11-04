@@ -1,0 +1,18 @@
+[
+  {
+    "name": "upload mới",
+    "data": {
+      "documentId": "01JDOC000000000000000001",
+      "status": "uploaded",
+      "duplicate": false
+    }
+  },
+  {
+    "name": "cùng staff nộp lại đúng file đã có",
+    "data": {
+      "documentId": "01JDOC000000000000000001",
+      "status": "needs_review",
+      "duplicate": true
+    }
+  }
+]

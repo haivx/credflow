@@ -22,6 +22,12 @@ export const envSchema = z.object({
     .default(7),
   // stringbool: "false" → false. z.coerce.boolean() sẽ biến chuỗi "false" thành true.
   COOKIE_SECURE: z.stringbool().default(false),
+  // Giới hạn dung lượng một file upload, tính bằng byte. Mặc định 10 MB.
+  UPLOAD_MAX_BYTES: z.coerce
+    .number()
+    .int()
+    .min(1, "UPLOAD_MAX_BYTES must be at least 1")
+    .default(10 * 1024 * 1024),
 });
 
 export type Env = z.infer<typeof envSchema>;

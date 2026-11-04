@@ -73,6 +73,15 @@ export const DocumentRecord = z
   .meta({ id: "DocumentRecord" });
 export type DocumentRecord = z.infer<typeof DocumentRecord>;
 
+/**
+ * Response POST /documents. HTTP 201 = tạo mới; 200 + `duplicate: true` = chính staff này
+ * đã nộp đúng file này rồi (cùng sha256), trả lại document cũ.
+ */
+export const UploadDocumentResponse = z
+  .object({ documentId: Id, status: DocumentStatus, duplicate: z.boolean() })
+  .meta({ id: "UploadDocumentResponse" });
+export type UploadDocumentResponse = z.infer<typeof UploadDocumentResponse>;
+
 /** Hành động của người duyệt. Mọi chỗ sửa được lưu lại làm dữ liệu eval. */
 export const ReviewAction = z
   .object({

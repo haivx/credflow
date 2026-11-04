@@ -3,7 +3,12 @@ import { Classification, DocType } from "./document.js";
 import { ApiError } from "./error.js";
 import { Extraction } from "./extraction.js";
 import { EvalRun, GoldenCase } from "./eval.js";
-import { DocumentRecord, ReviewAction, RoutingDecision } from "./routing.js";
+import {
+  DocumentRecord,
+  ReviewAction,
+  RoutingDecision,
+  UploadDocumentResponse,
+} from "./routing.js";
 import { RuleResult, RulesConfig } from "./rules.js";
 import { StaffProfile } from "./staff.js";
 
@@ -32,5 +37,6 @@ export const Schemas = {
   EvalRun,
   ApiError,
   AuthUser,
+  UploadDocumentResponse,
 } as const;
 export type SchemaName = keyof typeof Schemas;

@@ -8,6 +8,7 @@ import { APP_FILTER } from "@nestjs/core";
 import cookieParser from "cookie-parser";
 import { AuthModule } from "./auth/auth.module.js";
 import { AllExceptionsFilter } from "./common/all-exceptions.filter.js";
+import { DocumentsModule } from "./documents/documents.module.js";
 import { HealthModule } from "./health/health.module.js";
 import { baseConfig } from "./config/config.options.js";
 import { StaffModule } from "./staff/staff.module.js";
@@ -16,6 +17,7 @@ import { StaffModule } from "./staff/staff.module.js";
   imports: [
     ConfigModule.forRoot(baseConfig),
     AuthModule,
+    DocumentsModule,
     HealthModule,
     StaffModule,
   ],

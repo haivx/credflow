@@ -16,6 +16,8 @@ const CODE_BY_STATUS: Partial<Record<number, ErrorCode>> = {
   403: "FORBIDDEN",
   404: "NOT_FOUND",
   409: "CONFLICT",
+  413: "PAYLOAD_TOO_LARGE",
+  415: "UNSUPPORTED_MEDIA_TYPE",
 };
 
 /** Lỗi pg do client gây ra (trùng unique, FK không tồn tại). CHECK/NOT NULL là bug server → 500. */
