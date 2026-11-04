@@ -2,7 +2,7 @@ import { eq, sql } from "drizzle-orm";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { documents, reviewActions, staff, users } from "../src/db/schema.js";
 import { contractFixture } from "./contract-fixtures.js";
-import { DocumentStatus } from "@credflow/contracts";
+import { DocumentStatus, type RoutingDecision } from "@credflow/contracts";
 import {
   createTestDb,
   makeDocument,
@@ -291,6 +291,22 @@ describe("CHECK trạng thái documents (integration)", () => {
         check(name),
       );
     });
+
+    // Biểu thức ra NULL thì CHECK coi là qua: COALESCE ép các ca này thành false. Shape sai nên phải ép kiểu.
+    it.each([
+      ["{}", {}],
+      ['{"decision":"auto_approve"}', { decision: "auto_approve" }],
+    ])(
+      "INSERT auto_approved với routing thiếu key %s → 23514",
+      async (_, routing) => {
+        const row = makeProcessedDocument(owner.id, "auto_approved", {
+          routing: routing as RoutingDecision,
+        });
+        await expect(db.insert(documents).values(row)).rejects.toMatchObject(
+          check(name),
+        );
+      },
+    );
 
     it("INSERT auto_approved với routing needs_review → 23514", async () => {
       const row = makeProcessedDocument(owner.id, "auto_approved", {

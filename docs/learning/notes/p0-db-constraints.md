@@ -45,3 +45,52 @@ Test kiểm **mã lỗi + tên constraint**, không kiểm message (message đ�
 - `expect(fn).toThrow()` cho hàm đồng bộ; `.rejects` cho promise.
 - Luôn có ca đối chứng (dữ liệu hợp lệ thì insert được), để test lỗi không "pass" vì helper sinh dữ liệu sai.
 - `TRUNCATE` bảng có FK trỏ vào phải truncate cùng lúc các bảng con (`truncateAll`).
+
+## CHECK cho qua khi biểu thức ra NULL
+
+Bài học từ PR #16 (plan 12d, CHECK C1). `WHERE` và `CHECK` xử lý NULL **ngược nhau**:
+
+| Biểu thức ra | `WHERE` | `CHECK` |
+| --- | --- | --- |
+| `true` | lấy dòng | nhận |
+| `false` | bỏ dòng | **từ chối** |
+| `NULL` | bỏ dòng | **nhận** |
+
+CHECK chỉ từ chối khi biểu thức ra đúng `false`. Mà SQL có logic ba giá trị: so sánh với NULL ra NULL, và `false OR NULL` cũng ra NULL.
+
+**Ví dụ thật.** Bản đầu của C1 trông đúng:
+
+```sql
+CHECK (status <> 'auto_approved'
+  OR (routing ->> 'decision' = 'auto_approve'
+      AND jsonb_array_length(routing -> 'reasons') = 0))
+```
+
+Với dòng `auto_approved`, `routing` NULL:
+
+1. `status <> 'auto_approved'` → `false`
+2. `NULL ->> 'decision' = 'auto_approve'` → `NULL`
+3. `false OR NULL` → `NULL` → CHECK **nhận**
+
+Tức là đúng dòng nguy hiểm nhất (tự duyệt mà không có quyết định routing) lại lọt. Test bắt được: `INSERT auto_approved không có routing` báo `promise resolved "Result{ command: 'INSERT', …}" instead of rejecting`.
+
+**Cách sửa:** ép NULL thành `false`.
+
+```sql
+CHECK (status <> 'auto_approved'
+  OR COALESCE(routing ->> 'decision' = 'auto_approve'
+      AND jsonb_array_length(routing -> 'reasons') = 0, false))
+```
+
+**Quy tắc khi viết CHECK có cột cho phép NULL:**
+
+- `IS NULL`, `IS NOT NULL` không bao giờ ra NULL: an toàn (A6, A7, C4, C5 đều dùng).
+- `=`, `<>`, `IN`, `->>`, `jsonb_array_length` có thể ra NULL: bọc `COALESCE(…, false)`, hoặc kiểm `IS NOT NULL` trước.
+- Luôn có test cho đúng ca NULL. Đọc SQL bằng mắt rất dễ bỏ sót.
+- Đôi khi NULL được qua là **chủ ý**: `documents_declared_doc_type_check` dựa vào đó để cột vẫn được để trống (`schema.ts`).
+
+Đã chạy trên Postgres thật (plan 12e): `NULL::jsonb ->> 'decision' = 'auto_approve'`, `'{}'::jsonb ->> 'decision' = 'auto_approve'` và `false OR NULL` đều ra NULL; `COALESCE(…, false)` ra `f`.
+
+Bỏ `COALESCE` tạm trên DB test thì 3 ca lọt: `routing` NULL, `{}`, `{"decision":"auto_approve"}`. Có `COALESCE` thì cả 3 bị từ chối.
+
+Code: `apps/api/src/db/schema.ts` (`documents_auto_approved_routing`), `apps/api/drizzle/0003_elite_shiva.sql`, `apps/api/test/db-constraints.int-spec.ts`.

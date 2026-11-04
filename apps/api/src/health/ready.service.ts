@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { type Db, DB } from "../db/db.provider.js";
 import { REDIS } from "../redis/redis.provider.js";
 import { sql } from "drizzle-orm";
@@ -31,7 +31,9 @@ function toState(name: string, result: PromiseSettledResult<unknown>) {
       result.reason instanceof Error && result.reason.cause instanceof Error
         ? ` (cause: ${result.reason.cause.message})`
         : "";
-    console.error(`ready check failed: ${name}: ${message}${cause}`);
+    new Logger("Ready").error(
+      `ready check failed: ${name}: ${message}${cause}`,
+    );
   }
   return result.status === "fulfilled" ? "up" : "down";
 }

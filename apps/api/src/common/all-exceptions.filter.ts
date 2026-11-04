@@ -7,7 +7,7 @@ import {
 } from "@nestjs/common";
 import { ApiError, type ErrorCode } from "@credflow/contracts";
 import type { Response } from "express";
-import { getPgErrorCode, getPgErrorInfo } from "./pg-error.js";
+import { formatErrorForLog, getPgErrorCode } from "./pg-error.js";
 
 /** HttpException không mang body ApiError thì suy code từ status. Không có trong bảng → INTERNAL. */
 const CODE_BY_STATUS: Partial<Record<number, ErrorCode>> = {
@@ -72,13 +72,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
   }
 
   private logUnhandled(exception: unknown): void {
-    // Lỗi pg (vd CHECK 23514) bị Drizzle bọc: stack ngoài không có tên constraint, nên in thêm.
-    const pg = getPgErrorInfo(exception);
-    this.logger.error(
-      pg
-        ? `Unhandled exception pg=${JSON.stringify(pg)}`
-        : "Unhandled exception",
-      exception instanceof Error ? exception.stack : String(exception),
-    );
+    const { message, stack } = formatErrorForLog(exception);
+    if (stack === undefined) this.logger.error(message);
+    else this.logger.error(message, stack);
   }
 }

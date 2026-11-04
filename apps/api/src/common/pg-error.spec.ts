@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getPgErrorCode } from "./pg-error.js";
+import { formatErrorForLog, getPgErrorCode } from "./pg-error.js";
 
 /** Giả lập lỗi Postgres như Drizzle ném ra: lỗi của pg nằm ở `.cause`. */
 function drizzleError(code: string): Error {
@@ -32,5 +32,35 @@ describe("getPgErrorCode", () => {
       code: "ECONNREFUSED",
     });
     expect(getPgErrorCode(netError)).toBeUndefined();
+  });
+});
+
+describe("formatErrorForLog", () => {
+  it("lỗi pg trong cause: không giữ message gốc", () => {
+    const { message, stack } = formatErrorForLog(drizzleError("23514"));
+    expect(message).toContain("23514");
+    expect(message).not.toContain("Failed query");
+    expect(stack ?? "").not.toContain("Failed query");
+  });
+
+  it("stack không chứa message (đã bị sửa): bỏ cả stack, không đoán", () => {
+    const error = drizzleError("23514");
+    error.stack = "Error: nội dung khác\n    at f (a.js:1:1)";
+    expect(formatErrorForLog(error).stack).toBeUndefined();
+  });
+
+  it("lỗi không phải DB: giữ nguyên stack", () => {
+    const error = new Error("boom");
+    expect(formatErrorForLog(error)).toEqual({
+      message: "Unhandled exception",
+      stack: error.stack,
+    });
+  });
+
+  it("giá trị không phải Error: in dạng chuỗi", () => {
+    expect(formatErrorForLog("lạ")).toEqual({
+      message: "Unhandled exception",
+      stack: "lạ",
+    });
   });
 });

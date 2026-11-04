@@ -1,4 +1,4 @@
-import type { FactoryProvider } from "@nestjs/common";
+import { type FactoryProvider, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Redis } from "ioredis";
 import type { Env } from "../config/env.schema.js";
@@ -19,7 +19,7 @@ export const redisProvider = {
     });
     // Không có listener 'error' thì Node coi là lỗi không bắt và kill process (giống pool ở plan 05).
     redis.on("error", (err) => {
-      console.error("Redis client error:", err.message);
+      new Logger("Redis").error(`Redis client error: ${err.message}`);
     });
     return redis;
   },

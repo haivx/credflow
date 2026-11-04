@@ -15,16 +15,16 @@
 
 > Claude cập nhật sau **mỗi bước**, không chờ cuối phiên. Mở phiên mới gõ `/tiep` để làm tiếp.
 
-- **Mục 🎓:** (không có 🎓 mới) Plan 12d CHECK trên `documents`, nhánh `feat/12d-db-check-documents`.
-- **Đã xong:** 6 CHECK (A6, A7, C1, C2, C4, C5) + migration 0003 (đã áp DB dev); F1 log `code/constraint/table` của lỗi pg; test đỏ trước/xanh sau.
-- **Bước tiếp theo:** PR 12d chờ Liam merge. Rồi plan 12 BullMQ.
-- **Câu hỏi còn treo:** Liam "tạm hiểu" vì sao cần `@Inject(DB)`. Log 500 vẫn chứa `params` của câu SQL lỗi (message Drizzle `Failed query … params:`), có thể chứa giá trị dòng: đề xuất plan nhỏ cắt `params` khỏi log. `/ready` log `error.cause`: filter đã có ở 12d, `/ready` chưa. Có bật branch protection (bắt CI xanh mới merge) không.
+- **Mục 🎓:** (không có 🎓 mới) Plan 12e, nhánh `fix/12e-log-no-params`.
+- **Đã xong:** `formatErrorForLog` + lỗi thật trong `error-log.int-spec.ts`; lint A14 (`.stack`, `sql.raw`, `no-console`); `console` → `Logger`; 2 ca C1 thiếu key. Watchlist + note CHECK/NULL.
+- **Bước tiếp theo:** PR 12e chờ Liam merge. Rồi plan 12 BullMQ.
+- **Câu hỏi còn treo:** Liam "tạm hiểu" vì sao cần `@Inject(DB)`. Có bật branch protection (bắt CI xanh mới merge) không.
 
 ## Tiếp theo
 
 1. P1: contract `extraction`, `rules` chốt ở P1; model LLM chốt ở P1 (ADR).
 2. Task đầu P1 chọn bằng `/next`.
-3. **Plan 12 BullMQ phải ghi `versions` khi chuyển document sang `processing`** (CHECK A6 `documents_versions_after_processing`: `failed` không có `versions` bị DB từ chối). Worker nạp `RulesConfig` + gọi `assertRulesReady` lúc khởi động (12c).
+3. **Plan 12 BullMQ phải ghi `versions` khi chuyển document sang `processing`** (CHECK A6 `documents_versions_after_processing`: `failed` không có `versions` bị DB từ chối). Worker nạp `RulesConfig` + gọi `assertRulesReady` lúc khởi động (12c). Log của worker và cột `documents.error` dùng `formatErrorForLog` (12e), không ghi `err.message` thô.
 
 ## Vướng / câu hỏi mở
 
