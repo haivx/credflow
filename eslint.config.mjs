@@ -35,6 +35,19 @@ const A3_PURE = [
   },
 ];
 
+// A14: gờ chính là formatErrorForLog + test (apps/api/test/error-log.int-spec.ts), lint chỉ là lớp phụ.
+const A14_NO_STACK = {
+  selector: "MemberExpression[property.name='stack']",
+  message: "A14: không đọc .stack trực tiếp, dùng formatErrorForLog",
+};
+const A14_NO_SQL_RAW = {
+  selector: "MemberExpression[object.name='sql'][property.name='raw']",
+  message:
+    "A14: không dùng sql.raw; an toàn của log và chống SQL injection đều dựa trên query có tham số",
+};
+const API_SRC = ["apps/api/src/**/*.ts"];
+const API_SRC_IGNORES = ["**/*.spec.ts"];
+
 const PACKAGES_IGNORES = ["**/*.test.ts", "packages/rules/src/config.ts"];
 
 export default tseslint.config(
@@ -134,6 +147,25 @@ export default tseslint.config(
       ],
       "no-restricted-syntax": ["error", ...A5_NO_DATE, ...A3_PURE],
     },
+  },
+  // A14: log lỗi DB an toàn. Hai miễn trừ dưới đặt sau và thay hẳn options của block này.
+  {
+    files: API_SRC,
+    ignores: API_SRC_IGNORES,
+    rules: {
+      "no-console": "error",
+      "no-restricted-syntax": ["error", A14_NO_STACK, A14_NO_SQL_RAW],
+    },
+  },
+  // Helper duy nhất được đọc .stack.
+  {
+    files: ["apps/api/src/common/pg-error.ts"],
+    rules: { "no-restricted-syntax": ["error", A14_NO_SQL_RAW] },
+  },
+  // DDL không nhận tham số $1; schema.ts chỉ ghép hằng số từ contracts.
+  {
+    files: ["apps/api/src/db/schema.ts"],
+    rules: { "no-restricted-syntax": ["error", A14_NO_STACK] },
   },
   // CLAUDE.md: TypeScript strict, không `any`.
   { rules: { "@typescript-eslint/no-explicit-any": "error" } },

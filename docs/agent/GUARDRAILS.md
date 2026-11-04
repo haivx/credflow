@@ -54,6 +54,7 @@ Trạng thái: ✅ đã có gờ · 🟡 có một phần · ⏳ chờ code tồ
 | A10 | LLM không bao giờ quyết định duyệt | module LLM chỉ trả `Extraction`; lint cấm module LLM import nơi ghi status / `route()` | ⏳ | plan 12 |
 | A11 | Không tự từ chối; trạng thái chỉ đổi qua một nơi | hàm ghi status duy nhất + bảng transition (`rejected` bắt buộc `reviewerId`); lint cấm `.set({ status })` ngoài file đó | ⏳ | plan 12 |
 | A12 | Prompt nằm trong file có version | một hàm `loadPrompt(name, version)`; test đối chiếu prompt dùng trong code với file | ⏳ | plan có LLM đầu tiên (P1) |
+| A14 | Log lỗi DB chỉ gồm `PgErrorInfo` + SQL dạng `$1` + stack frames; không có message gốc, `params`, `detail`, `where`. **Giả định:** mọi query đều có tham số, nên SQL trong log không chứa giá trị (cũng là cơ sở chống SQL injection) | **Gờ chính:** `formatErrorForLog` (`apps/api/src/common/pg-error.ts`) + `apps/api/test/error-log.int-spec.ts` (lỗi thật, kiểm chuỗi thật ghi ra). **Lớp phụ (lint, `eslint.config.mjs`, block "A14"):** cấm `.stack` (miễn trừ `pg-error.ts`), cấm `sql.raw` (miễn trừ `schema.ts`: DDL không nhận `$1`, chỉ ghép hằng số từ contracts), `no-console` ở `apps/api/src` (trừ spec; `scripts/` nằm ngoài). Lint không chặn được `logger.error(err.message)` | ✅ | plan 12e |
 
 Luật **giữ ở lớp mềm** (cần phán đoán, máy không bắt được): chế độ dạy, giải thích trước khi code,
 chọn task tiếp theo, đánh giá trade-off. Những luật này ở lại CLAUDE.md.
@@ -64,3 +65,4 @@ chọn task tiếp theo, đánh giá trade-off. Những luật này ở lại CL
 | Ngày | Sai ở đâu | Số lần gặp | Rule cứng đề xuất |
 |---|---|---|---|
 | 2026-11-04 | C3 (`needs_review` → `routing` NOT NULL) chưa bật: ca LLM lỗi → `needs_review` chưa có mã trong `RuleCode` | 0 | bật CHECK `documents_needs_review_routing` khi contract có mã cho ca LLM lỗi → `needs_review` |
+| 2026-11-04 | Kiểm chứng plan 12d: lệnh shell chạy tiếp dù bước trước lỗi (zsh không tách `$P`, không có `set -e`), nên query vi phạm không chạy mà `make db-migrate` vẫn chạy | 1 | script trong `.claude/skills/verify/scripts` dùng bash + `set -euo pipefail`, thêm test kiểm mọi script ở đó. **Lưu ý:** lần này là lệnh gõ trực tiếp, không phải script, nên rule này một mình chưa chặn được; bước một chiều như migrate phải đi qua script. Phương án thêm: đưa bước kiểm vào trong `make db-migrate`, **chờ lần gặp thứ hai mới làm** |

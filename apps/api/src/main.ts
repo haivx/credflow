@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import { Logger } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module.js";
 import type { Env } from "./config/env.schema.js";
@@ -10,4 +11,4 @@ const apiPort = configService.get("API_PORT", { infer: true });
 const apiHost = configService.get("API_HOST", { infer: true });
 
 await app.listen(apiPort, apiHost);
-console.log(`api http://${apiHost}:${apiPort}`);
+new Logger("Main").log(`api http://${apiHost}:${apiPort}`);

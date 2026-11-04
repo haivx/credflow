@@ -157,3 +157,42 @@ describe("A9: eslint-disable phải có lý do, không thừa", () => {
     );
   });
 });
+
+describe("A14: log lỗi DB an toàn (lớp phụ, gờ chính là formatErrorForLog + test)", () => {
+  const SERVICE = "apps/api/src/documents/documents.service.ts";
+  const HELPER = "apps/api/src/common/pg-error.ts";
+  const SCHEMA = "apps/api/src/db/schema.ts";
+  const SPEC = "apps/api/src/common/pg-error.spec.ts";
+  const SCRIPT = "apps/api/scripts/seed.ts";
+
+  const STACK = `export const f = (e: Error) => e.stack;\n`;
+  const RAW = `import { sql } from "drizzle-orm";\nexport const x = sql.raw("1");\n`;
+  const CONSOLE = `console.log("x");\n`;
+
+  it("cấm .stack", async () => {
+    await expectReported(STACK, SERVICE, /^no-restricted-syntax: A14:/);
+  });
+
+  it("helper được đọc .stack nhưng vẫn không được dùng sql.raw", async () => {
+    await expectClean(STACK, HELPER);
+    await expectReported(RAW, HELPER, /^no-restricted-syntax: A14:/);
+  });
+
+  it("cấm sql.raw", async () => {
+    await expectReported(RAW, SERVICE, /^no-restricted-syntax: A14:/);
+  });
+
+  it("schema.ts được dùng sql.raw (DDL) nhưng vẫn không được đọc .stack", async () => {
+    await expectClean(RAW, SCHEMA);
+    await expectReported(STACK, SCHEMA, /^no-restricted-syntax: A14:/);
+  });
+
+  it("cấm console ở apps/api/src", async () => {
+    await expectReported(CONSOLE, SERVICE, /^no-console:/);
+  });
+
+  it("scripts/ và file spec được dùng console", async () => {
+    await expectClean(CONSOLE, SCRIPT);
+    await expectClean(CONSOLE, SPEC);
+  });
+});
