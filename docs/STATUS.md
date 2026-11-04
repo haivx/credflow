@@ -9,14 +9,14 @@
 
 - Plan 02–10 xong, đã merge (PR #1–#8, #10). P0 xong.
 - Plan 10 đăng nhập cơ bản: merge PR #10 (CI xanh) 2026-11-03.
-- Plan 11 upload stream + sha256 + dedupe: đã duyệt, ADR 0005. Claude code xong phần của mình (nhánh `feat/11-upload-stream`, chưa commit): contract, storage, parser busboy, service dedupe, controller, 14 integration test. `hashToTempFile` xong 2026-11-04 (Liam viết, Claude sửa 2 lỗi cuối theo yêu cầu). Mọi check xanh; chưa commit.
+- Plan 11 upload stream + sha256 + dedupe: đã duyệt, ADR 0005. Claude code xong phần của mình (nhánh `feat/11-upload-stream`, chưa commit): contract, storage, parser busboy, service dedupe, controller, 14 integration test. `hashToTempFile` xong 2026-11-04. Kiểm tra tay + đo RSS đạt. PR #11 đã mở, chờ CI và Liam duyệt merge.
 
 ## Đang học
 
 > Claude cập nhật sau **mỗi bước**, không chờ cuối phiên. Mở phiên mới gõ `/tiep` để làm tiếp.
 
 - **Mục 🎓:** Stream upload + sha256 (plan 11). Liam viết `hashToTempFile` (1, 3, 4, 5, 7 đúng; Claude sửa thiếu `async` và `rm` chưa `await`). Spec 8/8 xanh.
-- **Bước tiếp theo:** Liam đọc note `notes/p1-stream-upload.md`, tự tick 3 dòng upload + 3 dòng auth khi trả lời được "Tự kiểm". Kiểm tra tay (curl, RSS khi upload 10 MB) → commit, PR plan 11.
+- **Bước tiếp theo:** CI PR #11 xanh → Liam duyệt merge. Liam đọc `notes/p1-stream-upload.md`, tự tick 3 dòng upload + 3 dòng auth; 4 dòng P0 còn chưa tick (vòng đời request, ràng buộc DB, Zod pipe, exception filter). Task kế: BullMQ (queue, worker, dual-write + sweep, job idempotent).
 - **Câu hỏi còn treo:** Liam "tạm hiểu" vì sao cần `@Inject(DB)`. Tuỳ chọn: log `/ready` in thêm `error.cause`. Có bật branch protection (bắt CI xanh mới merge) không.
 
 ## Tiếp theo
