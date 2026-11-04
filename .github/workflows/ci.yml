@@ -17,6 +17,20 @@ permissions:
   contents: read
 
 jobs:
+  # Guardrail A8: cảnh báo PR chạm vùng kiến trúc. Chạm vùng không làm job fail.
+  architecture-zones:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - run: bash tools/lint/architecture-zones.sh "$BASE_SHA" "$HEAD_SHA"
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
   check:
     runs-on: ubuntu-latest
     timeout-minutes: 15

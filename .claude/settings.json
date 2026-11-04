@@ -1,0 +1,45 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(gh pr merge)",
+      "Bash(gh pr merge *)",
+      "Bash(gh api *pulls/*/merge*)",
+      "Bash(git push * main)",
+      "Bash(git push * main *)",
+      "Bash(git push *:main*)",
+      "Bash(git push * master)",
+      "Bash(git push * master *)",
+      "Bash(git push *:master*)",
+      "Bash(git push --force*)",
+      "Bash(git push * --force*)",
+      "Bash(git push -f*)",
+      "Bash(git push * -f*)",
+      "Bash(git push * +*)",
+      "Bash(git push --delete*)",
+      "Bash(git push * --delete*)",
+      "Bash(git push -d*)",
+      "Bash(git push * -d*)",
+      "Bash(git push * :*)",
+      "Bash(gh api *rulesets*)",
+      "Bash(gh api *branches/*/protection*)"
+    ],
+    "ask": [
+      "Edit(/packages/contracts/src/**)",
+      "Edit(/config/rules/**)",
+      "Edit(/apps/api/src/prompts/**)",
+      "Edit(/apps/api/src/db/schema.ts)",
+      "Edit(/apps/api/drizzle/**)",
+      "Edit(/eslint.config.mjs)",
+      "Edit(/tools/lint/**)",
+      "Edit(/.github/**)",
+      "Edit(/Makefile)",
+      "Edit(/**/vitest*.config.ts)",
+      "Edit(/**/package.json)",
+      "Edit(/CLAUDE.md)",
+      "Edit(/docs/agent/**)",
+      "Edit(/.claude/settings.json)",
+      "Edit(/.claude/skills/verify/**)",
+      "Edit(/.claude/hooks/**)"
+    ]
+  }
+}
