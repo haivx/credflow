@@ -87,3 +87,5 @@ Làm việc với Claude Code: mở repo, chạy `/next` để xem task tiếp t
 ## License
 
 MIT
+
+<!-- PR thử plan 12f, kịch bản 9. -->
