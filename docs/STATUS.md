@@ -15,8 +15,9 @@
 
 > Claude cập nhật sau **mỗi bước**, không chờ cuối phiên. Mở phiên mới gõ `/tiep` để làm tiếp.
 
-- **Mục 🎓:** Stream upload + sha256 (plan 11). Liam viết `hashToTempFile` (1, 3, 4, 5, 7 đúng; Claude sửa thiếu `async` và `rm` chưa `await`). Spec 8/8 xanh.
-- **Bước tiếp theo:** Liam đọc `notes/p1-stream-upload.md`, tự tick 3 dòng upload + 3 dòng auth; 4 dòng P0 còn chưa tick. Viết plan 12 BullMQ (nhánh `feat/12-bullmq`): queue, worker, dual-write + sweep, job idempotent.
+- **Mục 🎓:** ESLint selector (AST) cho guardrail A3 (plan 12a, nhánh `chore/12a-guardrail-lint`, chưa commit).
+- **Đã xong:** plugin eslint-comments, block A9/A5/A3 trong `eslint.config.mjs`, `tools/lint/guardrails.test.mjs` (18/18 xanh), `purity.test.ts` (3 xanh + 3 todo, đã thấy đỏ), `make lint` chạy thêm test lint, GUARDRAILS A3/A5/A9 ✅. Kịch bản 1–5 đã đỏ đúng message.
+- **Bước tiếp theo:** PR plan 12a chờ CI + Liam merge (Liam đã thử tay `console` trong engine → lint đỏ đúng). Sau đó plan 12 BullMQ theo mẫu mới.
 - **Câu hỏi còn treo:** Liam "tạm hiểu" vì sao cần `@Inject(DB)`. Tuỳ chọn: log `/ready` in thêm `error.cause`. Có bật branch protection (bắt CI xanh mới merge) không.
 
 ## Tiếp theo

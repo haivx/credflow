@@ -85,7 +85,7 @@ make db-seed     # seed 10 staff + 3 user đăng nhập giả lập (idempotent)
 make test       # vitest mọi package (unit test, không cần docker)
 make test-int   # integration test apps/api: bật db-test (cổng 5433, tmpfs) + Redis, chạy migration, supertest
 make typecheck  # tsc mọi package
-make lint       # eslint (có type-check cho apps/api, packages) + prettier --check
+make lint       # eslint (có type-check cho apps/api, packages; guardrail A3/A5/A9) + prettier --check + test lint (tools/lint/)
 make format     # prettier --write: sửa định dạng khi make lint báo lỗi prettier
 make eval       # chạy golden set → eval/report.md (P2)
 make synth      # sinh dữ liệu giả lập → data/synth/ (P2), SEED= tuỳ chọn

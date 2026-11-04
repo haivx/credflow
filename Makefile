@@ -63,6 +63,7 @@ typecheck:
 lint:
 	pnpm exec eslint .
 	pnpm exec prettier --check .
+	node --test tools/lint/*.test.mjs
 
 # Sửa định dạng mọi file theo .prettierrc (make lint chỉ kiểm, không sửa).
 format:
