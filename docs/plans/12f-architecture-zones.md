@@ -17,6 +17,9 @@ Phase: P1 · Trạng thái: Đã duyệt · Ngày: 2026-11-04
 | 3 | Bật delete-branch-on-merge (đã bật) |
 | 4 | Học nâng cao: token riêng cho agent |
 | 5 | Giữ `--no-renames` (xem mục Lớp 3) |
+| 6 | Required check gồm `check` và `architecture-zones` |
+| 7 | Vùng thêm `**/tsconfig*.json` (tắt strict là tắt một lớp guardrail) và đúng 4 file test guardrail: `db-constraints.int-spec.ts`, `error-log.int-spec.ts`, `route.invariants.test.ts`, `purity.test.ts` |
+| 8 | Deny thêm `Bash(gh api graphql*)`: merge qua mutation `mergePullRequest` |
 
 ## Mục tiêu
 
@@ -71,7 +74,10 @@ gh api -X PUT repos/haivx/credflow/rulesets/26453915 --input - <<'JSON'
     } },
     { "type": "required_status_checks", "parameters": {
         "strict_required_status_checks_policy": false,
-        "required_status_checks": [{ "context": "check", "integration_id": 15368 }]
+        "required_status_checks": [
+          { "context": "check", "integration_id": 15368 },
+          { "context": "architecture-zones", "integration_id": 15368 }
+        ]
     } }
   ]
 }
@@ -82,7 +88,7 @@ gh ruleset check main   # phải liệt kê đủ 4 rule
 Bằng giao diện: Settings → Rules → Rulesets → `Protect main branch`:
 
 - Enforcement **Active**, Bypass list **trống**, Target **Default branch**.
-- Bật: Restrict deletions, Block force pushes, Require a pull request (Required approvals **0**), Require status checks to pass (thêm `check`, nguồn GitHub Actions).
+- Bật: Restrict deletions, Block force pushes, Require a pull request (Required approvals **0**), Require status checks to pass (thêm `check` và `architecture-zones`, nguồn GitHub Actions).
 
 **Hệ quả:**
 
@@ -98,7 +104,7 @@ Bằng giao diện: Settings → Rules → Rulesets → `Protect main branch`:
 
 | Mục đích | Rule |
 | --- | --- |
-| Merge | `Bash(gh pr merge)`, `Bash(gh pr merge *)`, `Bash(gh api *pulls/*/merge*)` |
+| Merge | `Bash(gh pr merge)`, `Bash(gh pr merge *)`, `Bash(gh api *pulls/*/merge*)`, `Bash(gh api graphql*)` |
 | Push `main`/`master` | `Bash(git push * main)`, `Bash(git push * main *)`, `Bash(git push *:main*)`, tương tự `master` |
 | Force | `Bash(git push --force*)`, `Bash(git push * --force*)`, `Bash(git push -f*)`, `Bash(git push * -f*)`, `Bash(git push * +*)` |
 | Xoá nhánh remote | `Bash(git push --delete*)`, `Bash(git push * --delete*)`, `Bash(git push -d*)`, `Bash(git push * -d*)`, `Bash(git push * :*)` |
@@ -141,7 +147,7 @@ docs/agent/**
   - `git diff --name-only --no-renames BASE...HEAD -- ':(glob)<pattern>'...`
   - `--no-renames`: không có pathspec thì git chỉ in tên mới của file đổi tên, làm mất đường dẫn trong vùng. Script có pathspec nên hiện không phụ thuộc vào cờ này (đã chạy thử, xem Verification plan); giữ cờ để không phụ thuộc vào pathspec.
   - Mỗi file một `::warning file=<path>::...`; bảng file + pattern vào `$GITHUB_STEP_SUMMARY`.
-- Không thuộc required check, ruleset chỉ yêu cầu `check`.
+- **Là required check** (Liam chốt): chạm vùng không làm job đỏ, nhưng script hỏng thì job đỏ và chặn merge. PR xoá job này khỏi `ci.yml` cũng bị chặn, vì check bắt buộc không bao giờ báo về.
 
 **`.github/pull_request_template.md`:** tóm tắt evidence report, mức rủi ro, vùng kiến trúc bị chạm, "đã nới check/lint/test nào không? vì sao?". PR tạo bằng `gh pr create --body-file` không tự lấy template, nên Claude phải điền đúng các mục này; ruleset không kiểm được.
 

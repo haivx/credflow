@@ -17,7 +17,7 @@
 
 - **Mục 🎓:** (không có 🎓 mới) 12f (A8) đang chờ merge; 12g (A2) đã duyệt, chưa code.
 - **Đã xong:** PR 12f mở trên nhánh `chore/12f-architecture-zones`. A8 🟡. Auto-delete nhánh đã bật. Kịch bản 6 có bằng chứng một phần (Liam thấy prompt khi Edit `tools/lint/`).
-- **Bước tiếp theo:** Liam merge PR 12f + bật ruleset → Claude chạy kịch bản còn lại của 12f (1–9), mở PR đổi A8 ✅ → tạo nhánh 12g từ `main`, code theo `docs/plans/12g-zod-boundaries.md`. Sau đó plan 12 BullMQ.
+- **Bước tiếp theo:** Liam merge PR #18 + bật ruleset (2 required check: `check`, `architecture-zones`) → Claude chạy kịch bản còn lại của 12f (1–9), mở PR đổi A8 ✅ → tạo nhánh 12g từ `main`, code theo `docs/plans/12g-zod-boundaries.md`. Sau đó plan 12 BullMQ.
 - **Câu hỏi còn treo:** Liam "tạm hiểu" vì sao cần `@Inject(DB)`. Có bật branch protection (bắt CI xanh mới merge) không.
 
 ## Tiếp theo

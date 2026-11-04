@@ -18,6 +18,11 @@ tools/lint/**
 Makefile
 **/vitest*.config.ts
 **/package.json
+**/tsconfig*.json
+apps/api/test/db-constraints.int-spec.ts
+apps/api/test/error-log.int-spec.ts
+packages/rules/src/route.invariants.test.ts
+packages/rules/src/purity.test.ts
 
 # Quy trình cho agent
 CLAUDE.md

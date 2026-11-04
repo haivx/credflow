@@ -49,6 +49,7 @@ describe("settings.json khớp architecture-zones.txt", () => {
       "Bash(gh pr merge)",
       "Bash(gh pr merge *)",
       "Bash(gh api *pulls/*/merge*)",
+      "Bash(gh api graphql*)",
       "Bash(git push * main)",
       "Bash(git push * master)",
       "Bash(git push --force*)",
