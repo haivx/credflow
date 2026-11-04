@@ -35,21 +35,28 @@ Khi Liam phải chỉnh lại một lỗi Claude mắc (hoặc Claude tự phát
 Comment khi review là dấu hiệu: người viết "đừng làm X" trên một thay đổi thì mặc định
 đó là một dòng mới cho Watchlist.
 
-## Active (đã cưỡng chế)
+## Danh sách luật
 
-| # | Rule | Vì sao | Cưỡng chế bằng |
-|---|---|---|---|
-| A1 | Không có dữ liệu cá nhân/y tế thật trong fixture, log, screenshot, prompt (`docs/data-policy.md`) | tuân thủ | review + `.gitignore` (`real-docs/`, `data/`, `.env`); `TODO: lint fixture (bắt buộc chữ SAMPLE)` |
-| A2 | Mọi input từ bên ngoài (request, output LLM, file config, golden set) phải parse bằng Zod trước khi dùng | ranh giới tin cậy | `ZodValidationPipe`, `RulesConfig` khi khởi động; `TODO: kiểm ngoài quy ước` |
-| A3 | `packages/rules` là hàm thuần: engine không import I/O, LLM, `apps/*`, không gọi `Date.now()` | kiến trúc (CLAUDE.md) | `TODO: no-restricted-imports / no-restricted-syntax cho packages/rules/src/engine.ts` |
-| A4 | LLM không bao giờ quyết định duyệt; chỉ `auto_approve` khi mọi rule `block` qua | nguyên tắc sản phẩm | contract `RoutingDecision` (không có nhánh reject); `TODO: test bất biến routing + eval falseApproveRate` |
-| A5 | Ngày lịch là chuỗi `YYYY-MM-DD`, không dùng `Date` | lệch múi giờ | contract `IsoDate`; `TODO: lint` |
+Trạng thái: ✅ đã có gờ · 🟡 có một phần · ⏳ chờ code tồn tại (ghi plan sẽ làm)
 
-> A4 cũ của mẫu (TanStack Query) bỏ: `apps/web` chưa dùng và chưa có màn nào. Thay bằng các rule
-> "không được vi phạm" của CLAUDE.md.
->
-> Lần setup đầu, agent kiểm xem rule nào thật sự đang được cưỡng chế, rồi thay mỗi
-> `TODO` bằng cơ chế thật hoặc đề xuất thêm cơ chế.
+| # | Luật | Gờ (cơ chế cứng) | Trạng thái | Làm ở |
+|---|---|---|---|---|
+| A1 | Không có dữ liệu cá nhân/y tế thật trong fixture, log, screenshot, prompt | `.gitignore` (`real-docs/`, `data/`, `.env`); script `check-fixtures` trong CI | 🟡 | script: P2 (khi `tools/synth` sinh dữ liệu) |
+| A2 | Mọi input từ ngoài parse bằng Zod trước khi dùng | `ZodValidationPipe`, `RulesConfig` khi khởi động; lint cấm `JSON.parse` ngoài helper `parseWith(schema, text)` | 🟡 | lint: Bước 6 |
+| A3 | Rule engine là hàm thuần: không I/O, không framework, không đồng hồ, không `Math.random`, không `console` | `eslint.config.mjs` block "A3" (`no-restricted-imports`/`-globals`, `no-restricted-syntax` = `A5_NO_DATE` + `A3_PURE`; trừ `config.ts`, test); `packages/rules/src/purity.test.ts` (`route()`; `evaluateRules` là `it.todo` tới khi CPR rule có code); `tools/lint/guardrails.test.mjs` | ✅ | plan 12a |
+| A4 | Chỉ `auto_approve` khi mọi rule `block` qua | test bất biến `route()`; eval `falseApproveRate` | ⏳ | test: Bước 3 · eval: P2 |
+| A5 | Ngày lịch là `YYYY-MM-DD`, không dùng `Date` (chỉ `packages/*`; `apps/*` cần timestamp thật) | contract `IsoDate`; `eslint.config.mjs` block "A5" (`A5_NO_DATE`: `new Date`, `Date()`, `Date.now`; trừ test, `config.ts`) | ✅ | plan 12a |
+| A6 | Document đã qua `processing` phải có `versions` | DB CHECK `documents_versions_after_processing` | ⏳ | Bước 4 |
+| A7 | Document `failed` phải có `error` | DB CHECK `documents_failed_has_error` | ⏳ | Bước 4 |
+| A8 | Không tự đổi vùng kiến trúc (contracts, schema DB, `config/rules`, prompt, lint config, `docs/agent`) | branch protection (CI xanh + Liam duyệt); CI cảnh báo khi PR chạm các đường dẫn này | ⏳ | Bước 5 |
+| A9 | `eslint-disable` phải có lý do, không có disable thừa | `eslint.config.mjs` block "A9" (`comments.recommended` + `require-description`, `linterOptions.reportUnusedDisableDirectives: "error"`) | ✅ | plan 12a |
+| A10 | LLM không bao giờ quyết định duyệt | module LLM chỉ trả `Extraction`; lint cấm module LLM import nơi ghi status / `route()` | ⏳ | plan 12 |
+| A11 | Không tự từ chối; trạng thái chỉ đổi qua một nơi | hàm ghi status duy nhất + bảng transition (`rejected` bắt buộc `reviewerId`); lint cấm `.set({ status })` ngoài file đó | ⏳ | plan 12 |
+| A12 | Prompt nằm trong file có version | một hàm `loadPrompt(name, version)`; test đối chiếu prompt dùng trong code với file | ⏳ | plan có LLM đầu tiên (P1) |
+
+Luật **giữ ở lớp mềm** (cần phán đoán, máy không bắt được): chế độ dạy, giải thích trước khi code,
+chọn task tiếp theo, đánh giá trade-off. Những luật này ở lại CLAUDE.md.
+
 
 ## Watchlist (đã thấy, chưa cưỡng chế)
 

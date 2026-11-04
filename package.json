@@ -10,6 +10,7 @@
     "typecheck": "pnpm -r --if-present typecheck"
   },
   "devDependencies": {
+    "@eslint-community/eslint-plugin-eslint-comments": "^4.8.1",
     "@types/node": "^22.13.0",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.0",
