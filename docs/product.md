@@ -107,10 +107,11 @@ Hàm thuần `evaluateRules({extraction, staff, config, asOf}) → RuleResult[]`
 | `NAME_MISMATCH` | block | Tên trên giấy không khớp `legalName` hay `aliases` sau khi chuẩn hoá |
 | `ISSUER_NOT_ACCEPTED` | block | Tổ chức cấp không có trong `acceptedIssuers` của khách hàng |
 | `RESULT_NOT_PASSING` | block | TB không âm tính, background check không clear |
+| `NO_RULES_EVALUATED` | block | Engine không chấm rule nào (lỗi hệ thống, không phải lỗi giấy). Chỉ `route()` trả mã này |
 
 **So khớp tên:** chuẩn hoá (bỏ dấu, viết thường, đảo "LAST, FIRST", bỏ tên đệm viết tắt) rồi so với `legalName` và `aliases`. Không fuzzy-match lỏng: không khớp chắc thì `NAME_MISMATCH`, để người duyệt quyết.
 
-**Cấu hình:** `config/rules/<client>.yaml`, validate bằng `RulesConfig`. Giá trị trong repo là minh hoạ.
+**Cấu hình:** `config/rules/<client>.yaml`, validate bằng `RulesConfig`. Giá trị trong repo là minh hoạ. Rule nào áp cho loại giấy nào và severity của nó cố định trong code (`packages/rules/src/registry.ts`), khách hàng không đổi được. Lúc khởi động, `assertRulesReady` kiểm mọi loại giấy mà `roles` yêu cầu đều có ít nhất một rule `block` và mã không trùng; sai thì app không chạy.
 
 ## 6. Màn hình và luồng
 

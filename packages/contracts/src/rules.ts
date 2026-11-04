@@ -15,6 +15,8 @@ export const RuleCode = z
     "NAME_MISMATCH",
     "ISSUER_NOT_ACCEPTED",
     "RESULT_NOT_PASSING",
+    // Engine không chấm rule nào: lỗi hệ thống, không phải lỗi giấy. route([]) trả mã này.
+    "NO_RULES_EVALUATED",
   ])
   .meta({ id: "RuleCode" });
 export type RuleCode = z.infer<typeof RuleCode>;
