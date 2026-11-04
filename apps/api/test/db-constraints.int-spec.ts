@@ -1,9 +1,12 @@
 import { eq, sql } from "drizzle-orm";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { documents, reviewActions, staff, users } from "../src/db/schema.js";
+import { contractFixture } from "./contract-fixtures.js";
+import { DocumentStatus } from "@credflow/contracts";
 import {
   createTestDb,
   makeDocument,
+  makeProcessedDocument,
   makeStaff,
   makeUser,
   truncateAll,
@@ -188,6 +191,227 @@ describe("ràng buộc DB (integration)", () => {
       await expect(insert).rejects.toMatchObject({
         cause: { code: "23505", constraint: "users_email_unique" },
       });
+    });
+  });
+});
+
+// Guardrail A6, A7, C1, C2, C4, C5 (docs/agent/GUARDRAILS.md, plan 12d).
+// Mỗi ca vi phạm chỉ bỏ đúng một trường của một dòng hợp lệ, để chỉ một CHECK nổ.
+describe("CHECK trạng thái documents (integration)", () => {
+  const { db, close } = createTestDb();
+  const owner = makeStaff();
+
+  beforeEach(async () => {
+    await truncateAll(db);
+    await db.insert(staff).values(owner);
+  });
+
+  afterAll(async () => {
+    await close();
+  });
+
+  const check = (constraint: string) => ({
+    cause: { code: "23514", constraint },
+  });
+
+  /** Insert một dòng hợp lệ ở `from`, rồi UPDATE sang `patch`. */
+  async function updateFrom(
+    from: DocumentStatus,
+    patch: Partial<typeof documents.$inferInsert>,
+  ) {
+    const row = makeProcessedDocument(owner.id, from);
+    await db.insert(documents).values(row);
+    return db.update(documents).set(patch).where(eq(documents.id, row.id));
+  }
+
+  // Đối chứng: không có ca này thì các ca 23514 có thể đỏ vì helper sinh dữ liệu sai.
+  it.each(DocumentStatus.options)(
+    "dòng hợp lệ ở status %s → insert được",
+    async (status) => {
+      await db
+        .insert(documents)
+        .values(makeProcessedDocument(owner.id, status));
+      const rows = await db.select().from(documents);
+      expect(rows[0]?.status).toBe(status);
+    },
+  );
+
+  describe("A6 documents_versions_after_processing", () => {
+    const name = "documents_versions_after_processing";
+
+    it("INSERT failed không có versions → 23514", async () => {
+      const row = makeProcessedDocument(owner.id, "failed", { versions: null });
+      await expect(db.insert(documents).values(row)).rejects.toMatchObject(
+        check(name),
+      );
+    });
+
+    it("UPDATE uploaded → failed (có error, thiếu versions) → 23514", async () => {
+      await expect(
+        updateFrom("uploaded", {
+          status: "failed",
+          error: { step: "preprocess", message: "SAMPLE" },
+        }),
+      ).rejects.toMatchObject(check(name));
+    });
+
+    it("processing chưa có versions vẫn được (đối chứng)", async () => {
+      const row = makeProcessedDocument(owner.id, "processing", {
+        versions: null,
+      });
+      await db.insert(documents).values(row);
+    });
+  });
+
+  describe("A7 documents_failed_has_error", () => {
+    const name = "documents_failed_has_error";
+
+    it("INSERT failed không có error → 23514", async () => {
+      const row = makeProcessedDocument(owner.id, "failed", { error: null });
+      await expect(db.insert(documents).values(row)).rejects.toMatchObject(
+        check(name),
+      );
+    });
+
+    it("UPDATE processing → failed không có error → 23514", async () => {
+      await expect(
+        updateFrom("processing", { status: "failed" }),
+      ).rejects.toMatchObject(check(name));
+    });
+  });
+
+  describe("C1 documents_auto_approved_routing", () => {
+    const name = "documents_auto_approved_routing";
+
+    it("INSERT auto_approved không có routing → 23514", async () => {
+      const row = makeProcessedDocument(owner.id, "auto_approved", {
+        routing: null,
+      });
+      await expect(db.insert(documents).values(row)).rejects.toMatchObject(
+        check(name),
+      );
+    });
+
+    it("INSERT auto_approved với routing needs_review → 23514", async () => {
+      const row = makeProcessedDocument(owner.id, "auto_approved", {
+        routing: contractFixture("RoutingDecision", "chuyển người duyệt"),
+      });
+      await expect(db.insert(documents).values(row)).rejects.toMatchObject(
+        check(name),
+      );
+    });
+
+    it("UPDATE needs_review → auto_approved (rule đã qua, routing vẫn needs_review) → 23514", async () => {
+      await expect(
+        updateFrom("needs_review", {
+          status: "auto_approved",
+          ruleResults: [contractFixture("RuleResult", "rule block qua")],
+        }),
+      ).rejects.toMatchObject(check(name));
+    });
+  });
+
+  describe("C2 documents_auto_approved_no_block_fail", () => {
+    const name = "documents_auto_approved_no_block_fail";
+
+    it("INSERT auto_approved có rule block không qua → 23514", async () => {
+      const row = makeProcessedDocument(owner.id, "auto_approved", {
+        ruleResults: [
+          contractFixture("RuleResult", "rule block qua"),
+          contractFixture("RuleResult", "rule block không qua"),
+        ],
+      });
+      await expect(db.insert(documents).values(row)).rejects.toMatchObject(
+        check(name),
+      );
+    });
+
+    it("INSERT auto_approved không chấm rule nào → 23514", async () => {
+      const row = makeProcessedDocument(owner.id, "auto_approved", {
+        ruleResults: [],
+      });
+      await expect(db.insert(documents).values(row)).rejects.toMatchObject(
+        check(name),
+      );
+    });
+
+    it("UPDATE needs_review → auto_approved (routing auto, rule block vẫn trượt) → 23514", async () => {
+      await expect(
+        updateFrom("needs_review", {
+          status: "auto_approved",
+          routing: contractFixture("RoutingDecision", "tự duyệt"),
+        }),
+      ).rejects.toMatchObject(check(name));
+    });
+
+    it("rule info không qua vẫn được tự duyệt (đối chứng)", async () => {
+      const row = makeProcessedDocument(owner.id, "auto_approved", {
+        ruleResults: [
+          contractFixture("RuleResult", "rule block qua"),
+          contractFixture("RuleResult", "rule info không qua"),
+        ],
+      });
+      await db.insert(documents).values(row);
+    });
+  });
+
+  describe("C4 documents_extracted_has_result", () => {
+    const name = "documents_extracted_has_result";
+
+    it("INSERT extracted không có classification → 23514", async () => {
+      const row = makeProcessedDocument(owner.id, "extracted", {
+        classification: null,
+      });
+      await expect(db.insert(documents).values(row)).rejects.toMatchObject(
+        check(name),
+      );
+    });
+
+    it("INSERT auto_approved không có extraction → 23514", async () => {
+      const row = makeProcessedDocument(owner.id, "auto_approved", {
+        extraction: null,
+      });
+      await expect(db.insert(documents).values(row)).rejects.toMatchObject(
+        check(name),
+      );
+    });
+
+    it("UPDATE processing → extracted không ghi kết quả → 23514", async () => {
+      await expect(
+        updateFrom("processing", { status: "extracted" }),
+      ).rejects.toMatchObject(check(name));
+    });
+  });
+
+  describe("C5 documents_uploaded_is_clean", () => {
+    const name = "documents_uploaded_is_clean";
+
+    it("INSERT uploaded mang versions → 23514", async () => {
+      const row = makeProcessedDocument(owner.id, "uploaded", {
+        versions: contractFixture(
+          "DocumentRecord",
+          "CPR chuyển người duyệt vì tổ chức cấp",
+        ).versions,
+      });
+      await expect(db.insert(documents).values(row)).rejects.toMatchObject(
+        check(name),
+      );
+    });
+
+    it("INSERT uploaded mang ruleResults → 23514", async () => {
+      const row = makeProcessedDocument(owner.id, "uploaded", {
+        ruleResults: [contractFixture("RuleResult", "rule block qua")],
+      });
+      await expect(db.insert(documents).values(row)).rejects.toMatchObject(
+        check(name),
+      );
+    });
+
+    // Xử lý lại đi sang processing, không về uploaded (Liam chốt, plan 12d).
+    it("UPDATE needs_review → uploaded (giữ kết quả cũ) → 23514", async () => {
+      await expect(
+        updateFrom("needs_review", { status: "uploaded" }),
+      ).rejects.toMatchObject(check(name));
     });
   });
 });

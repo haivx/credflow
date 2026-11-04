@@ -130,6 +130,44 @@ describe("AllExceptionsFilter", () => {
     });
   });
 
+  describe("log lỗi pg (F1, plan 12d)", () => {
+    // detail của pg chứa giá trị của dòng (có thể là dữ liệu cá nhân): tuyệt đối không log.
+    const SECRET = "Jane Q. Doe";
+    const checkError = () => {
+      const pgError = Object.assign(
+        new Error("new row violates check constraint"),
+        {
+          code: "23514",
+          constraint: "documents_failed_has_error",
+          table: "documents",
+          detail: `Failing row contains (01J..., ${SECRET}, failed, null).`,
+        },
+      );
+      return new Error("Failed query: update documents ...", {
+        cause: pgError,
+      });
+    };
+    const logged = () => JSON.stringify(logError.mock.calls);
+
+    it("log có mã pg, tên constraint và bảng", () => {
+      run(checkError());
+      expect(logged()).toContain("23514");
+      expect(logged()).toContain("documents_failed_has_error");
+      expect(logged()).toContain("documents");
+    });
+
+    it("không log detail", () => {
+      run(checkError());
+      expect(logged()).not.toContain(SECRET);
+      expect(logged()).not.toContain("Failing row contains");
+    });
+
+    it("body không lộ tên constraint", () => {
+      const { body } = run(checkError());
+      expect(JSON.stringify(body)).not.toContain("documents_failed_has_error");
+    });
+  });
+
   describe("lỗi khác", () => {
     it("ZodError thô (output không khớp contract) → 500 INTERNAL, có log", () => {
       const zodError = StaffProfile.safeParse({}).error;
