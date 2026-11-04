@@ -44,7 +44,7 @@ Trạng thái: ✅ đã có gờ · 🟡 có một phần · ⏳ chờ code tồ
 | A1 | Không có dữ liệu cá nhân/y tế thật trong fixture, log, screenshot, prompt | `.gitignore` (`real-docs/`, `data/`, `.env`); script `check-fixtures` trong CI | 🟡 | script: P2 (khi `tools/synth` sinh dữ liệu) |
 | A2 | Mọi input từ ngoài parse bằng Zod trước khi dùng | `ZodValidationPipe`, `RulesConfig` khi khởi động; lint cấm `JSON.parse` ngoài helper `parseWith(schema, text)` | 🟡 | lint: Bước 6 |
 | A3 | Rule engine là hàm thuần: không I/O, không framework, không đồng hồ, không `Math.random`, không `console` | `eslint.config.mjs` block "A3" (`no-restricted-imports`/`-globals`, `no-restricted-syntax` = `A5_NO_DATE` + `A3_PURE`; trừ `config.ts`, test); `packages/rules/src/purity.test.ts` (`route()`; `evaluateRules` là `it.todo` tới khi CPR rule có code); `tools/lint/guardrails.test.mjs` | ✅ | plan 12a |
-| A4 | Chỉ `auto_approve` khi mọi rule `block` qua | test bất biến `route()`; eval `falseApproveRate` | ⏳ | test: Bước 3 · eval: P2 |
+| A4 | Chỉ `auto_approve` khi mọi rule `block` qua | `packages/rules/src/route.invariants.test.ts` (3 bất biến trên mọi danh sách dài 0–4); eval `falseApproveRate` chờ P2 | 🟡 | test: plan 12b · `route([])`: plan 12c · eval: P2 |
 | A5 | Ngày lịch là `YYYY-MM-DD`, không dùng `Date` (chỉ `packages/*`; `apps/*` cần timestamp thật) | contract `IsoDate`; `eslint.config.mjs` block "A5" (`A5_NO_DATE`: `new Date`, `Date()`, `Date.now`; trừ test, `config.ts`) | ✅ | plan 12a |
 | A6 | Document đã qua `processing` phải có `versions` | DB CHECK `documents_versions_after_processing` | ⏳ | Bước 4 |
 | A7 | Document `failed` phải có `error` | DB CHECK `documents_failed_has_error` | ⏳ | Bước 4 |
@@ -62,4 +62,4 @@ chọn task tiếp theo, đánh giá trade-off. Những luật này ở lại CL
 
 | Ngày | Sai ở đâu | Số lần gặp | Rule cứng đề xuất |
 |---|---|---|---|
-| | | | |
+| 2026-11-04 | Mã rule trùng trong một lần chấm: `route()` giữ nguyên, `reasons` lặp code. Đây là lỗi config, không lọc ở `route()` | 1 | chặn ở `RulesConfig` khi nạp (mã rule duy nhất), app không khởi động: plan 12c |
