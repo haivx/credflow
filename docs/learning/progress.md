@@ -36,11 +36,11 @@
 - [ ] **Guard + metadata, 401/403** · code: `apps/api/src/auth/{auth.guard,roles.guard,decorators,auth.module}.ts`, `apps/api/test/auth.int-spec.ts` · note: `notes/p1-auth-session.md`
   - Tự kiểm: Quên gắn decorator lên route mới thì chuyện gì xảy ra? Vì sao `RolesGuard` phải chạy sau `AuthGuard`?
 
-- [ ] **Stream khi upload và tính sha256** · code: — · note: —
+- [ ] **Stream khi upload và tính sha256** · code: `apps/api/src/documents/hash-to-temp-file.ts` (Liam viết), `apps/api/src/documents/upload-parser.ts` · note: `notes/p1-stream-upload.md`
   - Tự kiểm: Upload file 50 MB mà đọc cả file vào `Buffer` thì có vấn đề gì? Tính hash trong lúc stream thế nào?
-- [ ] **Interface storage (local / S3)** · code: — · note: —
+- [ ] **Interface storage (local / S3)** · code: `apps/api/src/storage/{storage,local-storage,storage.module}.ts` · note: `notes/p1-stream-upload.md`
   - Tự kiểm: Muốn đổi từ local sang S3 thì phải sửa những file nào?
-- [ ] **Dedupe upload bằng unique index** · code: — · note: —
+- [ ] **Dedupe upload bằng unique index** · code: `apps/api/src/documents/documents.service.ts`, `apps/api/test/documents.int-spec.ts` · note: `notes/p1-stream-upload.md`
   - Tự kiểm: Hai request upload cùng một file đến cùng lúc thì chuyện gì xảy ra, và code xử lý lỗi unique thế nào?
 - [ ] **BullMQ: queue, worker process riêng, concurrency** · code: — · note: —
   - Tự kiểm: Vì sao worker chạy process riêng thay vì chạy chung với HTTP? `concurrency: 5` nghĩa là gì?
