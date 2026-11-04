@@ -22,12 +22,30 @@ Liam vừa build vừa học, mục tiêu **middle–intermediate Node.js**. M�
 ## Quy trình làm việc
 
 1. **Đầu phiên:** đọc `docs/STATUS.md` (đang ở đâu, kể cả mục "Đang học") và phase hiện tại trong `docs/roadmap.md`. Liam hỏi "đang ở đâu", "làm tiếp" hoặc gõ `/tiep` → tóm tắt từ STATUS + git rồi đề xuất bước tiếp.
-2. **Task mới:** vào plan mode, viết plan vào `docs/plans/NN-<slug>.md` (mục tiêu, file sẽ sửa, contract bị ảnh hưởng, cách test, tiêu chí xong). Chờ Liam duyệt rồi mới code.
+2. **Task mới:** vào plan mode, viết plan vào `docs/plans/NN-<slug>.md` (mục tiêu, file sẽ sửa, contract bị ảnh hưởng, tiêu chí xong), cuối plan là **verification plan** (`docs/agent/templates/VERIFICATION_PLAN.md`). Chờ Liam duyệt cả hai rồi mới code.
 3. **Code:** PR nhỏ, review được tại ranh giới (contract, rule engine, prompt, routing). Test đi cùng code.
-4. **Eval gate (từ P2):** mọi thay đổi về prompt, model, rule hoặc ngưỡng phải chạy `make eval` và dán bảng metric (so với lần trước) vào PR.
-5. **Cuối phiên:** cập nhật `docs/STATUS.md`. Quyết định kỹ thuật mới hoặc lệch `docs/product.md` → thêm ADR `docs/decisions/NNNN-<slug>.md`. Đổi spec sản phẩm: sửa `product.md` trước.
+4. **Kiểm chứng:** thay đổi hành vi → chạy skill `verify`, viết evidence report (`docs/agent/templates/EVIDENCE_REPORT.md`), dán mục Tóm tắt vào tin nhắn cuối và PR. Chi tiết ở mục "Kiểm chứng" bên dưới.
+5. **Eval gate (từ P2):** mọi thay đổi về prompt, model, rule hoặc ngưỡng phải chạy `make eval` và dán bảng metric (so với lần trước) vào PR.
+6. **Cuối phiên:** cập nhật `docs/STATUS.md`. Quyết định kỹ thuật mới hoặc lệch `docs/product.md` → thêm ADR `docs/decisions/NNNN-<slug>.md`. Đổi spec sản phẩm: sửa `product.md` trước.
 
 Lệnh tắt: `/tiep` (mở lại phiên, làm tiếp chỗ đang dở), `/next` (đề xuất task tiếp theo), `/wrap` (cập nhật STATUS, progress, ADR cuối phiên).
+
+## Kiểm chứng (bắt buộc)
+
+Dự án kiểm chứng dựa trên bằng chứng: Liam duyệt plan **và** bằng chứng, Claude chứng minh thay đổi chạy được bằng cách chạy hệ thống thật. Rule đầy đủ: `docs/agent/VERIFICATION.md`; cách chạy: skill `verify` (`.claude/skills/verify/`).
+
+Rule kiểm chứng:
+
+- Không nói "xong / đã sửa / chạy được" khi chưa có bằng chứng từ phiên này.
+- Bug: tái hiện (đỏ) → sửa → cùng bước tái hiện (xanh). Không sửa theo phỏng đoán.
+- Mọi thay đổi hành vi có ít nhất một check ở L2 (server/API thật: `make test-int` hoặc gọi API đang chạy) trở lên.
+- Test mới phải được cho thấy đỏ trên hành vi cũ thì mới được tính.
+- Output LLM: kiểm bằng schema + bất biến + golden fixture (`make eval`), không bao giờ so nguyên văn.
+- Không bao giờ nới một check, script, lint rule hay test để cho qua. Check sai thì nói ra và sửa nó ở một bước riêng, có ghi nhãn.
+
+Liam phải chỉnh lại một lỗi Claude mắc (code sai, làm sai quy trình, review ghi "đừng làm X") → Claude ghi vào bảng **Watchlist** trong `docs/agent/GUARDRAILS.md`. Cùng kiểu lỗi gặp lần thứ hai → Claude đề xuất một rule cứng (lint, type, test, CI check) để máy tự chặn, không chỉ thêm lời nhắc.
+
+Bậc tin cậy hiện tại: **2** (Liam duyệt plan + verification plan; Claude nộp bằng chứng).
 
 ## Nguyên tắc không được vi phạm
 
@@ -45,12 +63,13 @@ Lệnh tắt: `/tiep` (mở lại phiên, làm tiếp chỗ đang dở), `/next`
 ```
 apps/web/            Next.js 14: portal upload, hàng chờ duyệt, màn duyệt, dashboard
 apps/api/            NestJS 12 (ESM, build bằng SWC): HTTP (main.ts) + BullMQ worker (worker.ts), gọi LLM (phân loại, trích xuất)
-packages/contracts/  Zod schema dùng chung, nguồn sự thật cho kiểu dữ liệu (BẢN NHÁP đến khi chốt ở P0)
+packages/contracts/  Zod schema dùng chung, nguồn sự thật cho kiểu dữ liệu (đã chốt ở P0; đổi phải qua Liam)
 packages/rules/      Rule engine thuần + đọc config
 config/rules/        Cấu hình rule theo khách hàng (YAML, validate bằng RulesConfig)
 eval/                Harness eval, hard-cases/ (ca khó làm tay, giả lập), report.md
 tools/synth/         Bộ sinh giấy tờ giả lập + đáp án
-docs/                product.md, flows.md, doc-types.md, data-policy.md, roadmap.md, STATUS.md, plans/, decisions/, research/, learning/
+docs/                product.md, flows.md, doc-types.md, data-policy.md, roadmap.md, STATUS.md, plans/, decisions/, research/, learning/, agent/ (rule kiểm chứng, guardrails, mẫu)
+.claude/             commands/ (/tiep, /next, /wrap), skills/verify/ (quy trình kiểm chứng, FEATURE_MAP.md)
 ```
 
 ## Lệnh
@@ -62,7 +81,7 @@ make dev-api    # chỉ API (nest start --watch, SWC); make dev-worker, make dev
 make build-packages  # tsc packages/* → dist/ (test, dev, eval, synth tự chạy trước, ADR 0003)
 make db-generate # drizzle-kit: sinh migration từ apps/api/src/db/schema.ts → apps/api/drizzle/
 make db-migrate  # chạy migration chưa áp vào DATABASE_URL
-make db-seed     # seed staff giả lập (idempotent)
+make db-seed     # seed 10 staff + 3 user đăng nhập giả lập (idempotent)
 make test       # vitest mọi package (unit test, không cần docker)
 make test-int   # integration test apps/api: bật db-test (cổng 5433, tmpfs) + Redis, chạy migration, supertest
 make typecheck  # tsc mọi package
