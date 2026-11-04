@@ -108,9 +108,12 @@ describe("route() bất biến (A4)", () => {
     }
   });
 
-  // Hành vi hiện tại: "mọi rule block đều qua" đúng một cách rỗng → auto_approve.
-  // Liam chốt 2026-11-04: phải là needs_review + NO_RULES_EVALUATED (plan 12c sẽ đổi ca này trước).
-  it("ca biên: danh sách rỗng (hành vi hiện tại, sẽ đổi ở plan 12c)", () => {
-    expect(route([])).toEqual({ decision: "auto_approve", reasons: [] });
+  // Không có rule nào được chấm thì "mọi rule block đều qua" chỉ đúng một cách rỗng.
+  // Không tự duyệt trên đó (Liam chốt 2026-11-04, plan 12c).
+  it("ca biên: danh sách rỗng → needs_review + NO_RULES_EVALUATED", () => {
+    expect(route([])).toEqual({
+      decision: "needs_review",
+      reasons: ["NO_RULES_EVALUATED"],
+    });
   });
 });

@@ -15,9 +15,9 @@
 
 > Claude cập nhật sau **mỗi bước**, không chờ cuối phiên. Mở phiên mới gõ `/tiep` để làm tiếp.
 
-- **Mục 🎓:** (không có 🎓 mới) Test bất biến bằng cách sinh mọi tổ hợp (plan 12b, nhánh `test/12b-route-invariants`, xếp chồng trên 12a).
-- **Đã xong:** `route.invariants.test.ts` 5 ca xanh; 4 cách sửa sai (a, b, b', c) đều đỏ đúng bất biến. GUARDRAILS A4 🟡, Watchlist "mã rule trùng".
-- **Bước tiếp theo:** Liam merge PR #13 (vẫn OPEN trên GitHub), rồi PR 12b. Plan 12c (`route([])` → `needs_review` + `NO_RULES_EVALUATED`, kiểm `RulesConfig` khi nạp) chờ Liam duyệt. Sau đó plan 12 BullMQ.
+- **Mục 🎓:** (không có 🎓 mới) Plan 12c, nhánh `feat/12c-no-rules-evaluated`.
+- **Đã xong:** `RuleCode` + `NO_RULES_EVALUATED`; `route([])` → `needs_review` (test đỏ trước); `registry.ts` 5 DocType + `unknown`; `assertRulesReady` + `ready.test.ts` (đã thấy đỏ). product.md, FEATURE_MAP, GUARDRAILS cập nhật.
+- **Bước tiếp theo:** PR 12c chờ Liam merge. Plan 12 BullMQ: worker nạp `RulesConfig` + gọi `assertRulesReady` lúc khởi động (nhận kịch bản L2 "registry hỏng → worker thoát" từ 12c).
 - **Câu hỏi còn treo:** Liam "tạm hiểu" vì sao cần `@Inject(DB)`. Tuỳ chọn: log `/ready` in thêm `error.cause`. Có bật branch protection (bắt CI xanh mới merge) không.
 
 ## Tiếp theo

@@ -64,6 +64,8 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 - **Kỳ vọng (khi có):**
   - thẻ CPR hợp lệ → `auto_approved`, có `holderName`, `issuerName`, `expirationDate` kèm `evidence.quote`
   - thẻ CPR hết hạn → `needs_review`, `routing.reasons` có `EXPIRED` (không bao giờ tự từ chối)
+  - engine không chấm rule nào → `needs_review`, `routing.reasons` = `["NO_RULES_EVALUATED"]`
+  - bộ rule thiếu rule `block` cho loại giấy được yêu cầu, hoặc mã trùng → worker không khởi động (`assertRulesReady`, gọi ở plan 12)
   - file hỏng → `failed` kèm `error.step`; lỗi LLM sau retry → `needs_review`
   - mỗi document có `versions { pipeline, prompt, model, rules }` và `timingMs`
 - **Fixture:** `TODO(verify)`: giấy giả lập SAMPLE từ `tools/synth/`, ca khó ở `eval/hard-cases/`

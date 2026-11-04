@@ -22,8 +22,11 @@ export function evaluateRules(input: RuleInput): RuleResult[] {
   throw new Error(`Chưa hiện thực (P1): ${input.extraction.docType}`);
 }
 
-/** Chỉ tự duyệt khi mọi rule `block` đều qua. */
+/** Chỉ tự duyệt khi mọi rule `block` đều qua. Không có rule nào được chấm → không tự duyệt. */
 export function route(results: RuleResult[]): RoutingDecision {
+  if (results.length === 0) {
+    return { decision: "needs_review", reasons: ["NO_RULES_EVALUATED"] };
+  }
   const reasons = results
     .filter((r) => r.severity === "block" && !r.passed)
     .map((r) => r.code);
