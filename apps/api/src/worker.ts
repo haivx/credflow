@@ -5,6 +5,8 @@ import { WorkerModule } from "./worker.module.js";
 import { AppInfoService } from "./app-info/app-info.service.js";
 
 const ctx = await NestFactory.createApplicationContext(WorkerModule);
+// SIGTERM/SIGINT → gọi onModuleDestroy: worker chờ job đang chạy xong rồi mới thoát.
+ctx.enableShutdownHooks();
 
 const appInfoService = ctx.get(AppInfoService);
 const appInfo = appInfoService.getAppInfo();

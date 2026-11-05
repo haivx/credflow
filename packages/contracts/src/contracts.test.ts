@@ -9,6 +9,7 @@ import {
   Schemas,
   type SchemaName,
   LoginRequest,
+  ProcessDocumentJob,
   StaffListQuery,
   UploadDocumentFields,
 } from "./index.js";
@@ -126,6 +127,21 @@ describe("AuthUser", () => {
       }).success,
     ).toBe(false);
   });
+});
+
+describe("ProcessDocumentJob", () => {
+  it("nhận job có documentId", () => {
+    expect(ProcessDocumentJob.parse({ documentId: "01ABC" })).toEqual({
+      documentId: "01ABC",
+    });
+  });
+
+  it.each([{}, { documentId: 123 }, { documentId: "" }, null])(
+    "từ chối %j",
+    (data) => {
+      expect(ProcessDocumentJob.safeParse(data).success).toBe(false);
+    },
+  );
 });
 
 describe("UploadDocumentFields", () => {
