@@ -4,6 +4,7 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  Logger,
   UnsupportedMediaTypeException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -13,11 +14,12 @@ import {
 } from "@credflow/contracts";
 import { eq } from "drizzle-orm";
 import { ulid } from "ulid";
-import { getPgErrorCode } from "../common/pg-error.js";
+import { formatErrorForLog, getPgErrorCode } from "../common/pg-error.js";
 import { ZodValidationPipe } from "../common/zod-validation.pipe.js";
 import type { Env } from "../config/env.schema.js";
 import { type Db, DB } from "../db/db.provider.js";
 import { documents } from "../db/schema.js";
+import { DOCUMENT_QUEUE, type DocumentQueue } from "../queue/document-queue.js";
 import { STORAGE, type Storage } from "../storage/storage.js";
 import { detectFileType, FILE_TYPE_HEAD_BYTES } from "./file-type.js";
 import type { ParsedUpload } from "./upload-parser.js";
@@ -26,9 +28,12 @@ const fieldsPipe = new ZodValidationPipe(UploadDocumentFields);
 
 @Injectable()
 export class DocumentsService {
+  private readonly logger = new Logger("DocumentsService");
+
   constructor(
     @Inject(DB) private readonly db: Db,
     @Inject(STORAGE) private readonly storage: Storage,
+    @Inject(DOCUMENT_QUEUE) private readonly queue: DocumentQueue,
     private readonly config: ConfigService<Env, true>,
   ) {}
 
@@ -68,6 +73,7 @@ export class DocumentsService {
       // Ghi file trước, INSERT sau: INSERT lỗi thì chỉ còn một file mồ côi (vô hại),
       // còn làm ngược lại thì DB có thể trỏ tới file không tồn tại.
       await this.storage.putFromTemp(file.tmpPath, storageKey);
+      let created: UploadDocumentResponse;
       try {
         const [row] = await this.db
           .insert(documents)
@@ -83,7 +89,7 @@ export class DocumentsService {
           })
           .returning({ id: documents.id, status: documents.status });
         if (row === undefined) throw new Error("INSERT không trả về dòng");
-        return { documentId: row.id, status: row.status, duplicate: false };
+        created = { documentId: row.id, status: row.status, duplicate: false };
       } catch (err) {
         await this.storage.remove(storageKey);
         // 23505: request khác cùng file vừa INSERT trước (giữa SELECT ở trên và INSERT này).
@@ -94,9 +100,28 @@ export class DocumentsService {
         }
         throw err;
       }
+      // Đặt ngoài try trên: enqueue lỗi không được xoá file của document đã commit.
+      await this.enqueue(created.documentId);
+      return created;
     } finally {
       // Nhánh thành công đã rename file đi, rm với force thì không lỗi.
       await rm(file.tmpPath, { force: true });
+    }
+  }
+
+  /**
+   * Dual-write: DB đã commit, không gói chung transaction với Redis được. `add` lỗi thì vẫn trả
+   * thành công, vì giấy đã được nhận; document nằm ở `uploaded` chờ sweep job (plan 13).
+   */
+  private async enqueue(documentId: string): Promise<void> {
+    try {
+      await this.queue.enqueue(documentId);
+    } catch (err) {
+      const { message, stack } = formatErrorForLog(err);
+      this.logger.error(
+        `enqueue lỗi, document ${documentId}: ${message}`,
+        stack,
+      );
     }
   }
 

@@ -42,15 +42,15 @@
   - Tự kiểm: Muốn đổi từ local sang S3 thì phải sửa những file nào?
 - [ ] **Dedupe upload bằng unique index** · code: `apps/api/src/documents/documents.service.ts`, `apps/api/test/documents.int-spec.ts` · note: `notes/p1-stream-upload.md`
   - Tự kiểm: Hai request upload cùng một file đến cùng lúc thì chuyện gì xảy ra, và code xử lý lỗi unique thế nào?
-- [ ] **BullMQ: queue, worker process riêng, concurrency** · code: — · note: —
+- [ ] **BullMQ: queue, worker process riêng, concurrency** · code: `apps/api/src/queue/`, `apps/api/src/worker/`, `apps/api/src/worker.ts` · note: `notes/p1-bullmq.md`
   - Tự kiểm: Vì sao worker chạy process riêng thay vì chạy chung với HTTP? `concurrency: 5` nghĩa là gì?
-- [ ] **Retry, backoff, job lỗi** · code: — · note: —
+- [ ] **Retry, backoff, job lỗi** · code: `apps/api/src/queue/document-queue.ts`, `apps/api/src/worker/document-processor.ts`, `apps/api/test/worker.int-spec.ts` · note: `notes/p1-bullmq.md`
   - Tự kiểm: `attempts: 3` với backoff exponential thì job chạy lại lúc nào? Hết lượt thì job đi đâu?
 - [ ] **Dual-write và sweep job** · code: — · note: —
   - Tự kiểm: Vì sao không gói ghi DB và `queue.add` trong một transaction được? `queue.add` lỗi sau khi commit thì document được xử lý lại bằng cách nào? Cách này có giới hạn gì?
 - [ ] **Job idempotent** · code: — · note: —
   - Tự kiểm: Cùng một job chạy 2 lần thì vì sao không sinh dữ liệu trùng? Vì sao `jobId` thôi chưa đủ?
-- [ ] **State machine của document** · code: — · note: —
+- [ ] **State machine của document** · code: `apps/api/src/documents/state-machine.ts` (Claude viết theo yêu cầu của Liam), `apps/api/src/documents/document-status.service.ts` · note: `notes/p1-bullmq.md`
   - Tự kiểm: Chặn transition sai ở code và ở DB khác nhau thế nào? Vì sao cần cả hai?
 - [ ] **Gọi LLM: timeout, phân loại lỗi** · code: — · note: —
   - Tự kiểm: Lỗi nào nên retry, lỗi nào không? `AbortController` dùng để làm gì?

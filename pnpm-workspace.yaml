@@ -7,3 +7,4 @@ trustPolicy: off
 allowBuilds:
   "@swc/core": false
   esbuild: true
+  msgpackr-extract: false

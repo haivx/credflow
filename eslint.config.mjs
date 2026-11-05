@@ -45,6 +45,14 @@ const A14_NO_SQL_RAW = {
   message:
     "A14: không dùng sql.raw; an toàn của log và chống SQL injection đều dựa trên query có tham số",
 };
+// A11: status chỉ đổi qua DocumentStatusService. Chỉ bắt object viết trực tiếp trong .set()/.values();
+// `const patch = { status }; .set(patch)` vẫn lọt (plan 12).
+const A11_NO_STATUS_WRITE = {
+  selector:
+    "CallExpression[callee.property.name=/^(set|values)$/] > ObjectExpression > Property[key.name='status']",
+  message:
+    "A11: chỉ đổi status qua DocumentStatusService.transition (documents/document-status.service.ts)",
+};
 const API_SRC = ["apps/api/src/**/*.ts"];
 const API_SRC_IGNORES = ["**/*.spec.ts"];
 
@@ -207,6 +215,7 @@ export default tseslint.config(
         A14_NO_STACK,
         A14_NO_SQL_RAW,
         A2_NO_JSON_PARSE,
+        A11_NO_STATUS_WRITE,
       ],
     },
   },
@@ -214,14 +223,36 @@ export default tseslint.config(
   {
     files: ["apps/api/src/common/pg-error.ts"],
     rules: {
-      "no-restricted-syntax": ["error", A14_NO_SQL_RAW, A2_NO_JSON_PARSE],
+      "no-restricted-syntax": [
+        "error",
+        A14_NO_SQL_RAW,
+        A2_NO_JSON_PARSE,
+        A11_NO_STATUS_WRITE,
+      ],
     },
   },
   // DDL không nhận tham số $1; schema.ts chỉ ghép hằng số từ contracts.
   {
     files: ["apps/api/src/db/schema.ts"],
     rules: {
-      "no-restricted-syntax": ["error", A14_NO_STACK, A2_NO_JSON_PARSE],
+      "no-restricted-syntax": [
+        "error",
+        A14_NO_STACK,
+        A2_NO_JSON_PARSE,
+        A11_NO_STATUS_WRITE,
+      ],
+    },
+  },
+  // Nơi duy nhất được ghi status (A11).
+  {
+    files: ["apps/api/src/documents/document-status.service.ts"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        A14_NO_STACK,
+        A14_NO_SQL_RAW,
+        A2_NO_JSON_PARSE,
+      ],
     },
   },
   // CLAUDE.md: TypeScript strict, không `any`.

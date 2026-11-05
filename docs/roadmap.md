@@ -38,7 +38,7 @@
   - **Dual-write:** commit DB rồi mới `queue.add` với `jobId = documentId`; sweep job (repeatable) đẩy lại document kẹt ở `uploaded`. Hiểu vì sao không gói được trong một transaction, và giới hạn của cách này.
   - **Job idempotent:** worker kiểm trạng thái trước khi chạy; ghi kết quả bằng upsert theo `(documentId, step, version)`.
   - **State machine đơn giản:** `uploaded → processing → extracted → needs_review | auto_approved | failed`, một hàm kiểm transition hợp lệ, cộng `CHECK` ở DB.
-  - **Gọi service ngoài (LLM):** timeout bằng `AbortController`; lỗi nào retry được (timeout, 429, 5xx), lỗi nào không (400, parse lỗi quá số lần); hết retry thì document sang `failed` kèm lý do.
+  - **Gọi service ngoài (LLM):** timeout bằng `AbortController`; lỗi nào retry được (timeout, 429, 5xx), lỗi nào không (400, parse lỗi quá số lần); hết retry thì document sang `needs_review` kèm ghi chú, chỉ file hỏng mới `failed` (ADR 0006).
   - Parse output LLM bằng Zod; parse lỗi → retry giới hạn → `needs_review`.
 - **Tiêu chí hoàn thành:** 5 thẻ CPR giả lập làm tay (≥ 3 bố cục khác nhau) chạy đúng end-to-end; output LLM luôn parse qua Zod; rule engine có unit test cho từng mã rule; mỗi document lưu `versions` và `timingMs`; route không gắn `@Public` mà chưa đăng nhập thì 401, sai vai trò thì 403 (có test); upload cùng file 2 lần chỉ tạo 1 document (có test); chạy cùng một job 2 lần không sinh dữ liệu trùng (có test); giả lập `queue.add` lỗi thì sweep job vẫn đưa document đi xử lý (có test); LLM giả lập lỗi 50% thì không document nào kẹt ở `processing`.
 - **Phụ thuộc:** P0.

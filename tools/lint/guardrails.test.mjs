@@ -298,6 +298,39 @@ describe("A2: dữ liệu từ ngoài phải qua Zod", () => {
   });
 });
 
+describe("A11: status chỉ đổi qua một nơi", () => {
+  const WRITER = "apps/api/src/documents/document-status.service.ts";
+  const SET = `declare const q: { set(v: object): void };\nq.set({ status: "approved" });\n`;
+  const VALUES = `declare const q: { values(v: object): void };\nq.values({ status: "approved" });\n`;
+  const STACK = `export const f = (e: Error) => e.stack;\n`;
+
+  it("cấm .set({ status }) ngoài file writer", async () => {
+    await expectReported(SET, API, /^no-restricted-syntax: A11:/);
+  });
+
+  it("cấm .values({ status }) ngoài file writer", async () => {
+    await expectReported(VALUES, API, /^no-restricted-syntax: A11:/);
+  });
+
+  it("cấm cả ở hai file có block no-restricted-syntax riêng", async () => {
+    await expectReported(
+      SET,
+      "apps/api/src/common/pg-error.ts",
+      /^no-restricted-syntax: A11:/,
+    );
+    await expectReported(
+      SET,
+      "apps/api/src/db/schema.ts",
+      /^no-restricted-syntax: A11:/,
+    );
+  });
+
+  it("file writer được ghi status nhưng vẫn giữ A14", async () => {
+    await expectClean(SET, WRITER);
+    await expectReported(STACK, WRITER, /^no-restricted-syntax: A14:/);
+  });
+});
+
 describe("A14: log lỗi DB an toàn (lớp phụ, gờ chính là formatErrorForLog + test)", () => {
   const SERVICE = "apps/api/src/documents/documents.service.ts";
   const HELPER = "apps/api/src/common/pg-error.ts";

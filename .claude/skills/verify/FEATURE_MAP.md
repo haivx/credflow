@@ -60,12 +60,16 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 
 ## Pipeline xử lý (P1, chưa làm)
 - **Trạng thái:** `uploaded → processing → extracted → auto_approved | needs_review | failed`; sau duyệt: `approved | rejected | reupload_requested` (`DocumentStatus`)
-- **Hiện tại:** document dừng ở `uploaded`, chưa có queue/worker (`TODO(verify)`: plan 12 BullMQ)
-- **Kỳ vọng (khi có):**
+- **Hiện tại (plan 12):** upload đẩy job (`jobId = documentId`), worker chạy pipeline **stub**, chưa gọi LLM: mọi document đi `uploaded → processing → needs_review`, `routing.reasons = ["NO_RULES_EVALUATED"]`, `versions = { pipeline: "12-stub", prompt: "none", model: "none", rules: "1" }`
+- **Chạy:** `make dev-api` + `make dev-worker`. Không có endpoint đọc trạng thái, xem bằng `psql`
+- **Lỗi (ADR 0006):** lỗi tạm thử tối đa 3 lần (chờ 1s, 2s), hết lượt → `needs_review` kèm `error`; file hỏng → `failed`, không retry; job data sai schema → failed set của BullMQ
+- **Redis chết:** upload vẫn `201` (tối đa khoảng 2s), document nằm ở `uploaded`. Chưa có sweep nên không tự chạy lại (plan 13)
+- **Kiểm sẵn có:** `apps/api/test/worker.int-spec.ts`, `apps/api/test/documents-enqueue.int-spec.ts`
+- **Kỳ vọng (khi có LLM và rule thật):**
   - thẻ CPR hợp lệ → `auto_approved`, có `holderName`, `issuerName`, `expirationDate` kèm `evidence.quote`
   - thẻ CPR hết hạn → `needs_review`, `routing.reasons` có `EXPIRED` (không bao giờ tự từ chối)
   - engine không chấm rule nào → `needs_review`, `routing.reasons` = `["NO_RULES_EVALUATED"]`
-  - bộ rule thiếu rule `block` cho loại giấy được yêu cầu, hoặc mã trùng → worker không khởi động (`assertRulesReady`, gọi ở plan 12)
+  - bộ rule thiếu rule `block` cho loại giấy được yêu cầu, hoặc mã trùng → worker không khởi động (`assertRulesReady`, `apps/api/src/rules/rules-config.provider.ts`)
   - file hỏng → `failed` kèm `error.step`; lỗi LLM sau retry → `needs_review`
   - mỗi document có `versions { pipeline, prompt, model, rules }` và `timingMs`
   - ghi trạng thái thiếu dữ liệu (failed không error, auto_approved có rule block trượt…) → DB từ chối 23514 → 500 `INTERNAL`, log có tên constraint (CHECK plan 12d, `test/db-constraints.int-spec.ts`)
@@ -85,5 +89,4 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 ---
 
 ## Chưa map / TODO
-- Worker (`apps/api/src/worker.ts`): chưa có job nào.
 - `apps/web`: chưa có màn nào, chưa có `data-testid`.

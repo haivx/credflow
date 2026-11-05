@@ -5,7 +5,8 @@ import { join } from "node:path";
 // Biến môi trường của process thắng .env trong ConfigModule, nên các giá trị này đè được .env dev.
 export const testEnv = {
   DATABASE_URL: "postgres://credflow:credflow@localhost:5433/credflow_test",
-  REDIS_URL: "redis://localhost:6379",
+  // Redis db 1: dùng chung db 0 thì worker dev đang chạy sẽ ăn mất job của test.
+  REDIS_URL: "redis://localhost:6379/1",
   // File upload của test ghi vào thư mục tạm của hệ điều hành, không đụng data/ của dev.
   DATA_DIR: join(tmpdir(), "credflow-int-test"),
   // Giới hạn nhỏ để test 413 không phải gửi 10 MB.
