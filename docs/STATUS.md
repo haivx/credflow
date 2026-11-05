@@ -2,7 +2,7 @@
 
 > Claude Code đọc file này đầu mỗi phiên và cập nhật cuối phiên (`/wrap`). Giữ ngắn, dưới 40 dòng.
 
-**Cập nhật:** 2026-11-03
+**Cập nhật:** 2026-11-05
 **Phase hiện tại:** P1 · Lát cắt dọc cho thẻ CPR (`docs/roadmap.md`). P0 xong 2026-11-03.
 
 ## Đang làm
@@ -15,9 +15,9 @@
 
 > Claude cập nhật sau **mỗi bước**, không chờ cuối phiên. Mở phiên mới gõ `/tiep` để làm tiếp.
 
-- **Mục 🎓:** (không có 🎓 mới) 12f (A8) đang chờ merge; 12g (A2) đã duyệt, chưa code.
-- **Đã xong:** PR 12f mở trên nhánh `chore/12f-architecture-zones`. A8 🟡. Auto-delete nhánh đã bật. Kịch bản 6 có bằng chứng một phần (Liam thấy prompt khi Edit `tools/lint/`).
-- **Bước tiếp theo:** Liam merge PR #18 + bật ruleset (2 required check: `check`, `architecture-zones`) → Claude chạy kịch bản còn lại của 12f (1–9), mở PR đổi A8 ✅ → tạo nhánh 12g từ `main`, code theo `docs/plans/12g-zod-boundaries.md`. Sau đó plan 12 BullMQ.
+- **Mục 🎓:** (không có 🎓 mới) 12f (A8) đã kiểm chứng, chờ merge PR đổi ✅; 12g (A2) đã duyệt, chưa code.
+- **Đã xong:** KB1–9 của 12f có kết quả; KB7 đo được lỗ script (Bash sửa vùng không qua `ask`). PR thử đã đóng; nhánh remote `tmp/12f-red` còn sót, Claude bị deny không xoá được.
+- **Bước tiếp theo:** Liam merge PR A8 ✅ → tạo nhánh 12g từ `main`, code theo `docs/plans/12g-zod-boundaries.md`. Sau đó plan 12 BullMQ.
 - **Câu hỏi còn treo:** Liam "tạm hiểu" vì sao cần `@Inject(DB)`. Có bật branch protection (bắt CI xanh mới merge) không.
 
 ## Tiếp theo
