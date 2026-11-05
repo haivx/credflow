@@ -1,5 +1,6 @@
 import * as z from "zod";
 
+// KB8 plan 12f: PR thử, KHÔNG MERGE.
 // Đã chốt 2026-11-03 (plan 07). Primitive dùng chung, không có .meta({ id }).
 
 /** Ngày lịch dạng YYYY-MM-DD (không có giờ, không có múi giờ). */
