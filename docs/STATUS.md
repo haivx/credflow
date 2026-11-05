@@ -11,12 +11,14 @@
 - Plan 10 đăng nhập cơ bản: merge PR #10 (CI xanh) 2026-11-03.
 - Plan 11 upload stream + sha256 + dedupe (ADR 0005): merge PR #11 (CI xanh) 2026-11-04.
 - Plan 12 BullMQ (ADR 0006): merge PR #24 2026-11-05.
+- Plan 12h bỏ chế độ lai, thu hẹp `ask`: merge PR #25 2026-11-05.
 
 > Claude cập nhật mục này sau **mỗi bước**, không chờ cuối phiên. Mở phiên mới gõ `/tiep` để làm tiếp.
 
-- **Đang làm:** plan 12h bỏ chế độ lai + thu hẹp `permissions.ask`, nhánh `chore/12h-cach-lam-viec`.
-- **Bước tiếp theo:** Liam thử ở phiên mới: nhờ Claude sửa `.claude/settings.json`, phải hiện prompt, bấm No, tool báo bị từ chối. Đạt thì merge PR 12h → plan 13.
-- **Câu hỏi còn treo:** trong phiên làm 12h, lần sửa đầu có prompt (Liam bấm Yes), lần sau không hiện. Nghi một lần Yes đã cho phép cả phiên, chưa kiểm chứng.
+- **Đang làm:** plan 12i subagent `pr-reviewer`, nhánh `chore/12i-pr-reviewer`, Liam yêu cầu commit và push tạm 2026-11-05 để kiểm lại ở phiên sau, **kịch bản 2–5 chưa chạy, chưa có evidence**. Đã có agent, hook + test (đỏ rồi xanh), `CLAUDE.md`, A15, vùng `.claude/agents/**`.
+- **Bước tiếp theo (phiên mới, vì `.claude/agents/` mới tạo nên cần khởi động lại):** chạy kịch bản 2–5 của plan 12i bằng subagent thật (nhánh vi phạm chỉ ở máy `tmp/review-bad`, xoá sau đó); viết evidence `.verify/reports/`; dán evidence và kết luận reviewer vào PR. Nếu đã merge thì sửa lỗi phát hiện bằng PR mới.
+- **Plan 12j (song song):** sửa deny `git push * :**`, nhánh `fix/12j-deny-push-colon`, worktree `../credflow-12j`, đã tạo PR, chờ CI và Liam merge. `pr-reviewer` chưa chạy vì không tới được worktree. Merge xong thì xoá worktree.
+- **Câu hỏi còn treo:** kịch bản 4 của plan 12h: PR #25 đã merge nhưng chưa ghi kết quả thử ở phiên mới. Trong phiên làm 12h, lần sửa `settings.json` đầu có prompt (Liam bấm Yes), lần sau không hiện; nghi một lần Yes đã cho phép cả phiên, chưa kiểm chứng. Ở phiên mới: sửa thử `settings.json`, phải hiện prompt, Liam bấm No, tool phải báo bị từ chối.
 
 ## Tiếp theo
 

@@ -30,6 +30,7 @@ real-docs/
 !.claude/commands/
 !.claude/skills/
 !.claude/hooks/
+!.claude/agents/
 !.claude/settings.json
 
 # Kết quả verify skill (log, screenshot, report, cookie jar)

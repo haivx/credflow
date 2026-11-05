@@ -30,3 +30,4 @@ docs/agent/**
 .claude/settings.json
 .claude/skills/verify/**
 .claude/hooks/**
+.claude/agents/**
