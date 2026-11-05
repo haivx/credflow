@@ -1,6 +1,6 @@
 # 12 · BullMQ: queue, worker process riêng, retry, state machine
 
-Phase: P1 · Trạng thái: Xong (chờ Liam xem bằng chứng và merge) · Ngày: 2026-11-05
+Phase: P1 · Trạng thái: Xong, merge PR #24 · Ngày: 2026-11-05
 
 **Lệch so với plan đã duyệt:**
 

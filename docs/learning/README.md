@@ -1,5 +1,7 @@
 # Learning
 
+> **Lưu trữ, dừng cập nhật từ 2026-11-05** (plan 12h). Quy trình dưới đây không còn áp dụng.
+
 CredFlow vừa là sản phẩm vừa là lộ trình học lên mức middle–intermediate Node.js. Thư mục này lưu những gì đã học để ôn lại.
 
 | File | Nội dung |

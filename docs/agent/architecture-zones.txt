@@ -1,8 +1,8 @@
 # Vùng kiến trúc (guardrail A8): nguồn sự thật duy nhất.
 # Nguyên tắc: thứ gì tắt được guardrail thì thuộc guardrail.
 # Mỗi dòng một pattern glob (`**` qua nhiều thư mục), tính từ gốc repo.
-# Thêm/bớt dòng thì sửa cả `permissions.ask` trong .claude/settings.json;
-# tools/lint/architecture-zones.test.mjs đỏ nếu hai nơi lệch nhau.
+# CI (tools/lint/architecture-zones.sh) cảnh báo khi PR chạm các vùng này; plan phải khai trước.
+# `permissions.ask` trong .claude/settings.json chỉ là tập con cố định (plan 12h), không cần khớp toàn bộ.
 
 # Contract, DB, rule, prompt
 packages/contracts/src/**

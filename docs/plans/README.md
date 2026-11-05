@@ -21,8 +21,14 @@ Một hai câu: làm xong thì có gì mà bây giờ chưa có.
 | File / module | Thay đổi |
 | --- | --- |
 
+## Vùng kiến trúc bị chạm
+(liệt kê file theo `docs/agent/architecture-zones.txt` sẽ sửa, hoặc "không")
+
 ## Contract / config / prompt bị ảnh hưởng
 (nếu có, cần Liam duyệt riêng)
+
+## Quyết định đáng nhớ
+(3–5 dòng: chỗ khó nhất, phương án đã loại và vì sao, khi nào cách này hỏng)
 
 ## Tiêu chí xong
 - [ ] ...

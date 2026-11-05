@@ -6,29 +6,26 @@ Nguồn sự thật cấp sản phẩm: `docs/product.md`. Đọc file đó trư
 ## Vai trò
 
 - **Liam (owner):** quyết định sản phẩm, contract (`packages/contracts`), kiến trúc, rule, model; duyệt plan trước khi code.
-- **Claude Code:** đề xuất plan, giải thích phần học (🎓), code phần còn lại của plan (kể cả boilerplate), viết test, chạy eval và báo cáo số liệu.
+- **Claude Code:** đề xuất plan, code toàn bộ plan (kể cả phần cốt lõi), viết test, chạy eval và báo cáo số liệu. Liam duyệt plan và PR.
 - Không tự ý đổi contract, schema DB, cấu hình rule, prompt đã chốt hay model. Cần đổi thì dừng lại và đề xuất kèm lý do.
 
-## Chế độ dạy
+## Quyết định đáng nhớ
 
-Liam vừa build vừa học, mục tiêu **middle–intermediate Node.js**. Mỗi mục 🎓 trong `docs/roadmap.md` là phần học.
+Mỗi plan có mục **"Quyết định đáng nhớ"**, 3–5 dòng: chỗ khó nhất, phương án đã loại và vì sao, khi nào cách này hỏng.
 
-- **Giải thích trước khi code:** vấn đề là gì, các cách giải, vì sao chọn cách này, lỗi hay gặp. Ngắn, không quá một màn hình.
-- **Chế độ lai (chốt 2026-11-03):** mỗi plan Liam tự viết **một** hàm/khối cốt lõi chứa khái niệm 🎓 chính (ghi rõ trong plan, mục "Liam tự viết"). Claude viết test cho phần đó trước, gợi ý khi bị kẹt (gợi ý trước, đưa đáp án sau), review sau khi viết. Phần còn lại của plan Claude code, rồi giải thích ngắn những chỗ có kiến thức 🎓 để Liam đọc và trả lời câu "Tự kiểm".
-- **Ghi lại:** xong một kiến thức, điền `code:` và `note:` cho dòng tương ứng trong `docs/learning/progress.md`; chủ đề lớn viết note trong `docs/learning/notes/`. **Không tự tick**, Liam tick khi tự trả lời được câu "Tự kiểm".
-- **Lưu trạng thái sau mỗi bước:** xong một bước nhỏ thì cập nhật ngay mục "Đang học" trong `docs/STATUS.md` (mục 🎓, bước đã xong, bước tiếp theo, code đang dở, câu hỏi còn treo). Phiên có thể bị đóng bất cứ lúc nào mà không kịp `/wrap`.
-- **Giữ đúng mức:** gặp kiến thức vượt mức middle thì nói một câu là nó tồn tại, ghi vào "Học nâng cao", rồi làm tiếp bằng cách đơn giản đã chọn trong roadmap/ADR.
+- **Giữ đúng mức:** gặp kiến thức vượt mức middle thì nói một câu là nó tồn tại, ghi vào "Học nâng cao" trong `docs/roadmap.md`, rồi làm tiếp bằng cách đơn giản đã chọn trong roadmap/ADR.
+- **Lưu trạng thái sau mỗi bước:** xong một bước nhỏ thì cập nhật ngay mục "Đang làm" trong `docs/STATUS.md` (bước đã xong, bước tiếp theo, code đang dở, câu hỏi còn treo). Phiên có thể bị đóng bất cứ lúc nào mà không kịp `/wrap`.
 
 ## Quy trình làm việc
 
-1. **Đầu phiên:** đọc `docs/STATUS.md` (đang ở đâu, kể cả mục "Đang học") và phase hiện tại trong `docs/roadmap.md`. Liam hỏi "đang ở đâu", "làm tiếp" hoặc gõ `/tiep` → tóm tắt từ STATUS + git rồi đề xuất bước tiếp.
-2. **Task mới:** vào plan mode, viết plan vào `docs/plans/NN-<slug>.md` (mục tiêu, file sẽ sửa, contract bị ảnh hưởng, tiêu chí xong), cuối plan là **verification plan** (`docs/agent/templates/VERIFICATION_PLAN.md`). Chờ Liam duyệt cả hai rồi mới code.
-3. **Code:** PR nhỏ, review được tại ranh giới (contract, rule engine, prompt, routing). Test đi cùng code. File trong vùng kiến trúc (`docs/agent/architecture-zones.txt`) chỉ sửa bằng tool Edit/Write, không bằng script: chỉ tool mới hiện prompt để Liam duyệt. `main` chỉ nhận qua PR có CI xanh; **Liam tự merge**, Claude không merge.
+1. **Đầu phiên:** đọc `docs/STATUS.md` (đang ở đâu) và phase hiện tại trong `docs/roadmap.md`. Liam hỏi "đang ở đâu", "làm tiếp" hoặc gõ `/tiep` → tóm tắt từ STATUS + git rồi đề xuất bước tiếp.
+2. **Task mới:** vào plan mode, viết plan vào `docs/plans/NN-<slug>.md` theo mẫu trong `docs/plans/README.md` (mục tiêu, file sẽ sửa, vùng kiến trúc bị chạm, contract bị ảnh hưởng, quyết định đáng nhớ, tiêu chí xong), cuối plan là **verification plan** (`docs/agent/templates/VERIFICATION_PLAN.md`). Chờ Liam duyệt cả hai rồi mới code.
+3. **Code:** PR nhỏ, review được tại ranh giới (contract, rule engine, prompt, routing). Test đi cùng code. Chạm file trong vùng kiến trúc (`docs/agent/architecture-zones.txt`) thì phải khai trước trong plan, mục "Vùng kiến trúc bị chạm"; ngoài plan thì dừng lại hỏi. `.claude/settings.json` và `.claude/hooks/**` chỉ sửa bằng tool Edit/Write, không bằng script: chỉ tool mới hiện prompt để Liam duyệt. `main` chỉ nhận qua PR có CI xanh; **Liam tự merge**, Claude không merge.
 4. **Kiểm chứng:** thay đổi hành vi → chạy skill `verify`, viết evidence report (`docs/agent/templates/EVIDENCE_REPORT.md`), dán mục Tóm tắt vào tin nhắn cuối và PR. Chi tiết ở mục "Kiểm chứng" bên dưới.
 5. **Eval gate (từ P2):** mọi thay đổi về prompt, model, rule hoặc ngưỡng phải chạy `make eval` và dán bảng metric (so với lần trước) vào PR.
 6. **Cuối phiên:** cập nhật `docs/STATUS.md`. Quyết định kỹ thuật mới hoặc lệch `docs/product.md` → thêm ADR `docs/decisions/NNNN-<slug>.md`. Đổi spec sản phẩm: sửa `product.md` trước.
 
-Lệnh tắt: `/tiep` (mở lại phiên, làm tiếp chỗ đang dở), `/next` (đề xuất task tiếp theo), `/wrap` (cập nhật STATUS, progress, ADR cuối phiên).
+Lệnh tắt: `/tiep` (mở lại phiên, làm tiếp chỗ đang dở), `/next` (đề xuất task tiếp theo), `/wrap` (cập nhật STATUS, ADR cuối phiên).
 
 ## Kiểm chứng (bắt buộc)
 
@@ -68,7 +65,7 @@ packages/rules/      Rule engine thuần + đọc config
 config/rules/        Cấu hình rule theo khách hàng (YAML, validate bằng RulesConfig)
 eval/                Harness eval, hard-cases/ (ca khó làm tay, giả lập), report.md
 tools/synth/         Bộ sinh giấy tờ giả lập + đáp án
-docs/                product.md, flows.md, doc-types.md, data-policy.md, roadmap.md, STATUS.md, plans/, decisions/, research/, learning/, agent/ (rule kiểm chứng, guardrails, mẫu)
+docs/                product.md, flows.md, doc-types.md, data-policy.md, roadmap.md, STATUS.md, plans/, decisions/, research/, learning/ (lưu trữ, dừng cập nhật 2026-11-05), agent/ (rule kiểm chứng, guardrails, mẫu)
 .claude/             commands/ (/tiep, /next, /wrap), skills/verify/ (quy trình kiểm chứng, FEATURE_MAP.md), settings.json (deny + ask dùng chung, guardrail A8)
 ```
 
