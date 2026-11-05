@@ -65,6 +65,21 @@ describe("settings.json và architecture-zones.txt", () => {
     );
   });
 
+  it("không rule Bash(...) nào trộn * với đuôi :*: đuôi đó là prefix kiểu cũ, * ở trước thành ký tự thật, rule mất tác dụng", () => {
+    const all = [
+      ...(permissions.allow ?? []),
+      ...permissions.ask,
+      ...permissions.deny,
+    ];
+    assert.deepEqual(
+      all.filter((rule) => {
+        const inner = rule.match(/^Bash\((.*)\)$/)?.[1];
+        return inner?.endsWith(":*") && inner.slice(0, -2).includes("*");
+      }),
+      [],
+    );
+  });
+
   it("deny còn đủ các đường merge, push main, force, xoá nhánh, gỡ ruleset", () => {
     for (const rule of [
       "Bash(gh pr merge)",
@@ -77,7 +92,7 @@ describe("settings.json và architecture-zones.txt", () => {
       "Bash(git push * --force*)",
       "Bash(git push * -f*)",
       "Bash(git push * --delete*)",
-      "Bash(git push * :*)",
+      "Bash(git push * :**)",
       "Bash(gh api *rulesets*)",
     ]) {
       assert.ok(permissions.deny.includes(rule), `thiếu deny: ${rule}`);
