@@ -5,12 +5,19 @@ import {
   type OnModuleInit,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { Worker } from "bullmq";
+import { Queue, Worker } from "bullmq";
 import { Redis } from "ioredis";
 import { formatErrorForLog } from "../common/pg-error.js";
 import type { Env } from "../config/env.schema.js";
-import { DOCUMENT_QUEUE_NAME } from "../queue/document-queue.js";
+import {
+  DOCUMENT_QUEUE_NAME,
+  SWEEP_EVERY_MS,
+  SWEEP_JOB,
+  SWEEP_QUEUE_NAME,
+  SWEEP_SCHEDULER_ID,
+} from "../queue/document-queue.js";
 import { DocumentProcessor } from "./document-processor.js";
+import { DocumentSweepService } from "./document-sweep.service.js";
 
 /** Số job chạy song song trong một process. Stub chưa có việc nặng; chỉnh lại khi có LLM. */
 const CONCURRENCY = 5;
@@ -20,9 +27,12 @@ export class DocumentWorkerService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger("DocumentWorker");
   private connection?: Redis;
   private worker?: Worker<unknown>;
+  private sweepQueue?: Queue;
+  private sweepWorker?: Worker;
 
   constructor(
     private readonly processor: DocumentProcessor,
+    private readonly sweep: DocumentSweepService,
     private readonly config: ConfigService<Env, true>,
   ) {}
 
@@ -40,11 +50,27 @@ export class DocumentWorkerService implements OnModuleInit, OnModuleDestroy {
     );
     // Không có listener 'error' thì lỗi kết nối thành lỗi không bắt.
     this.worker.on("error", this.logError);
+
+    this.sweepQueue = new Queue(SWEEP_QUEUE_NAME, {
+      connection: this.connection,
+    });
+    this.sweepQueue.on("error", this.logError);
+    this.sweepWorker = new Worker(SWEEP_QUEUE_NAME, () => this.sweep.run(), {
+      connection: this.connection,
+      concurrency: 1,
+    });
+    this.sweepWorker.on("error", this.logError);
+
+    // Đăng ký ở `ready`, không chỉ lúc khởi động: Redis không bật AOF nên restart có thể mất cả lịch,
+    // và sweep sẽ im lặng dừng đúng lúc cần nhất. `ready` bắn cả lần đầu lẫn mỗi lần kết nối lại.
+    this.connection.on("ready", this.scheduleSweep);
   }
 
   // worker.close() chờ job đang chạy xong rồi mới đóng. Connection do mình tạo nên mình đóng.
   async onModuleDestroy() {
-    await this.worker?.close();
+    this.connection?.off("ready", this.scheduleSweep);
+    await Promise.all([this.worker?.close(), this.sweepWorker?.close()]);
+    await this.sweepQueue?.close();
     try {
       await this.connection?.quit();
     } catch {
@@ -52,6 +78,22 @@ export class DocumentWorkerService implements OnModuleInit, OnModuleDestroy {
     }
     this.logger.log("worker đã dừng");
   }
+
+  private readonly scheduleSweep = () => {
+    this.sweepQueue
+      ?.upsertJobScheduler(
+        SWEEP_SCHEDULER_ID,
+        { every: SWEEP_EVERY_MS },
+        {
+          name: SWEEP_JOB,
+          opts: {
+            removeOnComplete: { count: 10 },
+            removeOnFail: { count: 50 },
+          },
+        },
+      )
+      .catch(this.logError);
+  };
 
   private readonly logError = (err: unknown) => {
     const { message, stack } = formatErrorForLog(err);

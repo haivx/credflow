@@ -20,13 +20,12 @@
 - **Plan 12j:** PR #26 đã merge, worktree đã xoá.
 - **Plan 12k (vá hook): dừng hẳn.** Commit `4f83553` chỉ ở máy, nhánh `fix/12k-pr-reviewer-hook`, chưa push. Bật lại reviewer thì đưa bản vá này vào trước.
 - **Plan 12h kịch bản 4:** đạt: prompt hiện, Liam bấm No, tool từ chối, file không đổi. Nghi một lần Yes cho phép cả phiên: chưa kiểm.
-- **Bước tiếp theo:** plan 13 (mục Tiếp theo), sau khi Liam merge PR tắt reviewer.
+- **Plan 13 sweep + idempotent (ADR 0007):** nhánh `feat/13-sweep-idempotent`, đã kiểm chứng, PR chờ Liam merge. **Bước tiếp theo:** plan LLM, sau khi merge.
 
 ## Tiếp theo
 
-1. **Plan 13:** sweep job + job idempotent + test `queue.add` lỗi → sweep cứu. Sweep cả `processing` quá hạn (DB chết đúng lượt cuối, job stalled). Thử thật: job completed/failed còn giữ có chặn `add` trùng `jobId` không.
-2. **Plan LLM (và ADR model):** thay `StubPipeline`, A10, A12. `formatErrorForLog` với lỗi không phải DB vẫn giữ `error.stack`, tức có message gốc, nên lỗi LLM phải không chứa dữ liệu giấy tờ hoặc phải siết hàm này.
-3. P1: contract `extraction`, `rules` chốt ở P1; model LLM chốt ở P1 (ADR).
+1. **Plan LLM (và ADR model):** thay `StubPipeline`, A10, A12. `formatErrorForLog` với lỗi không phải DB vẫn giữ `error.stack`, tức có message gốc, nên lỗi LLM phải không chứa dữ liệu giấy tờ hoặc phải siết hàm này. Kiểm thêm: `kill -9` worker giữa job (stalled thật), LLM lỗi 50%.
+2. P1: contract `extraction`, `rules` chốt ở P1; model LLM chốt ở P1 (ADR).
 
 ## Vướng / câu hỏi mở
 
@@ -50,4 +49,5 @@
 - 2026-11-03: plan 11 upload (ADR 0005): busboy, sha256 lúc stream, magic bytes, dedupe + 409, `LocalStorage`; chờ Liam viết `hashToTempFile`.
 - 2026-11-05: plan 12h: bỏ chế độ lai, Claude code toàn bộ plan; `ask` chỉ còn `settings.json`, `hooks`.
 - 2026-11-05: plan 12 BullMQ: queue, worker process riêng, retry, state machine, pipeline stub (ADR 0006).
+- 2026-11-05: plan 13 sweep (`uploaded` đẩy lại, `processing` quá hạn sang người duyệt), xử lý conflict khi chạy trùng job (ADR 0007).
 - 2026-11-03: plan 07 chốt contract Document/ReviewAction (+ `checksum`, `extracted`; không tự từ chối), bảng `documents`/`review_actions`, 7 test ràng buộc DB.

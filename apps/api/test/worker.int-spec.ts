@@ -222,6 +222,48 @@ describe("worker xử lý document", () => {
     expect(await readDocument(doc.id)).toEqual(before);
   });
 
+  it("hai job song song cùng document: một kết quả, job thua không lỗi, không retry", async () => {
+    const releases: (() => void)[] = [];
+    run.mockImplementation(
+      () =>
+        new Promise<PipelineResult>((resolve) => {
+          releases.push(() => {
+            resolve(OK);
+          });
+        }),
+    );
+    const transition = vi.spyOn(DocumentStatusService.prototype, "transition");
+    const logError = vi.spyOn(Logger.prototype, "error");
+    await startWorker();
+    const id = await addDocument();
+    await vi.waitFor(() => {
+      expect(run).toHaveBeenCalledTimes(1);
+    });
+
+    await queue.add(
+      PROCESS_DOCUMENT_JOB,
+      { documentId: id },
+      { ...DOCUMENT_JOB_OPTIONS, jobId: "job-trung" },
+    );
+    await vi.waitFor(() => {
+      expect(run).toHaveBeenCalledTimes(2);
+    });
+    for (const release of releases) release();
+
+    await waitForJob(id, "completed");
+    await waitForJob("job-trung", "completed");
+
+    expect(run).toHaveBeenCalledTimes(2);
+    const row = await readDocument(id);
+    expect(row.status).toBe("needs_review");
+    expect(row.error).toBeNull();
+    expect((await queue.getJob(id))?.attemptsMade).toBe(1);
+    expect((await queue.getJob("job-trung"))?.attemptsMade).toBe(1);
+    // uploaded → processing, rồi 2 lần ghi kết quả (một thắng, một conflict).
+    expect(transition).toHaveBeenCalledTimes(3);
+    expect(logError).not.toHaveBeenCalled();
+  });
+
   it("transition với from đã cũ: lỗi conflict, dòng không đổi", async () => {
     await startWorker();
     const doc = makeProcessedDocument(staffId, "needs_review");

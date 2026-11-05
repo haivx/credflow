@@ -3,6 +3,12 @@ import type { JobsOptions } from "bullmq";
 export const DOCUMENT_QUEUE_NAME = "documents";
 export const PROCESS_DOCUMENT_JOB = "process-document";
 
+/** Queue riêng cho sweep: job sweep không có dữ liệu, không đi qua parse `ProcessDocumentJob`. */
+export const SWEEP_QUEUE_NAME = "document-sweep";
+export const SWEEP_SCHEDULER_ID = "document-sweep";
+export const SWEEP_JOB = "sweep";
+export const SWEEP_EVERY_MS = 60_000;
+
 /**
  * `attempts` tính cả lần chạy đầu: tối đa 3 lần, chờ 1s rồi 2s giữa các lần.
  * Job xong vẫn giữ lại một số lượng có hạn để debug; mặc định BullMQ giữ mãi và Redis đầy dần.

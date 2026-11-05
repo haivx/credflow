@@ -35,8 +35,8 @@
   - **Stream:** nhận file upload bằng stream, tính sha256 trong lúc stream, ghi file qua interface storage (local trước, S3 sau). Vì sao không đọc cả file vào memory.
   - **Dedupe upload:** unique index trên checksum; upload lại cùng file trả về cùng `documentId`.
   - **BullMQ:** queue, worker chạy process riêng, `concurrency`, `attempts` + backoff, job lỗi đi đâu.
-  - **Dual-write:** commit DB rồi mới `queue.add` với `jobId = documentId`; sweep job (repeatable) đẩy lại document kẹt ở `uploaded`. Hiểu vì sao không gói được trong một transaction, và giới hạn của cách này.
-  - **Job idempotent:** worker kiểm trạng thái trước khi chạy; ghi kết quả bằng upsert theo `(documentId, step, version)`.
+  - **Dual-write:** commit DB rồi mới `queue.add` với `jobId = documentId`; sweep job (repeatable) đẩy lại document kẹt ở `uploaded`, còn `processing` quá hạn không còn job sống thì chuyển người duyệt (ADR 0007). Hiểu vì sao không gói được trong một transaction, và giới hạn của cách này.
+  - **Job idempotent:** worker kiểm trạng thái trước khi chạy; ghi kết quả bằng `UPDATE ... WHERE status = from`, chạy trùng thì chỉ một bên thắng (ADR 0007).
   - **State machine đơn giản:** `uploaded → processing → extracted → needs_review | auto_approved | failed`, một hàm kiểm transition hợp lệ, cộng `CHECK` ở DB.
   - **Gọi service ngoài (LLM):** timeout bằng `AbortController`; lỗi nào retry được (timeout, 429, 5xx), lỗi nào không (400, parse lỗi quá số lần); hết retry thì document sang `needs_review` kèm ghi chú, chỉ file hỏng mới `failed` (ADR 0006).
   - Parse output LLM bằng Zod; parse lỗi → retry giới hạn → `needs_review`.

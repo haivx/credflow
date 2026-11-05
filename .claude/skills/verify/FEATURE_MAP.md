@@ -63,8 +63,13 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 - **Hiện tại (plan 12):** upload đẩy job (`jobId = documentId`), worker chạy pipeline **stub**, chưa gọi LLM: mọi document đi `uploaded → processing → needs_review`, `routing.reasons = ["NO_RULES_EVALUATED"]`, `versions = { pipeline: "12-stub", prompt: "none", model: "none", rules: "1" }`
 - **Chạy:** `make dev-api` + `make dev-worker`. Không có endpoint đọc trạng thái, xem bằng `psql`
 - **Lỗi (ADR 0006):** lỗi tạm thử tối đa 3 lần (chờ 1s, 2s), hết lượt → `needs_review` kèm `error`; file hỏng → `failed`, không retry; job data sai schema → failed set của BullMQ
-- **Redis chết:** upload vẫn `201` (tối đa khoảng 2s), document nằm ở `uploaded`. Chưa có sweep nên không tự chạy lại (plan 13)
-- **Kiểm sẵn có:** `apps/api/test/worker.int-spec.ts`, `apps/api/test/documents-enqueue.int-spec.ts`
+- **Redis chết:** upload vẫn `201` (tối đa khoảng 2s), document nằm ở `uploaded`; Redis sống lại thì sweep đẩy lại job
+- **Sweep (ADR 0007):** chạy trong worker, 60 giây một vòng, queue `document-sweep`, đăng ký lại lịch mỗi khi kết nối Redis `ready`
+  - job còn sống (`waiting`, `active`, `delayed`...) → bỏ qua
+  - `uploaded` quá 1 phút → xoá job completed/failed còn giữ rồi `add` lại (`add` trùng `jobId` bị bỏ qua mà không báo lỗi)
+  - `processing` quá 15 phút → `needs_review`, `reasons = ["NO_RULES_EVALUATED"]`, `error.step = "sweep"`, không chạy lại
+- **Chạy trùng job:** chỉ một lần ghi thắng (`WHERE status = from`); job thua nhận conflict, log `warn`, `completed`, không retry
+- **Kiểm sẵn có:** `apps/api/test/worker.int-spec.ts`, `apps/api/test/documents-enqueue.int-spec.ts`, `apps/api/test/sweep.int-spec.ts`
 - **Kỳ vọng (khi có LLM và rule thật):**
   - thẻ CPR hợp lệ → `auto_approved`, có `holderName`, `issuerName`, `expirationDate` kèm `evidence.quote`
   - thẻ CPR hết hạn → `needs_review`, `routing.reasons` có `EXPIRED` (không bao giờ tự từ chối)
