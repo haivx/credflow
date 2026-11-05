@@ -20,16 +20,20 @@
 - **Plan 12j:** PR #26 đã merge, worktree đã xoá.
 - **Plan 12k (vá hook): dừng hẳn.** Commit `4f83553` chỉ ở máy, nhánh `fix/12k-pr-reviewer-hook`, chưa push. Bật lại reviewer thì đưa bản vá này vào trước.
 - **Plan 12h kịch bản 4:** đạt: prompt hiện, Liam bấm No, tool từ chối, file không đổi. Nghi một lần Yes cho phép cả phiên: chưa kiểm.
-- **Plan 13 sweep + idempotent (ADR 0007):** nhánh `feat/13-sweep-idempotent`, đã kiểm chứng, PR chờ Liam merge. **Bước tiếp theo:** plan LLM, sau khi merge.
+- **Plan 13 sweep + idempotent (ADR 0007):** merge PR #29 2026-11-05.
+- **Plan 14 LLM CPR (ADR 0008):** nhánh `feat/14-llm-trich-xuat-cpr`, đã kiểm chứng, PR chờ Liam: chạy kiểm chứng T3, quyết 3 câu ở "Vướng", merge. **Bước tiếp theo:** plan 15 sau khi merge.
 
 ## Tiếp theo
 
-1. **Plan LLM (và ADR model):** thay `StubPipeline`, A10, A12. `formatErrorForLog` với lỗi không phải DB vẫn giữ `error.stack`, tức có message gốc, nên lỗi LLM phải không chứa dữ liệu giấy tờ hoặc phải siết hàm này. Kiểm thêm: `kill -9` worker giữa job (stalled thật), LLM lỗi 50%.
-2. P1: contract `extraction`, `rules` chốt ở P1; model LLM chốt ở P1 (ADR).
+1. **Plan 15:** rule engine CPR (8 mã rule), chốt contract `rules`. `evaluateRules` còn ném "Chưa hiện thực".
+2. **Plan 16:** nối rule + routing + `extracted`, màn upload và kết quả thô, 5 thẻ CPR end-to-end.
 
 ## Vướng / câu hỏi mở
 
-- (chưa có)
+- **`CprCardFields`:** Liam 2026-11-05: không cần đổi. Output thật dùng được (21/22 trường chính đúng trên 5 fixture); `extraction.ts` giữ nguyên.
+- **Ngày dạng `09/02/2025`:** Liam 2026-11-05: giữ nguyên, xử lý sau. Prompt để trống vì dễ nhầm; xem lại khi có số liệu eval ở P2.
+- **File tạm sót khi upload vượt giới hạn** (`hash-to-temp-file`, plan 11): lỗi thật, đã tái hiện. Sửa ở nhánh `fix/hash-temp-file-leak`, PR riêng trước plan 15.
+- **Hạn mức $5:** code không chặn cứng, cần đặt spend limit trong Console. Đã dùng khoảng $0.004.
 
 ## Eval mới nhất
 
@@ -49,5 +53,6 @@
 - 2026-11-03: plan 11 upload (ADR 0005): busboy, sha256 lúc stream, magic bytes, dedupe + 409, `LocalStorage`; chờ Liam viết `hashToTempFile`.
 - 2026-11-05: plan 12h: bỏ chế độ lai, Claude code toàn bộ plan; `ask` chỉ còn `settings.json`, `hooks`.
 - 2026-11-05: plan 12 BullMQ: queue, worker process riêng, retry, state machine, pipeline stub (ADR 0006).
+- 2026-11-05: plan 14 Claude thật (`claude-haiku-5-5`, ADR 0008): phân loại, trích xuất CPR, phân loại lỗi, A10, A12.
 - 2026-11-05: plan 13 sweep (`uploaded` đẩy lại, `processing` quá hạn sang người duyệt), xử lý conflict khi chạy trùng job (ADR 0007).
 - 2026-11-03: plan 07 chốt contract Document/ReviewAction (+ `checksum`, `extracted`; không tự từ chối), bảng `documents`/`review_actions`, 7 test ràng buộc DB.

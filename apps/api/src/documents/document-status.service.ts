@@ -1,6 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import type {
+  Classification,
   DocumentStatus,
+  Extraction,
   RoutingDecision,
   RuleResult,
   Versions,
@@ -15,6 +17,9 @@ export interface TransitionFields {
   versions?: Versions;
   routing?: RoutingDecision;
   ruleResults?: RuleResult[];
+  classification?: Classification;
+  extraction?: Extraction;
+  timingMs?: Record<string, number>;
   error?: { step: string; message: string };
 }
 

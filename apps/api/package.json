@@ -16,6 +16,7 @@
     "db:seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "1.4.0",
     "@credflow/contracts": "workspace:*",
     "@credflow/rules": "workspace:*",
     "@nestjs/common": "^12.3.2",

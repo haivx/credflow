@@ -1,0 +1,18 @@
+body {
+  margin: 0;
+  font-family: Helvetica, Arial, sans-serif;
+  background: #fff;
+}
+.wm {
+  z-index: 10;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 96px;
+  font-weight: 700;
+  color: rgba(200, 30, 30, 0.18);
+  transform: rotate(-20deg);
+  pointer-events: none;
+}

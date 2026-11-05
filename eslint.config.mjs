@@ -204,6 +204,54 @@ export default tseslint.config(
       ],
     },
   },
+  // A10: LLM chỉ đọc và trích xuất. Module LLM không chạm được rule, routing, nơi ghi status, DB.
+  {
+    files: ["apps/api/src/llm/**/*.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@credflow/rules",
+              message:
+                "A10: LLM không gọi rule hay routing, code ra quyết định",
+            },
+          ],
+          patterns: [
+            {
+              group: [
+                "**/documents/*",
+                "**/db/*",
+                "**/pipeline/*",
+                "**/worker/*",
+              ],
+              message:
+                "A10: LLM chỉ trả dữ liệu, không ghi status, không đọc DB, không biết pipeline",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // A10: chỉ module LLM được gọi SDK, để không có đường gọi LLM nào lách qua ranh giới trên.
+  {
+    files: API_SRC,
+    ignores: ["apps/api/src/llm/**/*.ts"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@anthropic-ai/sdk", "@anthropic-ai/sdk/*"],
+              message: "A10: chỉ apps/api/src/llm được import SDK của LLM",
+            },
+          ],
+        },
+      ],
+    },
+  },
   // A14: log lỗi DB an toàn. Hai miễn trừ dưới đặt sau và thay hẳn options của block này.
   {
     files: API_SRC,

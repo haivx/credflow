@@ -127,9 +127,9 @@ describe("worker xử lý document", () => {
       reasons: ["NO_RULES_EVALUATED"],
     });
     expect(row.versions).toEqual({
-      pipeline: "12-stub",
-      prompt: "none",
-      model: "none",
+      pipeline: "14",
+      prompt: "classify@1+extract-cpr@1",
+      model: "claude-haiku-5-5",
       rules: "1",
     });
     expect(row.error).toBeNull();
