@@ -1,0 +1,34 @@
+{
+  "fields": {
+    "cardNumber": { "value": null, "evidence": null, "confidence": 0 },
+    "courseType": {
+      "value": "HS-CPR-B (Heartsaver CPR, Basic)",
+      "evidence": { "quote": "HS-CPR-B (Heartsaver CPR, Basic)" },
+      "confidence": 0.9
+    },
+    "holderName": {
+      "value": "Tobias Arkwright-Lenz",
+      "evidence": { "quote": "Tobias Arkwright-Lenz" },
+      "confidence": 0.95
+    },
+    "issuerName": {
+      "value": "LIFELINE RESPONSE INSTITUTE",
+      "evidence": {
+        "quote": "L I F E L I N E R E S P O N S E I N S T I T U T E"
+      },
+      "confidence": 0.9
+    },
+    "validityText": {
+      "value": "Valid 2 years from the date of completion.",
+      "evidence": { "quote": "Valid 2 years from the date of completion." },
+      "confidence": 0.9
+    },
+    "completionDate": {
+      "value": null,
+      "evidence": { "quote": "09/02/2025" },
+      "confidence": 0
+    },
+    "expirationDate": { "value": null, "evidence": null, "confidence": 0 }
+  },
+  "docType": "cpr_card"
+}

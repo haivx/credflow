@@ -1,0 +1,36 @@
+{
+  "fields": {
+    "cardNumber": {
+      "value": "NSC-448120",
+      "evidence": { "quote": "NSC-448120" },
+      "confidence": 0.95
+    },
+    "courseType": {
+      "value": "Adult CPR and AED Provider",
+      "evidence": { "quote": "Adult CPR and AED Provider" },
+      "confidence": 0.95
+    },
+    "holderName": {
+      "value": "Marisol Quennell",
+      "evidence": { "quote": "Marisol Quennell" },
+      "confidence": 0.95
+    },
+    "issuerName": {
+      "value": "Northbridge Safety Council",
+      "evidence": { "quote": "Northbridge Safety Council" },
+      "confidence": 0.97
+    },
+    "validityText": { "value": null, "evidence": null, "confidence": 0 },
+    "completionDate": {
+      "value": "2026-03-14",
+      "evidence": { "quote": "March 14, 2026" },
+      "confidence": 0.95
+    },
+    "expirationDate": {
+      "value": "2028-03-14",
+      "evidence": { "quote": "March 14, 2028" },
+      "confidence": 0.95
+    }
+  },
+  "docType": "cpr_card"
+}
