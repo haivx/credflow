@@ -69,6 +69,21 @@ describe("hashToTempFile", () => {
     expect(await readdir(tmpDir)).toEqual([]);
   });
 
+  // Lỗi cũ: lần mở file còn dở khi đã `rm`, nên file được tạo sau đó và ở lại mãi. Chỉ xảy ra
+  // khi đua nhau, nên phải lặp nhiều lần mới chắc chắn bắt được.
+  it("vượt giới hạn liên tục 200 lần: không sót file tạm nào", async () => {
+    for (let i = 0; i < 200; i++) {
+      await expect(
+        hashToTempFile(Readable.from([Buffer.alloc(65, 0x41)]), {
+          tmpDir,
+          maxBytes: 64,
+        }),
+      ).rejects.toBeInstanceOf(FileTooLargeError);
+    }
+
+    expect(await readdir(tmpDir)).toEqual([]);
+  });
+
   it("vượt giới hạn thì dừng ngay, không đọc tiếp source (source vô hạn vẫn kết thúc)", async () => {
     let chunksRead = 0;
     async function* endless() {
