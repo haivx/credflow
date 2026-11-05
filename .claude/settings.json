@@ -20,7 +20,7 @@
       "Bash(git push * --delete*)",
       "Bash(git push -d*)",
       "Bash(git push * -d*)",
-      "Bash(git push * :*)",
+      "Bash(git push * :**)",
       "Bash(gh api *rulesets*)",
       "Bash(gh api *branches/*/protection*)"
     ],
