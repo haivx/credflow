@@ -10,7 +10,7 @@
 - Plan 02–11 xong, đã merge (PR #1–#8, #10, #11). P0 xong.
 - Plan 10 đăng nhập cơ bản: merge PR #10 (CI xanh) 2026-11-03.
 - Plan 11 upload stream + sha256 + dedupe (ADR 0005): merge PR #11 (CI xanh) 2026-11-04.
-- Plan 12 BullMQ (ADR 0006): xong trên nhánh `feat/12-bullmq-worker`, **chưa commit**, chờ Liam xem bằng chứng.
+- Plan 12 BullMQ (ADR 0006): PR #24, chờ CI và Liam merge.
 
 ## Đang học
 
@@ -18,7 +18,7 @@
 
 - **Mục 🎓:** BullMQ, retry, state machine (plan 12). Note: `docs/learning/notes/p1-bullmq.md`. Claude viết cả `assertTransition` theo yêu cầu của Liam, nên Liam cần đọc lại rồi tự trả lời "Tự kiểm".
 - **Đã xong:** code, test, kiểm chứng chạy thật plan 12; evidence: `.verify/reports/2026-11-05-bullmq-worker.md`.
-- **Bước tiếp theo:** Liam xem bằng chứng (đổi contract nên theo Rule 6 là T3, Liam tự chạy hoặc xem chạy một lần), rồi Claude commit + mở PR khi được yêu cầu.
+- **Bước tiếp theo:** Liam tự chạy hoặc xem chạy một lần (đổi contract nên theo Rule 6 là T3), rồi merge PR #24 → plan 13.
 - **Câu hỏi còn treo:** Liam "tạm hiểu" vì sao cần `@Inject(DB)`.
 
 ## Tiếp theo
