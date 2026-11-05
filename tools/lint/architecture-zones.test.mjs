@@ -24,16 +24,37 @@ const zones = readFileSync(
   .map((line) => line.trim())
   .filter((line) => line !== "" && !line.startsWith("#"));
 
-describe("settings.json khớp architecture-zones.txt", () => {
+// `ask` chỉ giữ thứ tắt được cổng (plan 12h). Vùng khác dựa vào plan khai trước + CI + owner merge.
+const ASK = ["Edit(/.claude/settings.json)", "Edit(/.claude/hooks/**)"];
+
+function checkAsk(ask) {
+  assert.deepEqual([...ask].sort(), [...ASK].sort());
+}
+
+describe("settings.json và architecture-zones.txt", () => {
   const { permissions } = JSON.parse(
     readFileSync(join(ROOT, ".claude/settings.json"), "utf8"),
   );
 
-  it("ask đúng bằng các vùng, không thừa không thiếu", () => {
-    assert.deepEqual(
-      [...permissions.ask].sort(),
-      zones.map((zone) => `Edit(/${zone})`).sort(),
-    );
+  it("ask đúng bằng danh sách cố định, không thừa không thiếu", () => {
+    checkAsk(permissions.ask);
+  });
+
+  for (const missing of ASK) {
+    it(`check đỏ nếu ask thiếu ${missing}`, () => {
+      assert.throws(() => checkAsk(ASK.filter((rule) => rule !== missing)));
+    });
+  }
+
+  it("check đỏ nếu ask bị nới rộng trở lại", () => {
+    assert.throws(() => checkAsk([...ASK, "Edit(/eslint.config.mjs)"]));
+  });
+
+  it("mỗi đường dẫn trong ask vẫn thuộc danh sách vùng", () => {
+    const zoneRules = zones.map((zone) => `Edit(/${zone})`);
+    for (const rule of permissions.ask) {
+      assert.ok(zoneRules.includes(rule), `không thuộc vùng: ${rule}`);
+    }
   });
 
   it("không có rule Write(path): Claude Code không bao giờ khớp dạng này", () => {

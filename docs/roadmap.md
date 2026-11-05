@@ -2,7 +2,7 @@
 
 > Nguồn sự thật về kế hoạch. Tiến độ hằng ngày ghi ở `docs/STATUS.md`, plan từng task ở `docs/plans/`.
 > Mỗi phase: mục tiêu · phạm vi · 🎓 học được · tiêu chí hoàn thành · phụ thuộc. Phase chỉ xong khi đạt **đủ** tiêu chí.
-> **Mục tiêu cá nhân:** vừa build CredFlow vừa lên mức middle–intermediate Node.js. Mỗi mục 🎓 là phần học; mỗi plan Liam tự code một hàm cốt lõi, phần còn lại Claude code và giải thích (chế độ lai, xem "Chế độ dạy" trong `CLAUDE.md`). Tiến độ học ghi ở `docs/learning/progress.md`.
+> **Mục tiêu cá nhân:** vừa build CredFlow vừa lên mức middle–intermediate Node.js. Mỗi mục 🎓 là kiến thức gắn với phase đó, **không còn bắt buộc tự code** (từ 2026-11-05 Claude code toàn bộ plan, Liam duyệt plan và PR; xem mục "Quyết định đáng nhớ" trong `CLAUDE.md`). `docs/learning/` giữ làm lưu trữ.
 > Kiến thức vượt mức middle được ghi ở mục **Học nâng cao** cuối file, không làm trong MVP.
 > Ước lượng: 9–10 tuần, không có hạn chót. Ưu tiên hiểu chắc hơn làm nhanh.
 
@@ -122,7 +122,7 @@ Agent (xem `docs/product.md` mục 9), nhắc gia hạn, nhiều tenant, đăng 
 
 ## Học nâng cao
 
-Vượt mức middle; mỗi mục ghi chỗ trong CredFlow sẽ cần nó. Làm khi đã tick hết `progress.md` của MVP.
+Vượt mức middle; mỗi mục ghi chỗ trong CredFlow sẽ cần nó. Làm khi xong MVP.
 
 | Kiến thức | Thay cho cách đang dùng | Chỗ dùng |
 | --- | --- | --- |

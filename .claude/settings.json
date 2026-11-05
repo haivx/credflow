@@ -24,28 +24,6 @@
       "Bash(gh api *rulesets*)",
       "Bash(gh api *branches/*/protection*)"
     ],
-    "ask": [
-      "Edit(/packages/contracts/src/**)",
-      "Edit(/config/rules/**)",
-      "Edit(/apps/api/src/prompts/**)",
-      "Edit(/apps/api/src/db/schema.ts)",
-      "Edit(/apps/api/drizzle/**)",
-      "Edit(/eslint.config.mjs)",
-      "Edit(/tools/lint/**)",
-      "Edit(/.github/**)",
-      "Edit(/Makefile)",
-      "Edit(/**/vitest*.config.ts)",
-      "Edit(/**/package.json)",
-      "Edit(/**/tsconfig*.json)",
-      "Edit(/apps/api/test/db-constraints.int-spec.ts)",
-      "Edit(/apps/api/test/error-log.int-spec.ts)",
-      "Edit(/packages/rules/src/route.invariants.test.ts)",
-      "Edit(/packages/rules/src/purity.test.ts)",
-      "Edit(/CLAUDE.md)",
-      "Edit(/docs/agent/**)",
-      "Edit(/.claude/settings.json)",
-      "Edit(/.claude/skills/verify/**)",
-      "Edit(/.claude/hooks/**)"
-    ]
+    "ask": ["Edit(/.claude/settings.json)", "Edit(/.claude/hooks/**)"]
   }
 }

@@ -14,7 +14,9 @@ Plan: `docs/plans/NN-<slug>.md`
 
 ## Vùng kiến trúc bị chạm
 
-<!-- Theo docs/agent/architecture-zones.txt; job CI architecture-zones cũng liệt kê. Plan có nói trước không? -->
+<!-- Theo docs/agent/architecture-zones.txt; job CI architecture-zones cũng liệt kê. -->
+
+**Vùng kiến trúc bị chạm có khớp với plan không?**
 
 ## Đã nới check/lint/test nào không? Vì sao?
 
