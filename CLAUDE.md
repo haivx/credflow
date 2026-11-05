@@ -23,7 +23,8 @@ Mỗi plan có mục **"Quyết định đáng nhớ"**, 3–5 dòng: chỗ khó
 3. **Code:** PR nhỏ, review được tại ranh giới (contract, rule engine, prompt, routing). Test đi cùng code. Chạm file trong vùng kiến trúc (`docs/agent/architecture-zones.txt`) thì phải khai trước trong plan, mục "Vùng kiến trúc bị chạm"; ngoài plan thì dừng lại hỏi. `.claude/settings.json` và `.claude/hooks/**` chỉ sửa bằng tool Edit/Write, không bằng script: chỉ tool mới hiện prompt để Liam duyệt. `main` chỉ nhận qua PR có CI xanh; **Liam tự merge**, Claude không merge.
 4. **Kiểm chứng:** thay đổi hành vi → chạy skill `verify`, viết evidence report (`docs/agent/templates/EVIDENCE_REPORT.md`), dán mục Tóm tắt vào tin nhắn cuối và PR. Chi tiết ở mục "Kiểm chứng" bên dưới.
 5. **Eval gate (từ P2):** mọi thay đổi về prompt, model, rule hoặc ngưỡng phải chạy `make eval` và dán bảng metric (so với lần trước) vào PR.
-6. **Cuối phiên:** cập nhật `docs/STATUS.md`. Quyết định kỹ thuật mới hoặc lệch `docs/product.md` → thêm ADR `docs/decisions/NNNN-<slug>.md`. Đổi spec sản phẩm: sửa `product.md` trước.
+6. **Review trước khi báo sẵn sàng:** trước khi báo PR sẵn sàng, chạy subagent `pr-reviewer` (đã checkout nhánh, đưa đường dẫn plan và evidence report) và dán kết luận vào PR. "Cần sửa" thì sửa rồi chạy lại; chỗ không đồng ý thì vẫn dán và nêu lý do để Liam quyết. Reviewer không thay evidence report và không thay Liam.
+7. **Cuối phiên:** cập nhật `docs/STATUS.md`. Quyết định kỹ thuật mới hoặc lệch `docs/product.md` → thêm ADR `docs/decisions/NNNN-<slug>.md`. Đổi spec sản phẩm: sửa `product.md` trước.
 
 Lệnh tắt: `/tiep` (mở lại phiên, làm tiếp chỗ đang dở), `/next` (đề xuất task tiếp theo), `/wrap` (cập nhật STATUS, ADR cuối phiên).
 
@@ -66,7 +67,7 @@ config/rules/        Cấu hình rule theo khách hàng (YAML, validate bằng R
 eval/                Harness eval, hard-cases/ (ca khó làm tay, giả lập), report.md
 tools/synth/         Bộ sinh giấy tờ giả lập + đáp án
 docs/                product.md, flows.md, doc-types.md, data-policy.md, roadmap.md, STATUS.md, plans/, decisions/, research/, learning/ (lưu trữ, dừng cập nhật 2026-11-05), agent/ (rule kiểm chứng, guardrails, mẫu)
-.claude/             commands/ (/tiep, /next, /wrap), skills/verify/ (quy trình kiểm chứng, FEATURE_MAP.md), settings.json (deny + ask dùng chung, guardrail A8)
+.claude/             commands/ (/tiep, /next, /wrap), agents/ (pr-reviewer), hooks/, skills/verify/ (quy trình kiểm chứng, FEATURE_MAP.md), settings.json (deny + ask dùng chung, guardrail A8)
 ```
 
 ## Lệnh
