@@ -15,10 +15,12 @@
 
 > Claude cập nhật mục này sau **mỗi bước**, không chờ cuối phiên. Mở phiên mới gõ `/tiep` để làm tiếp.
 
-- **Đang làm:** plan 12i subagent `pr-reviewer`, nhánh `chore/12i-pr-reviewer`, Liam yêu cầu commit và push tạm 2026-11-05 để kiểm lại ở phiên sau, **kịch bản 2–5 chưa chạy, chưa có evidence**. Đã có agent, hook + test (đỏ rồi xanh), `CLAUDE.md`, A15, vùng `.claude/agents/**`.
-- **Bước tiếp theo (phiên mới, vì `.claude/agents/` mới tạo nên cần khởi động lại):** chạy kịch bản 2–5 của plan 12i bằng subagent thật (nhánh vi phạm chỉ ở máy `tmp/review-bad`, xoá sau đó); viết evidence `.verify/reports/`; dán evidence và kết luận reviewer vào PR. Nếu đã merge thì sửa lỗi phát hiện bằng PR mới.
-- **Plan 12j (song song):** sửa deny `git push * :**`, nhánh `fix/12j-deny-push-colon`, worktree `../credflow-12j`, đã tạo PR, chờ CI và Liam merge. `pr-reviewer` chưa chạy vì không tới được worktree. Merge xong thì xoá worktree.
-- **Câu hỏi còn treo:** kịch bản 4 của plan 12h: PR #25 đã merge nhưng chưa ghi kết quả thử ở phiên mới. Trong phiên làm 12h, lần sửa `settings.json` đầu có prompt (Liam bấm Yes), lần sau không hiện; nghi một lần Yes đã cho phép cả phiên, chưa kiểm chứng. Ở phiên mới: sửa thử `settings.json`, phải hiện prompt, Liam bấm No, tool phải báo bị từ chối.
+- **`pr-reviewer` tạm tắt từ 2026-11-05:** Liam ưu tiên ship. Không chạy cho tới khi Liam bật lại. Giữ file agent, hook, test.
+- **Plan 12i:** PR #27 đã merge; kiểm sau merge: kịch bản 1–6 đạt, tái hiện 3 lỗi hook (chỉ có tác dụng khi gọi reviewer). Tóm tắt ở comment PR #27.
+- **Plan 12j:** PR #26 đã merge, worktree đã xoá.
+- **Plan 12k (vá hook): dừng hẳn.** Commit `4f83553` chỉ ở máy, nhánh `fix/12k-pr-reviewer-hook`, chưa push. Bật lại reviewer thì đưa bản vá này vào trước.
+- **Plan 12h kịch bản 4:** đạt: prompt hiện, Liam bấm No, tool từ chối, file không đổi. Nghi một lần Yes cho phép cả phiên: chưa kiểm.
+- **Bước tiếp theo:** plan 13 (mục Tiếp theo), sau khi Liam merge PR tắt reviewer.
 
 ## Tiếp theo
 
