@@ -58,6 +58,21 @@ export class BullDocumentQueue implements DocumentQueue, OnModuleDestroy {
     }
   }
 
+  /** Job còn cơ hội tự chạy. Trạng thái lạ cũng tính là còn sống: thà chờ vòng sau còn hơn chạy trùng. */
+  async hasLiveJob(documentId: string): Promise<boolean> {
+    const state = await this.queue.getJobState(documentId);
+    return !["completed", "failed", "unknown"].includes(state);
+  }
+
+  /**
+   * Job completed/failed còn giữ làm `add` cùng `jobId` bị bỏ qua mà không báo lỗi (đã thử thật,
+   * plan 13), nên phải xoá trước. Chỉ gọi khi `hasLiveJob` trả false.
+   */
+  async requeue(documentId: string): Promise<void> {
+    await this.queue.remove(documentId);
+    await this.enqueue(documentId);
+  }
+
   async onModuleDestroy() {
     await this.queue.close();
   }
@@ -65,7 +80,10 @@ export class BullDocumentQueue implements DocumentQueue, OnModuleDestroy {
 
 @Module({
   imports: [RedisModule],
-  providers: [{ provide: DOCUMENT_QUEUE, useClass: BullDocumentQueue }],
-  exports: [DOCUMENT_QUEUE],
+  providers: [
+    BullDocumentQueue,
+    { provide: DOCUMENT_QUEUE, useExisting: BullDocumentQueue },
+  ],
+  exports: [DOCUMENT_QUEUE, BullDocumentQueue],
 })
 export class QueueModule {}

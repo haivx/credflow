@@ -10,7 +10,10 @@ import { eq } from "drizzle-orm";
 import { formatErrorForLog } from "../common/pg-error.js";
 import { type Db, DB } from "../db/db.provider.js";
 import { documents } from "../db/schema.js";
-import { DocumentStatusService } from "../documents/document-status.service.js";
+import {
+  DocumentStatusConflictError,
+  DocumentStatusService,
+} from "../documents/document-status.service.js";
 import {
   PIPELINE,
   PIPELINE_VERSIONS,
@@ -39,6 +42,13 @@ export class DocumentProcessor {
       await this.handle(job);
     } catch (err) {
       if (err instanceof UnrecoverableError) throw err;
+      // Dòng đã được process khác đổi (job trùng, sweep): việc đã có người làm, không retry.
+      if (err instanceof DocumentStatusConflictError) {
+        this.logger.warn(
+          `document ${err.documentId} đã được xử lý nơi khác, bỏ qua job`,
+        );
+        return;
+      }
       const { message, stack } = formatErrorForLog(err);
       this.logger.error(`job ${String(job.id)}: ${message}`, stack);
       // BullMQ lưu message và stack của lỗi vào Redis. Lỗi Drizzle có `params` nên phải đổi thành

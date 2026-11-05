@@ -5,8 +5,10 @@ import { baseConfig } from "./config/config.options.js";
 import { DbModule } from "./db/db.module.js";
 import { DocumentStatusModule } from "./documents/document-status.module.js";
 import { PIPELINE, StubPipeline } from "./pipeline/pipeline.js";
+import { QueueModule } from "./queue/queue.module.js";
 import { rulesConfigProvider } from "./rules/rules-config.provider.js";
 import { DocumentProcessor } from "./worker/document-processor.js";
+import { DocumentSweepService } from "./worker/document-sweep.service.js";
 import { DocumentWorkerService } from "./worker/document-worker.service.js";
 
 @Module({
@@ -15,11 +17,13 @@ import { DocumentWorkerService } from "./worker/document-worker.service.js";
     AppInfoModule,
     DbModule,
     DocumentStatusModule,
+    QueueModule,
   ],
   providers: [
     rulesConfigProvider,
     { provide: PIPELINE, useClass: StubPipeline },
     DocumentProcessor,
+    DocumentSweepService,
     DocumentWorkerService,
   ],
 })
