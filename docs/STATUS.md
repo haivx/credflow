@@ -30,9 +30,9 @@
 
 ## Vướng / câu hỏi mở
 
-- **Chốt `CprCardFields`?** Output thật không cần đổi field (21/22 trường chính đúng trên 5 fixture). Chờ Liam.
-- **Ngày `09/02/2025`:** prompt để trống vì dễ nhầm; an toàn nhưng tăng ca chuyển người. Giữ, hay coi là MM/DD kiểu Mỹ (prompt v2)? Chờ Liam.
-- **Test flaky** `hash-to-temp-file.spec.ts` (plan 11): 2/11 lần đỏ, còn sót file tạm. Có thể là lỗi thật (file tạm mồ côi), chưa xác nhận. Cần task riêng.
+- **`CprCardFields`:** Liam 2026-11-05: không cần đổi. Output thật dùng được (21/22 trường chính đúng trên 5 fixture); `extraction.ts` giữ nguyên.
+- **Ngày dạng `09/02/2025`:** Liam 2026-11-05: giữ nguyên, xử lý sau. Prompt để trống vì dễ nhầm; xem lại khi có số liệu eval ở P2.
+- **File tạm sót khi upload vượt giới hạn** (`hash-to-temp-file`, plan 11): lỗi thật, đã tái hiện. Sửa ở nhánh `fix/hash-temp-file-leak`, PR riêng trước plan 15.
 - **Hạn mức $5:** code không chặn cứng, cần đặt spend limit trong Console. Đã dùng khoảng $0.004.
 
 ## Eval mới nhất
