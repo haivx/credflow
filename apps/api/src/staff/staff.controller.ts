@@ -5,7 +5,7 @@ import {
   Param,
   Query,
 } from "@nestjs/common";
-import { StaffListQuery, StaffProfile } from "@credflow/contracts";
+import { Id, StaffListQuery, StaffProfile } from "@credflow/contracts";
 import { Roles } from "../auth/decorators.js";
 import { ZodValidationPipe } from "../common/zod-validation.pipe.js";
 import { StaffService } from "./staff.service.js";
@@ -25,7 +25,7 @@ export class StaffController {
   }
 
   @Get(":id")
-  async getById(@Param("id") id: string) {
+  async getById(@Param("id", new ZodValidationPipe(Id)) id: string) {
     const row = await this.staffService.findById(id);
     if (row === undefined) {
       throw new NotFoundException(`Không tìm thấy staff ${id}`);

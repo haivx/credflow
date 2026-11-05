@@ -158,6 +158,146 @@ describe("A9: eslint-disable phải có lý do, không thừa", () => {
   });
 });
 
+describe("A2: dữ liệu từ ngoài phải qua Zod", () => {
+  const SERVICE = "apps/api/src/documents/documents.service.ts";
+  const ENGINE_FILE = ENGINE;
+  const API_SPEC = "apps/api/src/common/pg-error.spec.ts";
+  const API_TEST = "apps/api/test/db.ts";
+  const RULES_CONFIG = "packages/rules/src/config.ts";
+  const HELPER = "packages/contracts/src/parse-json.ts";
+  const ANY = `declare const v: any;\n`;
+  const PARSE = `export const p = JSON.parse("{}") as { a: string };\n`;
+  const REFERENCE = `export const p = JSON.parse;\n`;
+
+  for (const [rule, code] of [
+    ["no-unsafe-assignment", `${ANY}export const x: string = v;\n`],
+    ["no-unsafe-member-access", `${ANY}export const x: unknown = v.a;\n`],
+    ["no-unsafe-call", `${ANY}export const x: unknown = v();\n`],
+    ["no-unsafe-return", `${ANY}export function f() { return v; }\n`],
+    [
+      "no-unsafe-argument",
+      `${ANY}declare function g(s: string): void;\ng(v);\n`,
+    ],
+    [
+      "no-unsafe-type-assertion",
+      `declare const body: unknown;\nexport const x = body as { a: string };\n`,
+    ],
+  ]) {
+    const pattern = new RegExp(`^@typescript-eslint/${rule}:`);
+
+    it(`${rule} báo ở apps/api/src`, async () => {
+      await expectReported(code, SERVICE, pattern);
+    });
+
+    it(`${rule} báo ở packages/*/src`, async () => {
+      await expectReported(code, ENGINE_FILE, pattern);
+    });
+  }
+
+  it("no-unsafe-type-assertion miễn file test", async () => {
+    const messages = await lint(
+      `declare const body: unknown;\nexport const x = body as { a: string };\n`,
+      API_SPEC,
+    );
+    assert.deepEqual(messages, []);
+  });
+
+  it("5 rule no-unsafe vẫn áp cho file spec trong src", async () => {
+    await expectReported(
+      `${ANY}export const x: string = v;\n`,
+      API_SPEC,
+      /^@typescript-eslint\/no-unsafe-assignment:/,
+    );
+  });
+
+  it("không bật no-unsafe cho apps/api/test", async () => {
+    const messages = await lint(
+      `${ANY}export const x: string = v;\n`,
+      API_TEST,
+    );
+    assert.deepEqual(
+      messages.filter((m) => m.includes("no-unsafe")),
+      [],
+    );
+  });
+
+  for (const [where, file] of [
+    ["apps/api/src (block A14)", SERVICE],
+    ["pg-error.ts (miễn trừ A14)", "apps/api/src/common/pg-error.ts"],
+    ["schema.ts (miễn trừ A14)", "apps/api/src/db/schema.ts"],
+    ["apps/api/scripts", "apps/api/scripts/seed.ts"],
+    ["packages/rules/src/engine.ts (block A3)", ENGINE_FILE],
+    ["packages/rules/src/config.ts (ngoài A3, A5)", RULES_CONFIG],
+    ["packages/contracts/src (block A5)", CONTRACTS],
+    ["eval/src", "eval/src/run.ts"],
+    ["tools/synth/src", "tools/synth/src/generate.ts"],
+  ]) {
+    it(`cấm JSON.parse: ${where}`, async () => {
+      await expectReported(PARSE, file, /^no-restricted-syntax: A2:/);
+      await expectReported(REFERENCE, file, /^no-restricted-syntax: A2:/);
+    });
+  }
+
+  it("cấm JSON.parse: apps/web (.tsx)", async () => {
+    await expectReported(
+      PARSE,
+      "apps/web/app/page.tsx",
+      /^no-restricted-syntax: A2:/,
+    );
+  });
+
+  for (const [where, file] of [
+    ["helper", HELPER],
+    ["file spec", API_SPEC],
+    ["file test", RULES_TEST],
+    ["apps/api/test", API_TEST],
+  ]) {
+    it(`miễn JSON.parse: ${where}`, async () => {
+      const messages = await lint(REFERENCE, file);
+      assert.deepEqual(
+        messages.filter((m) => m.includes("A2:")),
+        [],
+      );
+    });
+  }
+
+  it("helper vẫn bị A5, không đọc đồng hồ", async () => {
+    await expectReported(
+      `export const x = Date.now();\n`,
+      HELPER,
+      /^no-restricted-syntax: A5:/,
+    );
+  });
+
+  it("gộp selector không làm mất A3, A5, A14", async () => {
+    await expectReported(
+      `export const x = Math.random();\n`,
+      ENGINE_FILE,
+      /^no-restricted-syntax: A3:/,
+    );
+    await expectReported(
+      `export const x = Date.now();\n`,
+      ENGINE_FILE,
+      /^no-restricted-syntax: A5:/,
+    );
+    await expectReported(
+      `export const x = new Date();\n`,
+      CONTRACTS,
+      /^no-restricted-syntax: A5:/,
+    );
+    await expectReported(
+      `export const f = (e: Error) => e.stack;\n`,
+      SERVICE,
+      /^no-restricted-syntax: A14:/,
+    );
+    await expectReported(
+      `export const f = (e: Error) => e.stack;\n`,
+      "apps/api/src/db/schema.ts",
+      /^no-restricted-syntax: A14:/,
+    );
+  });
+});
+
 describe("A14: log lỗi DB an toàn (lớp phụ, gờ chính là formatErrorForLog + test)", () => {
   const SERVICE = "apps/api/src/documents/documents.service.ts";
   const HELPER = "apps/api/src/common/pg-error.ts";

@@ -10,7 +10,15 @@ import {
   UnsupportedMediaTypeException,
 } from "@nestjs/common";
 import { ApiError, StaffProfile } from "@credflow/contracts";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from "vitest";
 import { AllExceptionsFilter } from "./all-exceptions.filter.js";
 
 /** Giả lập lỗi Postgres như Drizzle ném ra: lỗi của pg nằm ở `.cause`. */
@@ -34,7 +42,7 @@ function run(exception: unknown) {
 }
 
 describe("AllExceptionsFilter", () => {
-  let logError: ReturnType<typeof vi.spyOn>;
+  let logError: MockInstance<Logger["error"]>;
 
   beforeEach(() => {
     logError = vi.spyOn(Logger.prototype, "error").mockImplementation(() => {});

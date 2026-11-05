@@ -15,9 +15,9 @@
 
 > Claude cập nhật sau **mỗi bước**, không chờ cuối phiên. Mở phiên mới gõ `/tiep` để làm tiếp.
 
-- **Mục 🎓:** (không có 🎓 mới) 12f (A8) đã kiểm chứng, chờ merge PR đổi ✅; 12g (A2) đã duyệt, chưa code.
-- **Đã xong:** KB1–9 của 12f có kết quả; KB7 đo được lỗ script (Bash sửa vùng không qua `ask`). PR thử đã đóng; nhánh remote `tmp/12f-red` còn sót, Claude bị deny không xoá được.
-- **Bước tiếp theo:** Liam merge PR A8 ✅ → tạo nhánh 12g từ `main`, code theo `docs/plans/12g-zod-boundaries.md`. Sau đó plan 12 BullMQ.
+- **Mục 🎓:** (không có 🎓 mới) 12g (A2) chờ Liam merge.
+- **Đã xong:** A8 ✅ đã merge (PR #22). 12g: `parseJson`, lint A2 (6 rule + `JSON.parse`), `@Param` và cookie qua Zod, `pg-error.ts` bỏ `as`. A2 🟡 vì job data, LLM, `jsonb`, golden chưa có code.
+- **Bước tiếp theo:** Liam merge PR 12g → plan 12 BullMQ (nhớ các dòng ở "Tiếp theo").
 - **Câu hỏi còn treo:** Liam "tạm hiểu" vì sao cần `@Inject(DB)`. Có bật branch protection (bắt CI xanh mới merge) không.
 
 ## Tiếp theo
