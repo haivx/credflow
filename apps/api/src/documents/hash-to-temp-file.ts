@@ -2,8 +2,7 @@ import type { Readable } from "node:stream";
 import { join } from "node:path";
 import { createHash, randomUUID } from "node:crypto";
 import { pipeline } from "node:stream/promises";
-import { createWriteStream } from "node:fs";
-import { rm } from "node:fs/promises";
+import { type FileHandle, open, rm } from "node:fs/promises";
 
 /** File vượt giới hạn dung lượng upload. Controller map sang 413 PAYLOAD_TOO_LARGE. */
 export class FileTooLargeError extends Error {
@@ -49,10 +48,21 @@ export async function hashToTempFile(
     }
   }
 
+  // Mở file trước pipeline. `createWriteStream(path)` mở bất đồng bộ: pipeline lỗi sớm thì `rm`
+  // chạy khi lần mở còn dở, file được tạo sau đó và ở lại mãi trong tmpDir.
+  let file: FileHandle;
   try {
-    await pipeline(source, check, createWriteStream(tmpPath));
+    file = await open(tmpPath, "wx");
   } catch (err) {
-    // Destroy write stream không xoá phần đã ghi. force: file chưa kịp tạo cũng không lỗi.
+    source.destroy(); // pipeline chưa chạy nên chưa ai dọn source; upload sẽ treo nếu bỏ qua.
+    throw err;
+  }
+
+  try {
+    // Stream tự đóng handle khi xong hoặc bị destroy.
+    await pipeline(source, check, file.createWriteStream());
+  } catch (err) {
+    // Destroy write stream không xoá phần đã ghi.
     await rm(tmpPath, { force: true });
     throw err;
   }
