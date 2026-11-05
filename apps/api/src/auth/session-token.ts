@@ -1,7 +1,10 @@
 import { createHash, randomBytes } from "node:crypto";
 import type { Request } from "express";
+import * as z from "zod";
 
 export const SESSION_COOKIE = "credflow_session";
+
+const SessionCookies = z.object({ [SESSION_COOKIE]: z.string().min(1) });
 
 /** Token 256 bit ngẫu nhiên, chỉ trình duyệt giữ bản thô (trong cookie). */
 export function newSessionToken(): string {
@@ -18,9 +21,6 @@ export function hashSessionToken(token: string): string {
 
 /** Đọc token từ cookie (cookie-parser đã parse vào req.cookies). Không có hoặc rỗng → undefined. */
 export function readSessionToken(req: Request): string | undefined {
-  // @types/cookie-parser khai báo req.cookies là any: gán sang unknown rồi thu hẹp kiểu.
-  const cookies: unknown = req.cookies;
-  if (typeof cookies !== "object" || cookies === null) return undefined;
-  const value = (cookies as Record<string, unknown>)[SESSION_COOKIE];
-  return typeof value === "string" && value !== "" ? value : undefined;
+  // @types/cookie-parser khai báo req.cookies là any; đây là dữ liệu từ client nên parse bằng Zod.
+  return SessionCookies.safeParse(req.cookies).data?.[SESSION_COOKIE];
 }

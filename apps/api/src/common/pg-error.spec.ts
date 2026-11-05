@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { formatErrorForLog, getPgErrorCode } from "./pg-error.js";
+import {
+  formatErrorForLog,
+  getPgErrorCode,
+  getPgErrorInfo,
+} from "./pg-error.js";
 
 /** Giả lập lỗi Postgres như Drizzle ném ra: lỗi của pg nằm ở `.cause`. */
 function drizzleError(code: string): Error {
@@ -32,6 +36,51 @@ describe("getPgErrorCode", () => {
       code: "ECONNREFUSED",
     });
     expect(getPgErrorCode(netError)).toBeUndefined();
+  });
+});
+
+describe("getPgErrorInfo", () => {
+  const withCause = (fields: object) =>
+    new Error("Failed query", {
+      cause: Object.assign(new Error("pg error"), { code: "23514", ...fields }),
+    });
+
+  it("lấy code, constraint, table, column; bỏ detail và where", () => {
+    expect(
+      getPgErrorInfo(
+        withCause({
+          constraint: "c",
+          table: "t",
+          column: "col",
+          detail: "Failing row contains (SAMPLE)",
+          where: "SAMPLE",
+        }),
+      ),
+    ).toEqual({ code: "23514", constraint: "c", table: "t", column: "col" });
+  });
+
+  it("field không phải chuỗi thì bỏ, vẫn giữ code", () => {
+    expect(getPgErrorInfo(withCause({ constraint: 1, table: null }))).toEqual({
+      code: "23514",
+    });
+  });
+
+  it("lỗi pg trần (không bọc): đọc trực tiếp", () => {
+    const bare = Object.assign(new Error("x"), { code: "22P02" });
+    expect(getPgErrorInfo(bare)).toEqual({ code: "22P02" });
+  });
+
+  it.each([
+    ["không phải lỗi pg", new Error("boom")],
+    ["cause không phải object", new Error("boom", { cause: "23514" })],
+    [
+      "code không phải SQLSTATE",
+      Object.assign(new Error("x"), { code: "ECONNREFUSED" }),
+    ],
+    ["null", null],
+    ["chuỗi", "23514"],
+  ])("%s → undefined", (_name, error) => {
+    expect(getPgErrorInfo(error)).toBeUndefined();
   });
 });
 

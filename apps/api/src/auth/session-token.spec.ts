@@ -28,6 +28,8 @@ describe("session token", () => {
     ["không có cookie", {}, undefined],
     ["cookie rỗng", { [SESSION_COOKIE]: "" }, undefined],
     ["cookie-parser chưa chạy", undefined, undefined],
+    ["cookie không phải chuỗi", { [SESSION_COOKIE]: 123 }, undefined],
+    ["req.cookies không phải object", "abc", undefined],
   ])("readSessionToken: %s", (_name, cookies, expected) => {
     expect(readSessionToken({ cookies } as unknown as Request)).toBe(expected);
   });

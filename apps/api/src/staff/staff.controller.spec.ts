@@ -1,7 +1,11 @@
+import { BadRequestException } from "@nestjs/common";
+import { ROUTE_ARGS_METADATA } from "@nestjs/common/constants.js";
 import { Test } from "@nestjs/testing";
 import { describe, it, expect } from "vitest";
 import { StaffController } from "./staff.controller.js";
 import { StaffService } from "./staff.service.js";
+import { ZodValidationPipe } from "../common/zod-validation.pipe.js";
+import * as z from "zod";
 import { ZodError } from "zod";
 
 async function createController(rows: unknown[]) {
@@ -27,6 +31,29 @@ const newStaffProfile = {
 };
 
 describe("StaffController", () => {
+  // Route luôn có `id` không rỗng nên HTTP không phân biệt được có pipe hay không: đọc metadata của Nest.
+  it("@Param('id') đi qua ZodValidationPipe(Id)", () => {
+    const metadata: unknown = Reflect.getMetadata(
+      ROUTE_ARGS_METADATA,
+      StaffController,
+      "getById",
+    );
+    const args = z
+      .record(
+        z.string(),
+        z.object({ data: z.unknown(), pipes: z.array(z.unknown()) }),
+      )
+      .parse(metadata);
+    const pipe = Object.values(args)
+      .find((arg) => arg.data === "id")
+      ?.pipes.find((p) => p instanceof ZodValidationPipe);
+
+    expect(pipe).toBeInstanceOf(ZodValidationPipe);
+    expect(() => (pipe as ZodValidationPipe<z.ZodType>).transform("")).toThrow(
+      BadRequestException,
+    );
+  });
+
   it("return staff profiles", async () => {
     const controller = await createController([newStaffProfile]);
     const response = await controller.list({});

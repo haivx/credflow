@@ -1,6 +1,6 @@
 # 12g · Guardrail A2: mọi dữ liệu từ ngoài phải qua Zod
 
-Phase: P1 · Trạng thái: Đã duyệt · Ngày: 2026-11-04
+Phase: P1 · Trạng thái: Xong · Ngày: 2026-11-05
 
 ## Quyết định đã chốt (Liam, 2026-11-04)
 
@@ -23,8 +23,8 @@ Trạng thái: ✅ đã parse Zod · 🟡 có kiểm, chưa bằng Zod · ⏳ ch
 | Cửa | Chỗ | Trạng thái | Việc |
 | --- | --- | --- | --- |
 | HTTP body, query | `@Body`/`@Query` + `ZodValidationPipe` | ✅ | |
-| HTTP `@Param` | `staff.controller.ts:28` `@Param("id") id: string` | 🔴 kiểu do TS khai, không kiểm | thêm `ZodValidationPipe(Id)` |
-| Cookie | `session-token.ts:22-25` thu hẹp bằng tay, có `as` | 🟡 | đổi sang Zod |
+| HTTP `@Param` | `staff.controller.ts` `ZodValidationPipe(Id)` | ✅ plan này | |
+| Cookie | `session-token.ts` `SessionCookies.safeParse` | ✅ plan này | |
 | Multipart field | `upload-parser.ts` → `UploadDocumentFields` | ✅ | |
 | Multipart file | magic bytes (`file-type.ts`), giới hạn cỡ | 🟡 đúng cách: dữ liệu nhị phân, không dùng Zod | ghi vào A2 |
 | Multipart `filename` | `slice(0, 255)`, thư viện trả `string` | 🟡 chỉ dùng làm tên hiển thị, không dùng làm đường dẫn | giữ |

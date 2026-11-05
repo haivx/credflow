@@ -50,6 +50,13 @@ const API_SRC_IGNORES = ["**/*.spec.ts"];
 
 const PACKAGES_IGNORES = ["**/*.test.ts", "packages/rules/src/config.ts"];
 
+// A2: dữ liệu từ ngoài phải qua Zod. MemberExpression: bắt cả `const p = JSON.parse`.
+const A2_NO_JSON_PARSE = {
+  selector: "MemberExpression[object.name='JSON'][property.name='parse']",
+  message: "A2: dùng parseJson(schema, text) từ @credflow/contracts",
+};
+const TEST_FILES = ["**/*.test.ts", "**/*.spec.ts", "apps/api/test/**"];
+
 export default tseslint.config(
   {
     ignores: [
@@ -102,10 +109,46 @@ export default tseslint.config(
   {
     rules: { "@eslint-community/eslint-comments/require-description": "error" },
   },
+  // A2: giá trị `any` không lan được. Chỉ ở nơi có typed lint; web, eval, synth làm khi có code thật.
+  {
+    files: ["apps/api/src/**/*.ts", "packages/*/src/**/*.ts"],
+    rules: {
+      "@typescript-eslint/no-unsafe-assignment": "error",
+      "@typescript-eslint/no-unsafe-member-access": "error",
+      "@typescript-eslint/no-unsafe-call": "error",
+      "@typescript-eslint/no-unsafe-return": "error",
+      "@typescript-eslint/no-unsafe-argument": "error",
+    },
+  },
+  // A2: `req.body as Foo` lọt qua 5 rule trên. Test được ép kiểu để dựng dữ liệu giả.
+  {
+    files: ["apps/api/src/**/*.ts", "packages/*/src/**/*.ts"],
+    ignores: TEST_FILES,
+    rules: { "@typescript-eslint/no-unsafe-type-assertion": "error" },
+  },
+  // A2: JSON.parse chỉ ở helper. Các block `no-restricted-syntax` đặt sau thay hẳn options
+  // của block này, nên block nào cũng phải gộp A2_NO_JSON_PARSE. Miễn test và tools/lint (.mjs).
+  {
+    files: [
+      "apps/**/*.{ts,tsx}",
+      "packages/*/src/**/*.ts",
+      "eval/src/**/*.ts",
+      "tools/synth/src/**/*.ts",
+    ],
+    ignores: TEST_FILES,
+    rules: { "no-restricted-syntax": ["error", A2_NO_JSON_PARSE] },
+  },
   // A5: packages/* không tạo Date.
   {
     files: ["packages/*/src/**/*.ts"],
     ignores: PACKAGES_IGNORES,
+    rules: {
+      "no-restricted-syntax": ["error", ...A5_NO_DATE, A2_NO_JSON_PARSE],
+    },
+  },
+  // Helper duy nhất được gọi JSON.parse.
+  {
+    files: ["packages/contracts/src/parse-json.ts"],
     rules: { "no-restricted-syntax": ["error", ...A5_NO_DATE] },
   },
   // A3: rule engine là hàm thuần. Đọc file chỉ ở config.ts.
@@ -145,7 +188,12 @@ export default tseslint.config(
           message: "A3: rule engine không đọc env/process, truyền qua input",
         },
       ],
-      "no-restricted-syntax": ["error", ...A5_NO_DATE, ...A3_PURE],
+      "no-restricted-syntax": [
+        "error",
+        ...A5_NO_DATE,
+        ...A3_PURE,
+        A2_NO_JSON_PARSE,
+      ],
     },
   },
   // A14: log lỗi DB an toàn. Hai miễn trừ dưới đặt sau và thay hẳn options của block này.
@@ -154,18 +202,27 @@ export default tseslint.config(
     ignores: API_SRC_IGNORES,
     rules: {
       "no-console": "error",
-      "no-restricted-syntax": ["error", A14_NO_STACK, A14_NO_SQL_RAW],
+      "no-restricted-syntax": [
+        "error",
+        A14_NO_STACK,
+        A14_NO_SQL_RAW,
+        A2_NO_JSON_PARSE,
+      ],
     },
   },
   // Helper duy nhất được đọc .stack.
   {
     files: ["apps/api/src/common/pg-error.ts"],
-    rules: { "no-restricted-syntax": ["error", A14_NO_SQL_RAW] },
+    rules: {
+      "no-restricted-syntax": ["error", A14_NO_SQL_RAW, A2_NO_JSON_PARSE],
+    },
   },
   // DDL không nhận tham số $1; schema.ts chỉ ghép hằng số từ contracts.
   {
     files: ["apps/api/src/db/schema.ts"],
-    rules: { "no-restricted-syntax": ["error", A14_NO_STACK] },
+    rules: {
+      "no-restricted-syntax": ["error", A14_NO_STACK, A2_NO_JSON_PARSE],
+    },
   },
   // CLAUDE.md: TypeScript strict, không `any`.
   { rules: { "@typescript-eslint/no-explicit-any": "error" } },

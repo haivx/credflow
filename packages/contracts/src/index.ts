@@ -21,6 +21,7 @@ export * from "./routing.js";
 export * from "./eval.js";
 export * from "./error.js";
 export * from "./auth.js";
+export * from "./parse-json.js";
 
 /** Các kiểu đi qua ranh giới I/O. Fixture trong fixtures/<Tên>.json phải parse được. */
 export const Schemas = {

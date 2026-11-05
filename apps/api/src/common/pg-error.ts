@@ -1,49 +1,34 @@
 import { DrizzleQueryError } from "drizzle-orm";
+import * as z from "zod";
 
-const SQLSTATE = /^[0-9A-Z]{5}$/;
+const SafeString = z.string().optional().catch(undefined);
 
-/** Lấy mã SQLSTATE của Postgres từ lỗi (Drizzle bọc lỗi pg ở `.cause`). Không phải lỗi pg thì trả undefined. */
-export function getPgErrorCode(error: unknown): string | undefined {
+/**
+ * Phần của lỗi pg an toàn để log. z.object bỏ field lạ, nên `detail` và `where` (chứa giá trị
+ * của dòng) không bao giờ đi qua. Field phụ sai kiểu thì bỏ, vẫn giữ `code`.
+ */
+const PgErrorInfo = z.object({
+  code: z.string().regex(/^[0-9A-Z]{5}$/),
+  constraint: SafeString,
+  table: SafeString,
+  column: SafeString,
+});
+export type PgErrorInfo = z.infer<typeof PgErrorInfo>;
+
+const CauseWithCode = z.object({ code: z.string() });
+
+/** Lấy phần an toàn của lỗi pg (Drizzle bọc lỗi pg ở `.cause`). Không phải lỗi pg thì trả undefined. */
+export function getPgErrorInfo(error: unknown): PgErrorInfo | undefined {
   const candidate =
     typeof error === "object" && error !== null && "cause" in error
-      ? (error as { cause?: unknown }).cause
+      ? error.cause
       : error;
-  if (
-    typeof candidate === "object" &&
-    candidate !== null &&
-    "code" in candidate &&
-    typeof candidate.code === "string" &&
-    SQLSTATE.test(candidate.code)
-  ) {
-    return candidate.code;
-  }
-  return undefined;
+  return PgErrorInfo.safeParse(candidate).data;
 }
 
-/** Phần của lỗi pg an toàn để log. Cố ý bỏ `detail` và `where`: chúng chứa giá trị của dòng. */
-export interface PgErrorInfo {
-  code: string;
-  constraint?: string;
-  table?: string;
-  column?: string;
-}
-
-export function getPgErrorInfo(error: unknown): PgErrorInfo | undefined {
-  const code = getPgErrorCode(error);
-  if (code === undefined) return undefined;
-  const cause =
-    typeof error === "object" && error !== null && "cause" in error
-      ? (error as { cause?: unknown }).cause
-      : error;
-  const source = (
-    typeof cause === "object" && cause !== null ? cause : {}
-  ) as Record<string, unknown>;
-  const info: PgErrorInfo = { code };
-  for (const key of ["constraint", "table", "column"] as const) {
-    const value = source[key];
-    if (typeof value === "string") info[key] = value;
-  }
-  return info;
+/** Mã SQLSTATE của Postgres từ lỗi. Không phải lỗi pg thì trả undefined. */
+export function getPgErrorCode(error: unknown): string | undefined {
+  return getPgErrorInfo(error)?.code;
 }
 
 /** Stack không có phần đầu `name: message`. Không tìm thấy message thì bỏ cả stack: thà mất frame còn hơn lộ giá trị. */
@@ -79,8 +64,8 @@ export function formatErrorForLog(error: unknown): {
   if (pg !== undefined) parts.push(`pg=${JSON.stringify(pg)}`);
   if (isQueryError) {
     // Mất kết nối không có SQLSTATE; mã như ECONNREFUSED không chứa dữ liệu.
-    const causeCode = (error.cause as { code?: unknown } | undefined)?.code;
-    if (pg === undefined && typeof causeCode === "string") {
+    const causeCode = CauseWithCode.safeParse(error.cause).data?.code;
+    if (pg === undefined && causeCode !== undefined) {
       parts.push(`causeCode=${causeCode}`);
     }
     parts.push(`query=${error.query}`);
