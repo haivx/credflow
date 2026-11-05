@@ -1,6 +1,11 @@
-import { Injectable } from "@nestjs/common";
-import type { RoutingDecision, RuleResult } from "@credflow/contracts";
-import { route } from "@credflow/rules";
+import type {
+  Classification,
+  Extraction,
+  RoutingDecision,
+  RuleResult,
+} from "@credflow/contracts";
+import { LLM_MODEL } from "../llm/llm.service.js";
+import { PROMPT_VERSION } from "../llm/prompts.js";
 
 export const PIPELINE = Symbol("PIPELINE");
 
@@ -8,6 +13,11 @@ export interface PipelineResult {
   status: "needs_review";
   routing: RoutingDecision;
   ruleResults: RuleResult[];
+  classification?: Classification;
+  extraction?: Extraction;
+  timingMs?: Record<string, number>;
+  /** Lỗi không đáng thử lại: vẫn chuyển người duyệt, kèm phần đã đọc được. */
+  error?: { step: string; message: string };
 }
 
 /** Xử lý một document. Lỗi tạm thì ném lỗi thường để job retry. */
@@ -23,24 +33,9 @@ export class UnreadableFileError extends Error {
   }
 }
 
-/** Giá trị `versions` của stub. Plan LLM thay bằng phiên bản prompt và model thật. */
+/** Ghi lúc vào `processing`. Phần `rules` lấy từ config đang chạy. */
 export const PIPELINE_VERSIONS = {
-  pipeline: "12-stub",
-  prompt: "none",
-  model: "none",
+  pipeline: "14",
+  prompt: PROMPT_VERSION,
+  model: LLM_MODEL,
 };
-
-/**
- * Chưa gọi LLM (plan 12). Chưa rule nào được chấm nên `route([])` chuyển cho người duyệt,
- * nên stub không có đường tới `auto_approved`.
- */
-@Injectable()
-export class StubPipeline implements Pipeline {
-  run(): Promise<PipelineResult> {
-    return Promise.resolve({
-      status: "needs_review",
-      routing: route([]),
-      ruleResults: [],
-    });
-  }
-}

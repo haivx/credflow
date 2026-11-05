@@ -9,6 +9,8 @@ export interface Storage {
   readonly tmpDir: string;
   /** Chuyển file tạm (đã ghi xong, đã hash) vào vị trí `key`. File tạm không còn sau khi gọi. */
   putFromTemp(tmpPath: string, key: string): Promise<void>;
+  /** Đọc cả file vào memory (LLM cần base64, file đã bị giới hạn cỡ lúc upload). Không có file → null. */
+  read(key: string): Promise<Buffer | null>;
   /** Xoá file ở `key`. Không có file thì bỏ qua. */
   remove(key: string): Promise<void>;
 }

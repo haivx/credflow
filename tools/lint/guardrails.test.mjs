@@ -331,6 +331,49 @@ describe("A11: status chỉ đổi qua một nơi", () => {
   });
 });
 
+describe("A10: LLM chỉ đọc và trích xuất", () => {
+  const LLM = "apps/api/src/llm/llm.service.ts";
+  const PIPELINE = "apps/api/src/pipeline/llm-pipeline.ts";
+
+  it("module LLM không import rule hay routing", async () => {
+    await expectReported(
+      `export { route } from "@credflow/rules";\nimport { route } from "@credflow/rules";\nexport const r = route;\n`,
+      LLM,
+      /^no-restricted-imports: .*A10:/,
+    );
+  });
+
+  it("module LLM không import nơi ghi status, DB, pipeline", async () => {
+    for (const path of [
+      "../documents/document-status.service.js",
+      "../db/schema.js",
+      "../pipeline/pipeline.js",
+    ]) {
+      await expectReported(
+        `import * as m from "${path}";\nexport const x = m;\n`,
+        LLM,
+        /^no-restricted-imports: .*A10:/,
+      );
+    }
+  });
+
+  it("ngoài module LLM không import SDK", async () => {
+    await expectReported(
+      `import Anthropic from "@anthropic-ai/sdk";\nexport const a = Anthropic;\n`,
+      PIPELINE,
+      /^no-restricted-imports: .*A10:/,
+    );
+  });
+
+  it("module LLM được import SDK; pipeline được import route", async () => {
+    await expectClean(
+      `import Anthropic from "@anthropic-ai/sdk";\nexport const a = Anthropic;\n`,
+      LLM,
+    );
+    await expectClean(`import "@credflow/rules";\n`, PIPELINE);
+  });
+});
+
 describe("A14: log lỗi DB an toàn (lớp phụ, gờ chính là formatErrorForLog + test)", () => {
   const SERVICE = "apps/api/src/documents/documents.service.ts";
   const HELPER = "apps/api/src/common/pg-error.ts";

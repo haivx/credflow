@@ -73,7 +73,7 @@ Chi tiết trường, cách tính hạn và ca khó của từng loại: `docs/d
 upload → [1] tiền xử lý → [2] phân loại (LLM) → [3] trích xuất (LLM) → [4] kiểm tra (code) → [5] routing (code) → auto_approved | needs_review
 ```
 
-1. **Tiền xử lý** (code): PDF → ảnh từng trang, chuẩn hoá kích thước, xoay theo EXIF.
+1. **Tiền xử lý** (code): PDF → ảnh từng trang, chuẩn hoá kích thước, xoay theo EXIF. Chưa làm: P1 gửi thẳng file gốc (ADR 0008), xem lại theo số liệu eval.
 2. **Phân loại** (LLM vision): `{docType, confidence}`. `unknown` hoặc khác loại nhân viên khai → rule `WRONG_DOC_TYPE`.
 3. **Trích xuất** (LLM vision, structured output): mỗi trường `{value, confidence, evidence: {quote, box?}}`. Ngày chuẩn hoá `YYYY-MM-DD`, chữ gốc giữ trong `quote`. Output parse bằng Zod; lỗi parse → retry tối đa 1 lần → `needs_review`.
 4. **Kiểm tra** (rule engine thuần, `packages/rules`): xem mục 5.
@@ -140,7 +140,7 @@ Xem `docs/flows.md`. Các màn chính:
 | Job queue | BullMQ + Redis 7 (`noeviction`); dual-write xử lý bằng sweep job (ADR 0001) | Chấp nhận |
 | Đăng nhập | Email + mật khẩu (scrypt), session trong Postgres, cookie `httpOnly`; guard toàn cục + `@Roles` | Chấp nhận (ADR 0004) |
 | Lưu file | File system local (`DATA_DIR`), đổi sang S3-compatible khi deploy | Đề xuất |
-| LLM | Model có vision + structured output; model cụ thể chốt ở P1 | Mở |
+| LLM | `claude-haiku-5-5`, vision + structured output (ADR 0008); đo lại bằng eval ở P2 | Chấp nhận |
 | Contract | Zod 4 trong `packages/contracts` | Chấp nhận |
 | Eval | TypeScript (`eval/`) | Chấp nhận |
 | Deploy | Chốt ở P6 | Mở |
@@ -149,7 +149,7 @@ Xem `docs/flows.md`. Các màn chính:
 
 1. ~~Chốt contract bản nháp trong `packages/contracts`~~ Đã chốt `common`, `document`, `routing`, `staff` 2026-11-03 (plan 07); `extraction`, `rules` chốt ở P1, `eval` ở P2.
 2. ~~Stack trong bảng trên~~ Đã chốt 2026-10-29 (ADR 0001).
-3. Model LLM và nhà cung cấp (P1).
+3. ~~Model LLM và nhà cung cấp (P1).~~ Đã chốt 2026-11-05: `claude-haiku-5-5` (ADR 0008).
 4. ~~Có cho phép **tự từ chối** ca chắc chắn hết hạn không?~~ Đã chốt 2026-11-03: **không**. Mọi ca không qua đều vào hàng chờ; người duyệt từ chối (hàng chờ lọc theo lý do, P4).
 5. Vision thuần hay OCR + LLM cho bản cuối (P5, quyết theo số liệu eval).
 6. Nơi deploy và lưu file khi demo (P6).

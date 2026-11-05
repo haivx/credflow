@@ -58,19 +58,24 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 - **Kiểm sẵn có:** `apps/api/test/documents.int-spec.ts` (14 case)
 - **UI:** `TODO(verify)`: màn upload S1 chưa làm
 
-## Pipeline xử lý (P1, chưa làm)
+## Pipeline xử lý (P1, đã có LLM, chưa có rule)
 - **Trạng thái:** `uploaded → processing → extracted → auto_approved | needs_review | failed`; sau duyệt: `approved | rejected | reupload_requested` (`DocumentStatus`)
-- **Hiện tại (plan 12):** upload đẩy job (`jobId = documentId`), worker chạy pipeline **stub**, chưa gọi LLM: mọi document đi `uploaded → processing → needs_review`, `routing.reasons = ["NO_RULES_EVALUATED"]`, `versions = { pipeline: "12-stub", prompt: "none", model: "none", rules: "1" }`
-- **Chạy:** `make dev-api` + `make dev-worker`. Không có endpoint đọc trạng thái, xem bằng `psql`
-- **Lỗi (ADR 0006):** lỗi tạm thử tối đa 3 lần (chờ 1s, 2s), hết lượt → `needs_review` kèm `error`; file hỏng → `failed`, không retry; job data sai schema → failed set của BullMQ
+- **Hiện tại (plan 14):** upload đẩy job (`jobId = documentId`), worker gọi Claude thật (`claude-haiku-5-5`, ADR 0008): phân loại mọi file, trích xuất chỉ khi `cpr_card`. Chưa có rule nên mọi document đi `uploaded → processing → needs_review`, `routing.reasons = ["NO_RULES_EVALUATED"]`, `versions = { pipeline: "14", prompt: "classify@1+extract-cpr@1", model: "claude-haiku-5-5", rules: "1" }`. `evidence.box` bị bỏ trong code
+- **Chạy:** `make dev-api` + `make dev-worker` (worker cần `ANTHROPIC_API_KEY`, **tốn tiền thật**). Không có endpoint đọc trạng thái, xem bằng `psql`. Log worker có token từng lượt để cộng chi phí
+- **Fixture:** `eval/hard-cases/cpr/` (5 giấy SAMPLE, nguồn HTML, `expected.json` các trường chính)
+- **Lỗi (ADR 0006):**
+  - timeout, mất kết nối, 408, 409, 429, 5xx: thử tối đa 3 lần (chờ 1s, 2s), hết lượt → `needs_review`, `error.step = "pipeline"`
+  - 4xx khác, `refusal`: 1 lượt, `needs_review`, `error.step` là `classify` hoặc `extract`, giữ phần đã đọc được
+  - output sai schema, `max_tokens`: gọi lại 1 lần trong bước đó, vẫn lỗi thì như trên
+  - file không có trong storage → `failed`, 0 lượt gọi LLM; job data sai schema → failed set của BullMQ
 - **Redis chết:** upload vẫn `201` (tối đa khoảng 2s), document nằm ở `uploaded`; Redis sống lại thì sweep đẩy lại job
 - **Sweep (ADR 0007):** chạy trong worker, 60 giây một vòng, queue `document-sweep`, đăng ký lại lịch mỗi khi kết nối Redis `ready`
   - job còn sống (`waiting`, `active`, `delayed`...) → bỏ qua
   - `uploaded` quá 1 phút → xoá job completed/failed còn giữ rồi `add` lại (`add` trùng `jobId` bị bỏ qua mà không báo lỗi)
   - `processing` quá 15 phút → `needs_review`, `reasons = ["NO_RULES_EVALUATED"]`, `error.step = "sweep"`, không chạy lại
 - **Chạy trùng job:** chỉ một lần ghi thắng (`WHERE status = from`); job thua nhận conflict, log `warn`, `completed`, không retry
-- **Kiểm sẵn có:** `apps/api/test/worker.int-spec.ts`, `apps/api/test/documents-enqueue.int-spec.ts`, `apps/api/test/sweep.int-spec.ts`
-- **Kỳ vọng (khi có LLM và rule thật):**
+- **Kiểm sẵn có:** `apps/api/test/worker.int-spec.ts`, `apps/api/test/documents-enqueue.int-spec.ts`, `apps/api/test/sweep.int-spec.ts`, `apps/api/test/pipeline.int-spec.ts` (client LLM giả, không tốn tiền)
+- **Kỳ vọng (khi có rule thật):**
   - thẻ CPR hợp lệ → `auto_approved`, có `holderName`, `issuerName`, `expirationDate` kèm `evidence.quote`
   - thẻ CPR hết hạn → `needs_review`, `routing.reasons` có `EXPIRED` (không bao giờ tự từ chối)
   - engine không chấm rule nào → `needs_review`, `routing.reasons` = `["NO_RULES_EVALUATED"]`

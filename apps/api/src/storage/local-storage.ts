@@ -1,4 +1,4 @@
-import { mkdir, rename, rm } from "node:fs/promises";
+import { mkdir, readFile, rename, rm } from "node:fs/promises";
 import { dirname, resolve, sep } from "node:path";
 import type { Storage } from "./storage.js";
 
@@ -26,6 +26,17 @@ export class LocalStorage implements Storage {
     const target = this.pathOf(key);
     await mkdir(dirname(target), { recursive: true });
     await rename(tmpPath, target);
+  }
+
+  async read(key: string): Promise<Buffer | null> {
+    try {
+      return await readFile(this.pathOf(key));
+    } catch (err) {
+      if (err instanceof Error && "code" in err && err.code === "ENOENT") {
+        return null;
+      }
+      throw err;
+    }
   }
 
   async remove(key: string): Promise<void> {
