@@ -51,7 +51,7 @@ Bậc tin cậy hiện tại: **2** (Liam duyệt plan + verification plan; Clau
 - **Không chắc thì chuyển cho người.** Chỉ `auto_approve` khi mọi rule `block` đều qua. Hệ thống không bao giờ tự từ chối.
 - **Có value thì phải có evidence.** Trường không có đoạn chữ gốc làm bằng chứng → coi như không chắc.
 - **Metric quan trọng nhất là `falseApproveRate`, mục tiêu 0.** Đánh đổi recall (tỉ lệ tự duyệt) để giữ nó.
-- **Rule engine là hàm thuần:** input (extraction, staff, config, asOf) → output (RuleResult[]). Không gọi LLM, không đọc file, không dùng `Date.now()` bên trong.
+- **Rule engine là hàm thuần:** input (extraction, classification, declaredDocType?, staff, config, asOf) → output (RuleResult[]). Không gọi LLM, không đọc file, không dùng `Date.now()` bên trong.
 - **Không có dữ liệu cá nhân thật.** Chỉ dùng giấy tờ giả lập có watermark SAMPLE, tên và tổ chức hư cấu (`docs/data-policy.md`). Không commit `.env`, file upload, `real-docs/`.
 - Rule và danh sách tổ chức trong `config/rules/` là cấu hình minh hoạ, không nhận là quy định pháp lý.
 - Mỗi kết quả lưu kèm `versions {pipeline, prompt, model, rules}` để eval và audit tái lập được.

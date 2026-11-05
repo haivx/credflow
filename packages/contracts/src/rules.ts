@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { DocType } from "./document.js";
 
-// BẢN NHÁP: Liam chốt ở P1. Thêm mã rule mới nghĩa là sửa contract.
+// Đã chốt 2026-11-05 (plan 15). Thêm mã rule mới nghĩa là sửa contract.
 
 export const RuleCode = z
   .enum([

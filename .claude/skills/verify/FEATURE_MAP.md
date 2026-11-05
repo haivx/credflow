@@ -58,7 +58,8 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 - **Kiểm sẵn có:** `apps/api/test/documents.int-spec.ts` (14 case)
 - **UI:** `TODO(verify)`: màn upload S1 chưa làm
 
-## Pipeline xử lý (P1, đã có LLM, chưa có rule)
+## Pipeline xử lý (P1, đã có LLM, rule chưa nối)
+- **Rule engine (plan 15, ADR 0009):** `evaluateRules` chấm 9 rule cho `cpr_card` nhưng **chưa nối vào pipeline**. Kiểm: `pnpm --filter @credflow/rules test`; `recorded.test.ts` chạy trên output thật của Haiku (`eval/hard-cases/cpr/recorded/`)
 - **Trạng thái:** `uploaded → processing → extracted → auto_approved | needs_review | failed`; sau duyệt: `approved | rejected | reupload_requested` (`DocumentStatus`)
 - **Hiện tại (plan 14):** upload đẩy job (`jobId = documentId`), worker gọi Claude thật (`claude-haiku-5-5`, ADR 0008): phân loại mọi file, trích xuất chỉ khi `cpr_card`. Chưa có rule nên mọi document đi `uploaded → processing → needs_review`, `routing.reasons = ["NO_RULES_EVALUATED"]`, `versions = { pipeline: "14", prompt: "classify@1+extract-cpr@1", model: "claude-haiku-5-5", rules: "1" }`. `evidence.box` bị bỏ trong code
 - **Chạy:** `make dev-api` + `make dev-worker` (worker cần `ANTHROPIC_API_KEY`, **tốn tiền thật**). Không có endpoint đọc trạng thái, xem bằng `psql`. Log worker có token từng lượt để cộng chi phí

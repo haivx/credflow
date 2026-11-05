@@ -20,7 +20,7 @@ Ký hiệu: **B** = bắt buộc để tự duyệt, T = tuỳ chọn.
 
 \* Cần ít nhất một trong `expirationDate` hoặc `validityText`; nếu không có cả hai thì dùng `defaultValidityMonths.cpr_card`.
 
-**Cách tính hạn:** `expirationDate` nếu có → ngược lại `completionDate + validityText` → ngược lại `completionDate + defaultValidityMonths`. Có cả hai thì kiểm tra chéo (`DATE_INCONSISTENT` nếu lệch quá 31 ngày).
+**Cách tính hạn:** `expirationDate` nếu có → ngược lại `completionDate + validityText` → ngược lại `completionDate + defaultValidityMonths`. Có cả hai thì kiểm tra chéo (`DATE_INCONSISTENT` nếu lệch quá 31 ngày). Có chữ về hạn trên giấy mà không đọc được thì không dùng hiệu lực mặc định; không xác định được hạn thì `EXPIRED` không qua (ADR 0009).
 
 **Ca khó:** ảnh chụp lệch, "Recommended renewal: 03/2028" (chỉ tháng → lấy ngày cuối tháng), thẻ "electronic only" hoặc khoá online không có phần thực hành (chính sách tuỳ khách hàng, xử lý bằng `acceptedIssuers`).
 

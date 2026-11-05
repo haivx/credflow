@@ -93,7 +93,7 @@ Chạy bất đồng bộ qua job queue; trạng thái `uploaded → processing 
 
 ## 5. Rule engine
 
-Hàm thuần `evaluateRules({extraction, staff, config, asOf}) → RuleResult[]`. Mã rule (contract `RuleCode`):
+Hàm thuần `evaluateRules({extraction, classification, declaredDocType?, staff, config, asOf}) → RuleResult[]`. Mọi rule luôn được chấm; thiếu dữ liệu tính là không qua (ADR 0009). Mã rule (contract `RuleCode`):
 
 | Mã | Severity | Khi nào không qua |
 | --- | --- | --- |

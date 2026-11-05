@@ -21,18 +21,17 @@
 - **Plan 12k (vá hook): dừng hẳn.** Commit `4f83553` chỉ ở máy, nhánh `fix/12k-pr-reviewer-hook`, chưa push. Bật lại reviewer thì đưa bản vá này vào trước.
 - **Plan 12h kịch bản 4:** đạt: prompt hiện, Liam bấm No, tool từ chối, file không đổi. Nghi một lần Yes cho phép cả phiên: chưa kiểm.
 - **Plan 13 sweep + idempotent (ADR 0007):** merge PR #29 2026-11-05.
-- **Plan 14 LLM CPR (ADR 0008):** nhánh `feat/14-llm-trich-xuat-cpr`, đã kiểm chứng, PR chờ Liam: chạy kiểm chứng T3, quyết 3 câu ở "Vướng", merge. **Bước tiếp theo:** plan 15 sau khi merge.
+- **Plan 14 LLM CPR (ADR 0008):** merge PR #30 2026-11-05. Sửa file tạm sót: merge PR #31.
+- **Plan 15 rule engine CPR (ADR 0009):** nhánh `feat/15-rule-engine-cpr`, đã kiểm chứng, PR chờ Liam chạy kiểm chứng T3 và merge. Rule **chưa nối** vào pipeline. **Bước tiếp theo:** plan 16 sau khi merge.
 
 ## Tiếp theo
 
-1. **Plan 15:** rule engine CPR (8 mã rule), chốt contract `rules`. `evaluateRules` còn ném "Chưa hiện thực".
-2. **Plan 16:** nối rule + routing + `extracted`, màn upload và kết quả thô, 5 thẻ CPR end-to-end.
+1. **Plan 16:** nối rule + routing + `extracted`, màn upload và kết quả thô, 5 thẻ CPR end-to-end. Fixture phải khớp tên staff seed (hoặc thêm staff). Từ đây có đường tới `auto_approved` thật.
 
 ## Vướng / câu hỏi mở
 
 - **`CprCardFields`:** Liam 2026-11-05: không cần đổi. Output thật dùng được (21/22 trường chính đúng trên 5 fixture); `extraction.ts` giữ nguyên.
 - **Ngày dạng `09/02/2025`:** Liam 2026-11-05: giữ nguyên, xử lý sau. Prompt để trống vì dễ nhầm; xem lại khi có số liệu eval ở P2.
-- **File tạm sót khi upload vượt giới hạn** (`hash-to-temp-file`, plan 11): lỗi thật, đã tái hiện. Sửa ở nhánh `fix/hash-temp-file-leak`, PR riêng trước plan 15.
 - **Hạn mức $5:** code không chặn cứng, cần đặt spend limit trong Console. Đã dùng khoảng $0.004.
 
 ## Eval mới nhất

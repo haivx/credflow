@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { RuleResult } from "@credflow/contracts";
-import { route } from "./index.js";
+import { evaluateRules, type RuleInput, route } from "./index.js";
 
 // A3 (docs/agent/GUARDRAILS.md): kiểm lúc chạy rằng engine là hàm thuần, bổ sung cho lint.
 
@@ -63,9 +63,64 @@ describe("route() thuần", () => {
   });
 });
 
-// Bật khi CPR rule có code (evaluateRules hiện còn throw "Chưa hiện thực").
 describe("evaluateRules() thuần", () => {
-  it.todo("cùng input → cùng output");
-  it.todo("không sửa input đã deep-freeze");
-  it.todo("đổi đồng hồ hệ thống không đổi kết quả khi asOf giữ nguyên");
+  const field = (value: string) => ({
+    value,
+    confidence: 0.95,
+    evidence: { quote: value },
+  });
+  const input = (): RuleInput => ({
+    extraction: {
+      docType: "cpr_card",
+      fields: {
+        holderName: field("Maren Ostrowe"),
+        issuerName: field("Northbridge Safety Council"),
+        courseType: field("Adult CPR"),
+        completionDate: field("2026-03-14"),
+        expirationDate: { value: null, confidence: 0, evidence: null },
+        validityText: field("Valid 2 years"),
+        cardNumber: { value: null, confidence: 0, evidence: null },
+      },
+    },
+    classification: { docType: "cpr_card", confidence: 0.97 },
+    staff: {
+      id: "s1",
+      legalName: "Maren Ostrowe",
+      aliases: [],
+      role: "caregiver",
+      clientIds: [],
+      region: "CA",
+    },
+    config: {
+      version: 1,
+      minFieldConfidence: 0.85,
+      expiringSoonDays: 30,
+      roles: {},
+      defaultValidityMonths: { cpr_card: 24 },
+      acceptedIssuers: { cpr_card: ["Northbridge Safety Council"] },
+    },
+    asOf: "2026-11-05",
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("cùng input → cùng output", () => {
+    expect(evaluateRules(input())).toEqual(evaluateRules(input()));
+  });
+
+  it("không sửa input đã deep-freeze", () => {
+    const frozen = deepFreeze(input());
+    expect(() => evaluateRules(frozen)).not.toThrow();
+    expect(frozen).toEqual(input());
+  });
+
+  it("đổi đồng hồ hệ thống không đổi kết quả khi asOf giữ nguyên", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2020-01-01T00:00:00Z"));
+    const before = evaluateRules(input());
+    vi.setSystemTime(new Date("2099-12-31T23:59:59Z"));
+    expect(evaluateRules(input())).toEqual(before);
+  });
 });
