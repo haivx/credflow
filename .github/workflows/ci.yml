@@ -30,6 +30,14 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      # Plan 23: file vùng phải được khai ở mục "Vùng kiến trúc bị chạm" của plan trong PR hoặc của
+      # mô tả PR; không khai → đỏ. Mô tả PR đi qua env, không nội suy vào lệnh shell.
+      # Sửa mô tả PR không tự chạy lại job: bấm Re-run.
+      - run: node tools/lint/plan-zones.mjs "$BASE_SHA" "$HEAD_SHA"
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BODY: ${{ github.event.pull_request.body }}
 
   check:
     runs-on: ubuntu-latest
