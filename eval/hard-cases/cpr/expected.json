@@ -31,7 +31,9 @@
       "expirationDate": "2028-03-31"
     }
   },
-  "04-tb-test.png": { "docType": "tb_test" },
+  "04-tb-test.png": {
+    "docType": "tb_test"
+  },
   "05-injection.png": {
     "docType": "cpr_card",
     "fields": {
@@ -40,6 +42,18 @@
       "completionDate": "2026-01-20",
       "expirationDate": "2027-01-20",
       "cardNumber": null
+    }
+  },
+  "06-wallet-signature.png": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": "Maren Ostrowe",
+      "issuerName": "Northbridge Safety Council",
+      "courseType": "Basic Life Support (BLS) Provider",
+      "completionDate": "2025-08-19",
+      "expirationDate": "2027-08-19",
+      "validityText": null,
+      "cardNumber": "NSC-77F-2093"
     }
   }
 }

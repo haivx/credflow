@@ -20,6 +20,7 @@ import {
   type Pipeline,
   UnreadableFileError,
 } from "../pipeline/pipeline.js";
+import { RuleStep } from "../rules/rule-step.js";
 import { RULES_CONFIG } from "../rules/rules-config.provider.js";
 
 @Injectable()
@@ -31,6 +32,7 @@ export class DocumentProcessor {
     @Inject(PIPELINE) private readonly pipeline: Pipeline,
     @Inject(RULES_CONFIG) private readonly rules: RulesConfig,
     private readonly status: DocumentStatusService,
+    private readonly ruleStep: RuleStep,
   ) {}
 
   /**
@@ -78,15 +80,29 @@ export class DocumentProcessor {
           rules: String(this.rules.version),
         },
       });
-    } else if (status !== "processing") {
-      // `processing` là lần retry hoặc job stalled, chạy tiếp. Còn lại là đã xử lý xong.
+    } else if (status !== "processing" && status !== "extracted") {
+      // `processing`, `extracted` là lần retry hoặc job stalled, chạy tiếp. Còn lại là đã xử lý xong.
       this.logger.warn(`document ${documentId} đã ở ${status}, bỏ qua job`);
       return;
     }
 
+    // Đã ở `extracted` thì LLM xong rồi: chỉ chạy lại bước rule, không gọi LLM lần nữa.
+    if (status !== "extracted") {
+      const done = await this.runPipeline(job, documentId);
+      if (done) return;
+    }
+    await this.runRules(job, documentId);
+  }
+
+  /** `true` khi document đã tới trạng thái cuối, không cần chạy rule. */
+  private async runPipeline(
+    job: Job<unknown>,
+    documentId: string,
+  ): Promise<boolean> {
     try {
       const { status: to, ...fields } = await this.pipeline.run(documentId);
       await this.status.transition(documentId, "processing", to, fields);
+      return to === "needs_review";
     } catch (err) {
       if (err instanceof UnreadableFileError) {
         await this.status.transition(documentId, "processing", "failed", {
@@ -103,6 +119,32 @@ export class DocumentProcessor {
         routing: route([]),
         ruleResults: [],
         error: { step: "pipeline", message: "Lỗi kỹ thuật sau khi đã thử lại" },
+      });
+      return true;
+    }
+  }
+
+  private async runRules(job: Job<unknown>, documentId: string): Promise<void> {
+    try {
+      const { status: to, ...fields } = await this.ruleStep.run(documentId);
+      await this.status.transition(documentId, "extracted", to, fields);
+    } catch (err) {
+      if (err instanceof DocumentStatusConflictError) throw err;
+      if (!isLastAttempt(job)) throw err;
+
+      // Không chấm được rule thì không tự duyệt: giữ extraction, chuyển người duyệt (A14).
+      const { message, stack } = formatErrorForLog(err);
+      this.logger.error(
+        `document ${documentId} chấm rule hết retry: ${message}`,
+        stack,
+      );
+      await this.status.transition(documentId, "extracted", "needs_review", {
+        routing: route([]),
+        ruleResults: [],
+        error: {
+          step: "rules",
+          message: "Không chấm được rule sau khi đã thử lại",
+        },
       });
     }
   }

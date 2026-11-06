@@ -250,6 +250,38 @@ describe("sweep", () => {
     expect(row.error?.step).toBe("sweep");
   });
 
+  it("extracted quá hạn, không có job: sang needs_review, giữ extraction, pipeline không chạy", async () => {
+    await startWorker();
+    const doc = makeProcessedDocument(staffId, "extracted");
+    await db.insert(documents).values(doc);
+    const before = await readDocument(doc.id);
+
+    await sweep().sweepOnce(later());
+
+    expect(run).not.toHaveBeenCalled();
+    const row = await readDocument(doc.id);
+    expect(row.status).toBe("needs_review");
+    expect(row.routing).toEqual({
+      decision: "needs_review",
+      reasons: ["NO_RULES_EVALUATED"],
+    });
+    expect(row.error).toEqual({
+      step: "sweep",
+      message: "Xử lý bị gián đoạn",
+    });
+    expect(row.extraction).toEqual(before.extraction);
+  });
+
+  it("extracted chưa quá hạn: không đụng tới", async () => {
+    await startWorker();
+    const doc = makeProcessedDocument(staffId, "extracted");
+    await db.insert(documents).values(doc);
+
+    await sweep().sweepOnce(new Date());
+
+    expect((await readDocument(doc.id)).status).toBe("extracted");
+  });
+
   it("processing quá hạn, job đang chạy: không đụng tới, job xong thì ra kết quả", async () => {
     let release: (result: PipelineResult) => void = () => undefined;
     run.mockImplementation(

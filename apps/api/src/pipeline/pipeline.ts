@@ -9,7 +9,16 @@ import { PROMPT_VERSION } from "../llm/prompts.js";
 
 export const PIPELINE = Symbol("PIPELINE");
 
-export interface PipelineResult {
+/** Đọc được thẻ: worker ghi `extracted` rồi mới chạy rule (`RuleStep`). */
+export interface ExtractedResult {
+  status: "extracted";
+  classification: Classification;
+  extraction: Extraction;
+  timingMs: Record<string, number>;
+}
+
+/** Không có gì để chấm rule (loại giấy chưa hỗ trợ, LLM lỗi không đáng retry): chuyển người duyệt. */
+export interface NeedsReviewResult {
   status: "needs_review";
   routing: RoutingDecision;
   ruleResults: RuleResult[];
@@ -19,6 +28,8 @@ export interface PipelineResult {
   /** Lỗi không đáng thử lại: vẫn chuyển người duyệt, kèm phần đã đọc được. */
   error?: { step: string; message: string };
 }
+
+export type PipelineResult = ExtractedResult | NeedsReviewResult;
 
 /** Xử lý một document. Lỗi tạm thì ném lỗi thường để job retry. */
 export interface Pipeline {
@@ -35,7 +46,7 @@ export class UnreadableFileError extends Error {
 
 /** Ghi lúc vào `processing`. Phần `rules` lấy từ config đang chạy. */
 export const PIPELINE_VERSIONS = {
-  pipeline: "14",
+  pipeline: "16",
   prompt: PROMPT_VERSION,
   model: LLM_MODEL,
 };

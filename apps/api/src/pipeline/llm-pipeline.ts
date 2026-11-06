@@ -7,14 +7,15 @@ import { documents } from "../db/schema.js";
 import { LlmError, type LlmDocument, LlmService } from "../llm/llm.service.js";
 import { STORAGE, type Storage } from "../storage/storage.js";
 import {
+  type NeedsReviewResult,
   type Pipeline,
   type PipelineResult,
   UnreadableFileError,
 } from "./pipeline.js";
 
 /**
- * Đọc file → phân loại → trích xuất (chỉ CPR ở P1). Chưa có rule nên `route([])` luôn chuyển
- * người duyệt, không có đường tới `auto_approved` (plan 15, 16 mới nối rule).
+ * Đọc file → phân loại → trích xuất (chỉ CPR ở P1). Thẻ đọc được thì trả `extracted`, worker chạy
+ * rule ở bước sau (plan 16). Loại giấy khác chưa có rule: `route([])`, chuyển người duyệt.
  */
 @Injectable()
 export class LlmPipeline implements Pipeline {
@@ -51,7 +52,10 @@ export class LlmPipeline implements Pipeline {
       };
     }
 
-    return needsReview(classification, extraction, timingMs);
+    if (classification === undefined || extraction === undefined) {
+      return needsReview(classification, extraction, timingMs);
+    }
+    return { status: "extracted", classification, extraction, timingMs };
   }
 
   private async readDocument(documentId: string): Promise<LlmDocument> {
@@ -74,7 +78,7 @@ function needsReview(
   classification: Classification | undefined,
   extraction: Extraction | undefined,
   timingMs: Record<string, number>,
-): PipelineResult {
+): NeedsReviewResult {
   return {
     status: "needs_review",
     routing: route([]),

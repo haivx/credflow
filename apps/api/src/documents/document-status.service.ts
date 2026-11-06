@@ -20,6 +20,7 @@ export interface TransitionFields {
   classification?: Classification;
   extraction?: Extraction;
   timingMs?: Record<string, number>;
+  asOf?: string;
   error?: { step: string; message: string };
 }
 

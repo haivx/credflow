@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { Extraction, parseJson, type StaffProfile } from "@credflow/contracts";
 import { evaluateRules, loadRulesConfig, route } from "./index.js";
 
-// Output thật của claude-haiku-5-5 trên fixture SAMPLE (plan 14), chạy qua config mặc định.
+// Output thật của claude-haiku-5-5 trên fixture SAMPLE (plan 14; 06 ghi ở plan 16), chạy qua config mặc định.
 const ROOT = join(import.meta.dirname, "..", "..", "..");
 const config = loadRulesConfig(join(ROOT, "config", "rules", "default.yaml"));
 
@@ -54,6 +54,7 @@ describe("output thật của Haiku", () => {
       "needs_review",
     ],
     ["05-injection", "Odalys Venn", ["ISSUER_NOT_ACCEPTED"], "needs_review"],
+    ["06-wallet-signature", "Maren Ostrowe", [], "auto_approve"],
   ])("%s", (fixture, legalName, failed, decision) => {
     expect(evaluate(fixture, legalName)).toEqual({ failed, decision });
   });

@@ -44,7 +44,7 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 ## Hồ sơ staff
 - **API:** `GET /staff?role=&region=` (sắp theo tên), `GET /staff/:id` (không có → `404 NOT_FOUND`)
 - **Vai trò:** `reviewer`, `admin`; `staff` → `403`
-- **Kỳ vọng:** 10 staff seed hiện ra
+- **Kỳ vọng:** 13 staff seed hiện ra (3 chủ thẻ fixture CPR thêm ở plan 16)
 
 ## Upload giấy (plan 11, ADR 0005)
 - **API:** `POST /documents` (multipart: field `file`, tuỳ chọn `declaredDocType` ∈ `DocType`)
@@ -58,12 +58,13 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 - **Kiểm sẵn có:** `apps/api/test/documents.int-spec.ts` (14 case)
 - **UI:** `TODO(verify)`: màn upload S1 chưa làm
 
-## Pipeline xử lý (P1, đã có LLM, rule chưa nối)
-- **Rule engine (plan 15, ADR 0009):** `evaluateRules` chấm 9 rule cho `cpr_card` nhưng **chưa nối vào pipeline**. Kiểm: `pnpm --filter @credflow/rules test`; `recorded.test.ts` chạy trên output thật của Haiku (`eval/hard-cases/cpr/recorded/`)
+## Pipeline xử lý (P1, LLM + rule CPR, plan 16)
+- **Rule engine (plan 15, ADR 0009):** `evaluateRules` chấm 9 rule cho `cpr_card`. Kiểm: `pnpm --filter @credflow/rules test`; `recorded.test.ts` chạy trên output thật của Haiku (`eval/hard-cases/cpr/recorded/`)
 - **Trạng thái:** `uploaded → processing → extracted → auto_approved | needs_review | failed`; sau duyệt: `approved | rejected | reupload_requested` (`DocumentStatus`)
-- **Hiện tại (plan 14):** upload đẩy job (`jobId = documentId`), worker gọi Claude thật (`claude-haiku-5-5`, ADR 0008): phân loại mọi file, trích xuất chỉ khi `cpr_card`. Chưa có rule nên mọi document đi `uploaded → processing → needs_review`, `routing.reasons = ["NO_RULES_EVALUATED"]`, `versions = { pipeline: "14", prompt: "classify@1+extract-cpr@1", model: "claude-haiku-5-5", rules: "1" }`. `evidence.box` bị bỏ trong code
+- **Hiện tại (plan 16):** upload đẩy job (`jobId = documentId`), worker gọi Claude thật (`claude-haiku-5-5`, ADR 0008): phân loại mọi file, trích xuất chỉ khi `cpr_card`. CPR đi `uploaded → processing → extracted → auto_approved | needs_review`: `RuleStep` (`apps/api/src/rules/rule-step.ts`) chấm rule với staff của document, `asOf` = ngày UTC (ADR 0010), ghi `ruleResults`, `routing`, `as_of`, `timingMs.rules`. Loại giấy khác đi thẳng `processing → needs_review`, `NO_RULES_EVALUATED`, `as_of` NULL. `versions = { pipeline: "16", prompt: "classify@1+extract-cpr@1", model: "claude-haiku-5-5", rules: "1" }`. `evidence.box` bị bỏ trong code
+- **Chạy thật end-to-end (kịch bản 7 plan 16):** `make db-migrate db-seed`, `make dev-api` + `make dev-worker`; login từng user rồi `curl -F file=@eval/hard-cases/cpr/<fixture> /documents`: 01, 03 → `staff-marisol@example.test`; 02 → `staff-tobias@`; 05 → `staff-odalys@`; 04, 06 → `staff@` (mật khẩu `credflow-dev`). Xem `psql`: `select file_name, status, routing, as_of, timing_ms from documents`. Kỳ vọng: 01, 06 `auto_approved`; 02 `MISSING_FIELD`+`EXPIRED`; 04 `NO_RULES_EVALUATED`; 05 `ISSUER_NOT_ACCEPTED`; 03 dao động quanh ngưỡng confidence (`LOW_CONFIDENCE` hoặc `auto_approved` với giá trị đúng)
 - **Chạy:** `make dev-api` + `make dev-worker` (worker cần `ANTHROPIC_API_KEY`, **tốn tiền thật**). Không có endpoint đọc trạng thái, xem bằng `psql`. Log worker có token từng lượt để cộng chi phí
-- **Fixture:** `eval/hard-cases/cpr/` (5 giấy SAMPLE, nguồn HTML, `expected.json` các trường chính)
+- **Fixture:** `eval/hard-cases/cpr/` (6 giấy SAMPLE: 5 CPR + 1 TB, nguồn HTML, `expected.json` các trường chính)
 - **Lỗi (ADR 0006):**
   - timeout, mất kết nối, 408, 409, 429, 5xx: thử tối đa 3 lần (chờ 1s, 2s), hết lượt → `needs_review`, `error.step = "pipeline"`
   - 4xx khác, `refusal`: 1 lượt, `needs_review`, `error.step` là `classify` hoặc `extract`, giữ phần đã đọc được
@@ -73,9 +74,10 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 - **Sweep (ADR 0007):** chạy trong worker, 60 giây một vòng, queue `document-sweep`, đăng ký lại lịch mỗi khi kết nối Redis `ready`
   - job còn sống (`waiting`, `active`, `delayed`...) → bỏ qua
   - `uploaded` quá 1 phút → xoá job completed/failed còn giữ rồi `add` lại (`add` trùng `jobId` bị bỏ qua mà không báo lỗi)
-  - `processing` quá 15 phút → `needs_review`, `reasons = ["NO_RULES_EVALUATED"]`, `error.step = "sweep"`, không chạy lại
+  - `processing` hoặc `extracted` quá 15 phút → `needs_review`, `reasons = ["NO_RULES_EVALUATED"]`, `error.step = "sweep"`, không chạy lại
+- **Worker chết ở `extracted`:** job retry chỉ chạy lại bước rule, không gọi LLM; bước rule hết retry → `needs_review`, `error.step = "rules"`
 - **Chạy trùng job:** chỉ một lần ghi thắng (`WHERE status = from`); job thua nhận conflict, log `warn`, `completed`, không retry
-- **Kiểm sẵn có:** `apps/api/test/worker.int-spec.ts`, `apps/api/test/documents-enqueue.int-spec.ts`, `apps/api/test/sweep.int-spec.ts`, `apps/api/test/pipeline.int-spec.ts` (client LLM giả, không tốn tiền)
+- **Kiểm sẵn có:** `apps/api/test/worker.int-spec.ts`, `apps/api/test/documents-enqueue.int-spec.ts`, `apps/api/test/sweep.int-spec.ts`, `apps/api/test/pipeline.int-spec.ts`, `apps/api/test/pipeline-rules.int-spec.ts` (client LLM giả trả output Haiku đã ghi, `CLOCK` cố định; không tốn tiền)
 - **Kỳ vọng (khi có rule thật):**
   - thẻ CPR hợp lệ → `auto_approved`, có `holderName`, `issuerName`, `expirationDate` kèm `evidence.quote`
   - thẻ CPR hết hạn → `needs_review`, `routing.reasons` có `EXPIRED` (không bao giờ tự từ chối)

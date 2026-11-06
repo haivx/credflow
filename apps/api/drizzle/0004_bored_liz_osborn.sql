@@ -1,0 +1,2 @@
+ALTER TABLE "documents" ADD COLUMN "as_of" date;--> statement-breakpoint
+ALTER TABLE "documents" ADD CONSTRAINT "documents_auto_approved_as_of" CHECK ("documents"."status" <> 'auto_approved' OR "documents"."as_of" IS NOT NULL);

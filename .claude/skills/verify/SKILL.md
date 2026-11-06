@@ -39,7 +39,7 @@ Tính năng chưa có trong FEATURE_MAP.md thì thêm vào như một phần c�
 pnpm tsx .claude/skills/verify/scripts/seed.ts --scenario <name>
 ```
 Danh sách kịch bản nằm trong `scripts/seed.ts`. Fixture chỉ là dữ liệu giả lập, có watermark SAMPLE.
-- **Thay thế khi chưa có script:** `make db-seed` (10 staff + 3 user, xem FEATURE_MAP.md).
+- **Thay thế khi chưa có script:** `make db-seed` (13 staff + 6 user, xem FEATURE_MAP.md).
 - Dữ liệu tạo thêm khi kiểm tay trên DB dev (document, file trong `data/files/`) phải dọn lại sau khi kiểm.
 
 ### 3. Chọn mức
