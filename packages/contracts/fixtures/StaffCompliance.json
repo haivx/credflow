@@ -1,0 +1,31 @@
+[
+  {
+    "name": "thiếu giấy",
+    "data": {
+      "staffId": "01M6CRWH00M3S97971WJSR6NWZ",
+      "role": "caregiver",
+      "status": "incomplete",
+      "required": [
+        "cpr_card",
+        "tb_test",
+        "background_check",
+        "vaccination_record"
+      ],
+      "present": ["cpr_card"],
+      "missing": ["tb_test", "background_check", "vaccination_record"],
+      "configs": ["sunrise"]
+    }
+  },
+  {
+    "name": "vai trò không có trong config",
+    "data": {
+      "staffId": "01M6CRWH00M3S97971WJSR6NWZ",
+      "role": "janitor",
+      "status": "unknown_role",
+      "required": [],
+      "present": [],
+      "missing": [],
+      "configs": ["default"]
+    }
+  }
+]

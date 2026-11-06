@@ -60,6 +60,8 @@
 
 ## P3 · Rule engine đầy đủ và routing (3–4 ngày)
 
+> **Xong 2026-11-06** (plan 23–26): check vùng kiến trúc theo plan, ngày dạng thứ tự, config theo khách hàng + `dateOrder` (ADR 0011), `GET /staff/:id/compliance` với index và `EXPLAIN`. `RESULT_NOT_PASSING` đi cùng TB test/background check ở P5.
+
 - **Mục tiêu:** rule cấu hình được theo khách hàng, routing an toàn.
 - **Phạm vi:** đủ 10 mã rule; chuẩn hoá và so khớp tên; tính hạn khi không in sẵn; nhiều file config theo khách hàng; yêu cầu bộ giấy theo vai trò (staff đã đủ bộ chưa).
 - **🎓 Học được:**

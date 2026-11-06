@@ -12,7 +12,7 @@ import {
   UploadDocumentResponse,
 } from "./routing.js";
 import { RuleResult, RulesConfig } from "./rules.js";
-import { StaffProfile } from "./staff.js";
+import { StaffCompliance, StaffProfile } from "./staff.js";
 
 export * from "./common.js";
 export * from "./document.js";
@@ -32,6 +32,7 @@ export const Schemas = {
   Classification,
   Extraction,
   StaffProfile,
+  StaffCompliance,
   RuleResult,
   RulesConfig,
   RoutingDecision,

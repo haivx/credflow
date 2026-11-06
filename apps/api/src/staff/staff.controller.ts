@@ -5,7 +5,12 @@ import {
   Param,
   Query,
 } from "@nestjs/common";
-import { Id, StaffListQuery, StaffProfile } from "@credflow/contracts";
+import {
+  Id,
+  StaffCompliance,
+  StaffListQuery,
+  StaffProfile,
+} from "@credflow/contracts";
 import { Roles } from "../auth/decorators.js";
 import { ZodValidationPipe } from "../common/zod-validation.pipe.js";
 import { StaffService } from "./staff.service.js";
@@ -31,5 +36,15 @@ export class StaffController {
       throw new NotFoundException(`Không tìm thấy staff ${id}`);
     }
     return StaffProfile.parse(row);
+  }
+
+  /** Staff đã đủ bộ giấy chưa theo vai trò và khách hàng (plan 26). */
+  @Get(":id/compliance")
+  async compliance(@Param("id", new ZodValidationPipe(Id)) id: string) {
+    const result = await this.staffService.compliance(id);
+    if (result === undefined) {
+      throw new NotFoundException(`Không tìm thấy staff ${id}`);
+    }
+    return StaffCompliance.parse(result);
   }
 }

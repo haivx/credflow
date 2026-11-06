@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { Id } from "./common.js";
+import { DocType } from "./document.js";
 
 // Đã chốt 2026-11-02 (plan 05). Hồ sơ nhân viên là dữ liệu giả lập.
 
@@ -23,3 +24,22 @@ export const StaffListQuery = z.strictObject({
   region: z.string().min(1).optional(),
 });
 export type StaffListQuery = z.infer<typeof StaffListQuery>;
+
+/**
+ * Response GET /staff/:id/compliance (plan 26). `required` là hợp `roles[role].required` của config
+ * mọi khách hàng của staff; `present` là loại giấy đã tự duyệt hoặc đã được duyệt (chưa xét hạn).
+ * `unknown_role`: không config nào biết vai trò này, không bao giờ coi là đủ.
+ */
+export const StaffCompliance = z
+  .object({
+    staffId: Id,
+    role: z.string(),
+    status: z.enum(["complete", "incomplete", "unknown_role"]),
+    required: z.array(DocType),
+    present: z.array(DocType),
+    missing: z.array(DocType),
+    /** Tên config đã dùng, như `versions.rules`. */
+    configs: z.array(z.string()),
+  })
+  .meta({ id: "StaffCompliance" });
+export type StaffCompliance = z.infer<typeof StaffCompliance>;
