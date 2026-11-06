@@ -101,7 +101,7 @@ Hàm thuần `evaluateRules({extraction, classification, declaredDocType?, staff
 | `MISSING_FIELD` | block | Trường bắt buộc của loại giấy là null |
 | `MISSING_EVIDENCE` | block | Có value nhưng không có evidence |
 | `LOW_CONFIDENCE` | block | Trường bắt buộc dưới `minFieldConfidence` |
-| `DATE_INCONSISTENT` | block | Ngày mâu thuẫn nhau hoặc vô lý |
+| `DATE_INCONSISTENT` | block | Ngày mâu thuẫn nhau, vô lý, hoặc không xác định chắc từ chữ in: ngày số mà ngày và tháng đều ≤ 12 (`10/9/2025`), hoặc chỉ có tháng/năm ("Valid through 12/2027"). Code đọc `evidence.quote`, không tin ngày LLM điền (plan 21) |
 | `EXPIRED` | block | Hạn (in sẵn hoặc tự tính) trước `asOf` |
 | `EXPIRING_SOON` | info | Hết hạn trong `expiringSoonDays` ngày |
 | `NAME_MISMATCH` | block | Tên trên giấy không khớp `legalName` hay `aliases` sau khi chuẩn hoá |

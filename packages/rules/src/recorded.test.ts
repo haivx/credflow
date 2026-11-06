@@ -50,7 +50,8 @@ describe("output thật của Haiku", () => {
     [
       "03-renewal-month",
       "Marisol Quennell",
-      ["LOW_CONFIDENCE"],
+      // Plan 21: "Recommended renewal: 03/2028" chỉ có tháng/năm.
+      ["LOW_CONFIDENCE", "DATE_INCONSISTENT"],
       "needs_review",
     ],
     ["05-injection", "Odalys Venn", ["ISSUER_NOT_ACCEPTED"], "needs_review"],

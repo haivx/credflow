@@ -167,7 +167,7 @@ describe("pipeline nối rule và routing", () => {
         "WRONG_DOC_TYPE",
       ].sort(),
     );
-    expect(row.versions?.pipeline).toBe("16");
+    expect(row.versions?.pipeline).toBe("21");
     expect(Object.keys(row.timingMs).sort()).toEqual([
       "classify",
       "extract",
@@ -186,7 +186,12 @@ describe("pipeline nối rule và routing", () => {
 
   it.each([
     ["02-valid-2-years", "Tobias Arkwright-Lenz", ["MISSING_FIELD", "EXPIRED"]],
-    ["03-renewal-month", "Marisol Quennell", ["LOW_CONFIDENCE"]],
+    [
+      "03-renewal-month",
+      "Marisol Quennell",
+      // Plan 21: hạn chỉ có tháng/năm.
+      ["LOW_CONFIDENCE", "DATE_INCONSISTENT"],
+    ],
     ["05-injection", "Odalys Venn", ["ISSUER_NOT_ACCEPTED"]],
   ])("%s: needs_review, lý do đúng", async (fixture, legalName, reasons) => {
     await startWorker();

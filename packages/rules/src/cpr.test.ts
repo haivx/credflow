@@ -242,6 +242,43 @@ describe("DATE_INCONSISTENT", () => {
   const bad = (patch: Partial<Fields>) =>
     passes("DATE_INCONSISTENT", run(patch));
 
+  // Plan 21: LLM điền ra ngày cụ thể, nhưng chữ in trên thẻ không cho biết chắc ngày.
+  const quoted = (value: string, quote: string) => ({
+    value,
+    confidence: 0.85,
+    evidence: { quote },
+  });
+
+  it("chữ gốc ngày hết hạn mơ hồ (D/M ≤ 12) hoặc chỉ tháng/năm: không qua, không tự duyệt", () => {
+    for (const quote of ["10/9/2027", "Valid through 10/2027"]) {
+      const results = run({ expirationDate: quoted("2027-10-09", quote) });
+      expect(passes("DATE_INCONSISTENT", results), quote).toBe(false);
+      expect(route(results).decision, quote).toBe("needs_review");
+    }
+  });
+
+  it("chữ gốc ngày học mơ hồ: không qua", () => {
+    expect(
+      bad({ completionDate: quoted("2026-03-09", "Completed 3/9/2026") }),
+    ).toBe(false);
+  });
+
+  it("chữ gốc rõ ràng thì qua như trước", () => {
+    expect(
+      bad({
+        completionDate: quoted("2026-03-14", "3/14/2026"),
+        expirationDate: quoted("2028-03-14", "March 14, 2028"),
+      }),
+    ).toBe(true);
+  });
+
+  it("message chỉ nêu tên trường, không chép ngày", () => {
+    const results = run({ expirationDate: quoted("2027-10-09", "10/9/2027") });
+    const rule = results.find((r) => r.code === "DATE_INCONSISTENT");
+    expect(rule?.message).toContain("expirationDate");
+    expect(JSON.stringify(results)).not.toContain("10/9/2027");
+  });
+
   it("ngày không có thật thì không qua", () => {
     expect(bad({ completionDate: field("2026-02-30") })).toBe(false);
     expect(bad({ expirationDate: field("2027-02-30") })).toBe(false);

@@ -27,12 +27,12 @@
 - **Plan 17 màn upload + kết quả thô:** merge PR #34 2026-11-06. **P1 xong:** đủ 9 tiêu chí hoàn thành (đối chiếu 2026-11-06).
 - **Plan 18 eval harness:** merge PR #35; sửa đáp án ca 02 merge PR #36 (2026-11-06).
 - **Plan 19 synth:** merge PR #37 2026-11-06. Phát hiện 4 ca duyệt nhầm cùng kiểu confidence 0.85 = ngưỡng (mục Eval) → plan 21.
-- **Plan 20 harness:** nhánh `chore/20-harness`, đã kiểm (kịch bản 1–11, evidence dùng chính script mới), PR chờ Liam merge. `make eval-ci` vào CI, `eval/gate.json` = 2.
+- **Plan 20 harness:** merge PR #38 2026-11-06 (CI có `eval-ci`).
+- **Plan 21 ngày mơ hồ:** nhánh `feat/21-ngay-mo-ho`, đã kiểm (kịch bản 1–9), PR chờ Liam merge (T3: anh xem chạy `make eval-ci`). dev 0/36, holdout 0/10, gate 0.
 
 ## Tiếp theo
 
-1. **Plan 21:** sửa duyệt nhầm ở ngưỡng 0.85 (T3), hạ `eval/gate.json` về 0.
-2. Thêm 4 ca khó làm tay để đóng P2.
+1. Thêm 4 ca khó làm tay (nhắm đúng kiểu ngày mơ hồ, quote bị chuẩn hoá…) để đóng P2, rồi sang P3.
 
 ## Vướng / câu hỏi mở
 
@@ -42,6 +42,7 @@
 
 ## Eval mới nhất
 
+- **2026-11-06, plan 21 (pipeline 21, rules 1; output ghi sẵn plan 19, 0 lời gọi LLM):** dev 36 ca `falseApproveRate` **0% (0/36)**, `autoApproveRate` 58.3% (21 ca, đều đúng; trước là 23 ca gồm 2 duyệt nhầm); holdout 10 ca **0/10**, tự duyệt 50%. Chỉ 0006, 0021 đổi decision. `eval/gate.json` = 0 (CI chặn từ nay). Chạy thật ca 03 (Haiku): `LOW_CONFIDENCE` qua lần này, chỉ `DATE_INCONSISTENT` chặn.
 - **2026-11-06, plan 19 (synth SEED=1 + hard-cases; pipeline 16 / classify@1+extract-cpr@1 / haiku-5-5 / rules 1):**
   - **dev 36 ca** (6 hard + 30 synth): `falseApproveRate` **5.6% (2/36)**, `autoApproveRate` 63.9%, classification 100%, completionDate 94.3%, expirationDate 97.1%, các trường khác 100%; ~$0.00071/giấy; p50 3.1 s, p95 4.6 s. Theo nguồn: hard-cases 0/6, synth 2/30.
   - **holdout 10 ca synth:** `falseApproveRate` 20% (2/10).
