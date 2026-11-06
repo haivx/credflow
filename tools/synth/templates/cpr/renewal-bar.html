@@ -1,0 +1,136 @@
+<!doctype html>
+<meta charset="utf-8" />
+<!-- Thẻ ngang có dải màu, "Renewal Date" in sẵn, ngày M/D/YYYY (docs/research/layout-notes.md mẫu 1). Dữ liệu hư cấu. -->
+<style>
+  body {
+    margin: 0;
+    padding: 40px;
+    font-family: Helvetica, Arial, sans-serif;
+    background: #fff;
+  }
+  #card {
+    position: relative;
+    width: 720px;
+    height: 430px;
+    border: 1px solid #9aa7b4;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .bar {
+    height: 44px;
+    background: #b3262e;
+  }
+  .bar.bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 22px;
+  }
+  .issuer {
+    position: absolute;
+    top: 56px;
+    right: 28px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #b3262e;
+    text-align: right;
+    max-width: 260px;
+  }
+  .course {
+    position: absolute;
+    top: 60px;
+    left: 32px;
+    font-size: 22px;
+    font-weight: 700;
+    max-width: 380px;
+  }
+  .name {
+    position: absolute;
+    top: 150px;
+    left: 32px;
+    right: 32px;
+    font-size: 30px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 4px;
+    text-align: center;
+  }
+  .desc {
+    position: absolute;
+    top: 210px;
+    left: 32px;
+    right: 32px;
+    font-size: 14px;
+    color: #333;
+    text-align: center;
+  }
+  .dates {
+    position: absolute;
+    bottom: 52px;
+    left: 32px;
+    right: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .date {
+    width: 210px;
+    text-align: center;
+    font-size: 18px;
+  }
+  .date .label {
+    border-top: 1px solid #333;
+    font-size: 12px;
+    color: #555;
+    margin-top: 4px;
+    padding-top: 2px;
+  }
+  .mid {
+    font-weight: 700;
+    color: #b3262e;
+  }
+  .no {
+    position: absolute;
+    bottom: 28px;
+    left: 32px;
+    font-size: 11px;
+    color: #555;
+  }
+  .wm {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 110px;
+    font-weight: 700;
+    color: rgba(200, 30, 30, 0.16);
+    transform: rotate(-18deg);
+    pointer-events: none;
+  }
+</style>
+<div id="card">
+  <div class="bar"></div>
+  <div class="course">{{courseType}}</div>
+  <div class="issuer">{{issuerName}}</div>
+  <div class="name">{{holderName}}</div>
+  <div class="desc">
+    has successfully completed the cognitive and skills evaluations in
+    accordance with the curriculum of this course.
+  </div>
+  <div class="dates">
+    <div class="date">
+      {{completionText}}
+      <div class="label">Class Completion Date</div>
+    </div>
+    <div class="mid">CPR/AED</div>
+    <div class="date">
+      {{expiryText}}
+      <div class="label">Renewal Date</div>
+    </div>
+  </div>
+  <div class="no">Card No. {{cardNumber}} · Electronic card only</div>
+  <div class="bar bottom"></div>
+  <div class="wm">SAMPLE</div>
+</div>

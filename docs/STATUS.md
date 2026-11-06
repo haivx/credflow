@@ -25,11 +25,14 @@
 - **Plan 15 rule engine CPR (ADR 0009):** merge PR #32 2026-11-05. Rule chưa nối vào pipeline.
 - **Plan 16 nối rule + routing (ADR 0010):** merge PR #33 2026-11-06.
 - **Plan 17 màn upload + kết quả thô:** merge PR #34 2026-11-06. **P1 xong:** đủ 9 tiêu chí hoàn thành (đối chiếu 2026-11-06).
-- **Plan 18 eval harness:** merge PR #35 2026-11-06. Sửa đáp án ca 02 (`courseType`, `validityText` theo chữ in): nhánh `fix/eval-dap-an-02`, PR chờ merge.
+- **Plan 18 eval harness:** merge PR #35; sửa đáp án ca 02 merge PR #36 (2026-11-06).
+- **Plan 19 synth:** nhánh `feat/19-synth-cpr`, đã kiểm (kịch bản 1–12), baseline ở mục Eval. **Tiếp:** evidence, PR. **Phát hiện:** 4 ca duyệt nhầm cùng kiểu confidence 0.85 = ngưỡng (xem mục Eval) → đề xuất plan T3 sửa, trước hoặc sau plan 20 tuỳ Liam.
+- **Plan 20 harness:** Liam đồng ý hướng (script verify api/ui, gitignore `.playwright-mcp/`, eval trong CI trên output đã ghi). Viết plan sau khi plan 19 xong.
 
 ## Tiếp theo
 
-1. **Plan 19:** `tools/synth` (CPR 3–5 bố cục, nhiễu, seed, holdout). Đề xuất sau khi PR sửa đáp án merge.
+1. **Plan 19:** code (đang làm).
+2. **Plan 20:** harness, sau plan 19.
 
 ## Vướng / câu hỏi mở
 
@@ -39,7 +42,11 @@
 
 ## Eval mới nhất
 
-- **Baseline 2026-11-06** (plan 18, run `2026-11-06T04-00-12-008Z`, dev, 6 ca hard-cases, versions pipeline 16 / prompt classify@1+extract-cpr@1 / haiku-5-5 / rules 1): `falseApproveRate` 0% (0/6), `autoApproveRate` 33.3% (01, 06), `classificationAccuracy` 100%, field: holderName/issuerName/expirationDate/cardNumber 100%, completionDate 80% (02 để trống ngày `09/02/2025`, cố ý), validityText và courseType 100% sau khi sửa đáp án 02 theo chữ in (Liam 2026-11-06; trước đó 66.7% / 50%); 11 lượt gọi, ~$0.0039; latency p50 3.3s, p95 4.9s. Ca 03 lần này `LOW_CONFIDENCE` (plan 16 từng ra auto_approved).
+- **2026-11-06, plan 19 (synth SEED=1 + hard-cases; pipeline 16 / classify@1+extract-cpr@1 / haiku-5-5 / rules 1):**
+  - **dev 36 ca** (6 hard + 30 synth): `falseApproveRate` **5.6% (2/36)**, `autoApproveRate` 63.9%, classification 100%, completionDate 94.3%, expirationDate 97.1%, các trường khác 100%; ~$0.00071/giấy; p50 3.1 s, p95 4.6 s. Theo nguồn: hard-cases 0/6, synth 2/30.
+  - **holdout 10 ca synth:** `falseApproveRate` 20% (2/10).
+  - **Cả 4 ca duyệt nhầm cùng một kiểu:** ngày LLM tự suy ra (ngày D/M ≤ 12 như `10/9/2025`; "Valid through MM/YYYY" → cuối tháng) được gán confidence **đúng 0.85 = ngưỡng**, nên qua `LOW_CONFIDENCE`. Ca 03 hard-cases là cùng kiểu. Chưa sửa (ngoài phạm vi plan 19): cần plan T3 riêng (ngưỡng hoặc prompt), chỉnh trên dev, không nhìn holdout.
+- 2026-11-06, plan 18 baseline 6 ca hard-cases: `falseApproveRate` 0/6, `autoApproveRate` 33.3%.
 
 ## Nhật ký
 

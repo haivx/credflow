@@ -116,9 +116,16 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 ## Eval (plan 18)
 - **Chạy:** `make eval` (cần `ANTHROPIC_API_KEY`; không cần DB/worker). `ARGS=--no-cache` gọi LLM lại; `ARGS="--split holdout"`
 - **Code:** `apps/api/scripts/eval.ts` (CLI), `apps/api/src/eval/` (`run-case`, `compare`, `metrics`, `report`, `cache`, `limit`, `pricing`)
-- **Đáp án:** `eval/hard-cases/cpr/cases.json` (`GoldenCase[]`, `asOf` cố định); kết quả `eval/runs/<id>.json` (`EvalRun`, gitignore), `eval/report.md` (commit), cache `eval/cache/` (gitignore)
+- **Đáp án:** `eval/hard-cases/cpr/cases.json` + `data/synth/cpr/cases.json` nếu có (`GoldenCase[]`, `asOf` cố định); report có cột nguồn; kết quả `eval/runs/<id>.json` (`EvalRun`, gitignore), `eval/report.md` (commit), cache `eval/cache/` (gitignore)
 - **Kỳ vọng:** chạy lần hai không đổi gì → `LLM 0 lượt, cache 6`, metric giống hệt; đổi rule/ngưỡng → 0 lượt gọi LLM, decision đổi theo; `cases.json` sai schema → exit 1 kèm `index.trường`
 - **Duyệt nhầm:** tự duyệt mà đáp án `needs_review` hoặc đọc sai trường có trong đáp án; report liệt kê ở mục "Duyệt nhầm"
 - **Kiểm sẵn có:** `apps/api/src/eval/*.spec.ts` (36 test, không gọi LLM)
 - **Mức rủi ro:** T2 (số liệu quyết định thay đổi T3)
+
+## Synth (plan 19)
+- **Chạy:** `make synth SEED=1` (lần đầu: `pnpm --filter @credflow/synth exec playwright install chromium`) → `data/synth/cpr/` (40 file ảnh/PDF + HTML + `cases.json`)
+- **Kỳ vọng:** cùng seed → mọi file giống byte trên cùng máy (`shasum -a 256 data/synth/cpr/*`); 30 dev / 10 holdout; mọi thẻ có watermark SAMPLE; chưa cài Chromium → exit 1 kèm lệnh cài
+- **Đáp án:** `tools/synth/src/policy.ts` (bảng kịch bản Liam duyệt), không dùng rule engine
+- **Kiểm sẵn có:** `tools/synth/src/*.test.ts` (28 test, không cần trình duyệt)
+- **Xem tay:** mở `data/synth/cpr/synth-cpr-NNNN.html` hoặc ảnh; PDF xem bằng trình duyệt
 

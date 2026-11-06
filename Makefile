@@ -74,6 +74,7 @@ format:
 eval: build-packages
 	pnpm --filter @credflow/api eval $(ARGS)
 
-# Sinh giấy tờ giả lập + đáp án → data/synth/ (stub đến P2). SEED= tuỳ chọn.
+# Sinh thẻ CPR giả lập + đáp án → data/synth/cpr/ (plan 19). SEED= tuỳ chọn (mặc định 1).
+# Lần đầu cần Chromium: pnpm --filter @credflow/synth exec playwright install chromium
 synth: build-packages
 	pnpm --filter @credflow/synth run synth $(if $(SEED),--seed $(SEED))

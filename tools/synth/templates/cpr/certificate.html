@@ -1,0 +1,121 @@
+<!doctype html>
+<meta charset="utf-8" />
+<!-- Giấy chứng nhận khổ A4, đoạn văn, ngày dạng "March 14, 2026", "Expires" in sẵn. Dữ liệu hư cấu. -->
+<style>
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  body {
+    margin: 0;
+    padding: 40px;
+    font-family: Georgia, "Times New Roman", serif;
+    background: #fff;
+  }
+  #card {
+    position: relative;
+    width: 714px;
+    height: 1010px;
+    box-sizing: border-box;
+    border: 10px double #3d5a80;
+    padding: 70px 64px;
+    background: #fff;
+  }
+  .issuer {
+    text-align: center;
+    font-size: 26px;
+    letter-spacing: 1px;
+    color: #3d5a80;
+    font-weight: 700;
+  }
+  h1 {
+    text-align: center;
+    font-size: 40px;
+    margin: 40px 0 10px;
+    font-weight: 400;
+  }
+  .sub {
+    text-align: center;
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 60px;
+  }
+  p {
+    font-size: 20px;
+    line-height: 1.6;
+    text-align: center;
+  }
+  .name {
+    font-size: 34px;
+    font-style: italic;
+    margin: 18px 0;
+  }
+  table {
+    margin: 70px auto 0;
+    font-size: 18px;
+    border-collapse: collapse;
+  }
+  td {
+    padding: 8px 18px;
+  }
+  td:first-child {
+    color: #555;
+    text-align: right;
+  }
+  .sig {
+    position: absolute;
+    bottom: 90px;
+    left: 64px;
+    right: 64px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #555;
+  }
+  .sig div {
+    width: 240px;
+    border-top: 1px solid #333;
+    padding-top: 4px;
+    text-align: center;
+  }
+  .wm {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 150px;
+    font-weight: 700;
+    color: rgba(200, 30, 30, 0.14);
+    transform: rotate(-35deg);
+    pointer-events: none;
+    font-family: Helvetica, Arial, sans-serif;
+  }
+</style>
+<div id="card">
+  <div class="issuer">{{issuerName}}</div>
+  <h1>Certificate of Completion</h1>
+  <div class="sub">Cardiopulmonary Resuscitation Training</div>
+  <p>This certifies that</p>
+  <p class="name">{{holderName}}</p>
+  <p>has completed the requirements of the course<br /><b>{{courseType}}</b></p>
+  <table>
+    <tr>
+      <td>Date of Completion</td>
+      <td>{{completionText}}</td>
+    </tr>
+    <tr>
+      <td>Expires</td>
+      <td>{{expiryText}}</td>
+    </tr>
+    <tr>
+      <td>Certificate No.</td>
+      <td>{{cardNumber}}</td>
+    </tr>
+  </table>
+  <div class="sig">
+    <div>Training Center Coordinator</div>
+    <div>Course Instructor</div>
+  </div>
+  <div class="wm">SAMPLE</div>
+</div>
