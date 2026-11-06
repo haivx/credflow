@@ -38,7 +38,7 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
   - `GET /auth/me` → `200 AuthUser`; không có cookie / hết hạn → `401 UNAUTHORIZED`
   - `POST /auth/logout` → `204`, cookie cũ dùng lại → `401`
 - **Kỳ vọng:** sai email hoặc sai mật khẩu cùng một câu `401`; route không `@Public()` mà chưa login → `401`; sai vai trò → `403 FORBIDDEN`
-- **UI:** `TODO(verify)`: màn login gộp với màn upload, chưa làm
+- **UI:** `http://localhost:3000/` (plan 17): form login (`data-testid=login-form`), header có user và nút `logout`. Reviewer, admin đăng nhập chỉ thấy `role-not-ready`
 - **Mức rủi ro:** T3 (auth)
 
 ## Hồ sơ staff
@@ -56,14 +56,23 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
   - quá `UPLOAD_MAX_BYTES` (10 MB) → `413 PAYLOAD_TOO_LARGE`; không phải PDF/PNG/JPEG (magic bytes) → `415 UNSUPPORTED_MEDIA_TYPE`; file rỗng / thiếu field / 2 file / field lạ → `400`
   - không bao giờ còn file trong `data/tmp/` sau request
 - **Kiểm sẵn có:** `apps/api/test/documents.int-spec.ts` (14 case)
-- **UI:** `TODO(verify)`: màn upload S1 chưa làm
+- **UI (S1 tối giản, plan 17):** `http://localhost:3000/` sau khi login staff: `upload-form` (`upload-doc-type`, `upload-file`, `upload-submit`), câu báo ở `upload-message` (trùng → "đã nộp file này rồi", 413, 415, 409 có câu riêng). Web gọi API qua rewrite `/api/*` → `API_URL` (mặc định `http://127.0.0.1:8787`), cookie cùng site
+
+## Đọc giấy của tôi (plan 17)
+- **API:** `GET /documents` → `200 DocumentList` (giấy của staff đang login, mới nhất trước, tối đa 50); `GET /documents/:id` → `200 DocumentView`
+- **Vai trò:** chỉ `staff`; chưa login → `401`; reviewer, admin → `403`; giấy người khác hoặc id không có → cùng `404 NOT_FOUND` "Không tìm thấy giấy"
+- **Kỳ vọng:** response không có `storageKey`, `checksum` (contract `DocumentView`)
+- **UI:** bảng `documents-table` (nhãn trạng thái, lý do), nút "Xem kết quả" mở `document-detail` (classification, routing, `asOf`, versions, timingMs, bảng `detail-fields` có `quote`, bảng `detail-rules`). Trạng thái tự cập nhật: polling 2 giây khi còn giấy đang xử lý, dừng sau 2 phút
+- **Chạy:** `make dev` (API + worker + web), login `staff-marisol@example.test` / `credflow-dev`, nộp `eval/hard-cases/cpr/01-expires.png` → "Đang xử lý" rồi "Đã tự duyệt". Lỗi console lúc chưa login: `favicon.ico` 404 và `/api/auth/me` 401 (2 lần do StrictMode dev) là bình thường
+- **Kiểm sẵn có:** `apps/api/test/documents-read.int-spec.ts` (8 case)
+- **Mức rủi ro:** T2 (phân quyền đọc: kiểm như T3)
 
 ## Pipeline xử lý (P1, LLM + rule CPR, plan 16)
 - **Rule engine (plan 15, ADR 0009):** `evaluateRules` chấm 9 rule cho `cpr_card`. Kiểm: `pnpm --filter @credflow/rules test`; `recorded.test.ts` chạy trên output thật của Haiku (`eval/hard-cases/cpr/recorded/`)
 - **Trạng thái:** `uploaded → processing → extracted → auto_approved | needs_review | failed`; sau duyệt: `approved | rejected | reupload_requested` (`DocumentStatus`)
 - **Hiện tại (plan 16):** upload đẩy job (`jobId = documentId`), worker gọi Claude thật (`claude-haiku-5-5`, ADR 0008): phân loại mọi file, trích xuất chỉ khi `cpr_card`. CPR đi `uploaded → processing → extracted → auto_approved | needs_review`: `RuleStep` (`apps/api/src/rules/rule-step.ts`) chấm rule với staff của document, `asOf` = ngày UTC (ADR 0010), ghi `ruleResults`, `routing`, `as_of`, `timingMs.rules`. Loại giấy khác đi thẳng `processing → needs_review`, `NO_RULES_EVALUATED`, `as_of` NULL. `versions = { pipeline: "16", prompt: "classify@1+extract-cpr@1", model: "claude-haiku-5-5", rules: "1" }`. `evidence.box` bị bỏ trong code
 - **Chạy thật end-to-end (kịch bản 7 plan 16):** `make db-migrate db-seed`, `make dev-api` + `make dev-worker`; login từng user rồi `curl -F file=@eval/hard-cases/cpr/<fixture> /documents`: 01, 03 → `staff-marisol@example.test`; 02 → `staff-tobias@`; 05 → `staff-odalys@`; 04, 06 → `staff@` (mật khẩu `credflow-dev`). Xem `psql`: `select file_name, status, routing, as_of, timing_ms from documents`. Kỳ vọng: 01, 06 `auto_approved`; 02 `MISSING_FIELD`+`EXPIRED`; 04 `NO_RULES_EVALUATED`; 05 `ISSUER_NOT_ACCEPTED`; 03 dao động quanh ngưỡng confidence (`LOW_CONFIDENCE` hoặc `auto_approved` với giá trị đúng)
-- **Chạy:** `make dev-api` + `make dev-worker` (worker cần `ANTHROPIC_API_KEY`, **tốn tiền thật**). Không có endpoint đọc trạng thái, xem bằng `psql`. Log worker có token từng lượt để cộng chi phí
+- **Chạy:** `make dev-api` + `make dev-worker` (worker cần `ANTHROPIC_API_KEY`, **tốn tiền thật**). Xem trạng thái bằng `GET /documents/:id` (staff chủ giấy), màn S1, hoặc `psql`. Log worker có token từng lượt để cộng chi phí
 - **Fixture:** `eval/hard-cases/cpr/` (6 giấy SAMPLE: 5 CPR + 1 TB, nguồn HTML, `expected.json` các trường chính)
 - **Lỗi (ADR 0006):**
   - timeout, mất kết nối, 408, 409, 429, 5xx: thử tối đa 3 lần (chờ 1s, 2s), hết lượt → `needs_review`, `error.step = "pipeline"`

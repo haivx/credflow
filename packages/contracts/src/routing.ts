@@ -76,6 +76,22 @@ export const DocumentRecord = z
 export type DocumentRecord = z.infer<typeof DocumentRecord>;
 
 /**
+ * Một giấy như staff thấy qua API đọc (plan 17). Bỏ `storageKey`, `checksum`: chi tiết lưu trữ nội bộ.
+ * Zod bỏ key lạ khi parse, nên parse một dòng DB đầy đủ cũng không lộ hai trường này.
+ */
+export const DocumentView = DocumentRecord.omit({
+  storageKey: true,
+  checksum: true,
+}).meta({ id: "DocumentView" });
+export type DocumentView = z.infer<typeof DocumentView>;
+
+/** Response GET /documents: giấy của staff đang đăng nhập, mới nhất trước. */
+export const DocumentList = z
+  .object({ items: z.array(DocumentView) })
+  .meta({ id: "DocumentList" });
+export type DocumentList = z.infer<typeof DocumentList>;
+
+/**
  * Response POST /documents. HTTP 201 = tạo mới; 200 + `duplicate: true` = chính staff này
  * đã nộp đúng file này rồi (cùng sha256), trả lại document cũ.
  */

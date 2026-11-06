@@ -4,7 +4,9 @@ import { ApiError } from "./error.js";
 import { Extraction } from "./extraction.js";
 import { EvalRun, GoldenCase } from "./eval.js";
 import {
+  DocumentList,
   DocumentRecord,
+  DocumentView,
   ReviewAction,
   RoutingDecision,
   UploadDocumentResponse,
@@ -34,6 +36,8 @@ export const Schemas = {
   RulesConfig,
   RoutingDecision,
   DocumentRecord,
+  DocumentView,
+  DocumentList,
   ReviewAction,
   GoldenCase,
   EvalRun,

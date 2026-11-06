@@ -5,6 +5,7 @@ import {
   ApiError,
   AuthUser,
   DocumentRecord,
+  DocumentView,
   Extraction,
   Schemas,
   type SchemaName,
@@ -156,5 +157,19 @@ describe("UploadDocumentFields", () => {
     expect(UploadDocumentFields.safeParse({ staffId: "s1" }).success).toBe(
       false,
     );
+  });
+});
+
+describe("DocumentView", () => {
+  it("parse một DocumentRecord đầy đủ thì bỏ storageKey và checksum", () => {
+    const cases = readFileSync(
+      join(FIXTURE_DIR, "DocumentRecord.json"),
+      "utf8",
+    );
+    const [first] = JSON.parse(cases) as [FixtureCase];
+    const view = DocumentView.parse(first.data);
+    expect(view).not.toHaveProperty("storageKey");
+    expect(view).not.toHaveProperty("checksum");
+    expect(view.status).toBe("needs_review");
   });
 });
