@@ -8,7 +8,7 @@ import { documents } from "../db/schema.js";
 export const DOCUMENT_LIST_LIMIT = 50;
 
 /** Cột trả cho staff. Không chọn `storageKey`, `checksum` ngay từ query (plan 17). */
-const viewColumns = {
+export const viewColumns = {
   id: documents.id,
   staffId: documents.staffId,
   fileName: documents.fileName,
@@ -16,6 +16,7 @@ const viewColumns = {
   sizeBytes: documents.sizeBytes,
   declaredDocType: documents.declaredDocType,
   status: documents.status,
+  version: documents.version,
   classification: documents.classification,
   extraction: documents.extraction,
   ruleResults: documents.ruleResults,
@@ -54,10 +55,25 @@ export class DocumentsReadService {
       .where(and(eq(documents.id, id), eq(documents.staffId, staffId)));
     return row === undefined ? undefined : toView(row);
   }
+
+  /** File của giấy thuộc staff này (plan 27). `undefined` cùng nghĩa như `findForStaff`. */
+  async fileMetaForStaff(
+    staffId: string,
+    id: string,
+  ): Promise<{ storageKey: string; mimeType: string } | undefined> {
+    const [row] = await this.db
+      .select({
+        storageKey: documents.storageKey,
+        mimeType: documents.mimeType,
+      })
+      .from(documents)
+      .where(and(eq(documents.id, id), eq(documents.staffId, staffId)));
+    return row;
+  }
 }
 
 /** DB dùng NULL, contract dùng trường vắng mặt; timestamp đổi sang chuỗi ISO. */
-function toView(
+export function toView(
   row: Record<string, unknown> & { createdAt: Date; updatedAt: Date },
 ): DocumentView {
   const present = Object.fromEntries(

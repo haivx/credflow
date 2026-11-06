@@ -1,4 +1,5 @@
-import { mkdir, readFile, rename, rm } from "node:fs/promises";
+import { mkdir, open, readFile, rename, rm } from "node:fs/promises";
+import type { Readable } from "node:stream";
 import { dirname, resolve, sep } from "node:path";
 import type { Storage } from "./storage.js";
 
@@ -31,6 +32,20 @@ export class LocalStorage implements Storage {
   async read(key: string): Promise<Buffer | null> {
     try {
       return await readFile(this.pathOf(key));
+    } catch (err) {
+      if (err instanceof Error && "code" in err && err.code === "ENOENT") {
+        return null;
+      }
+      throw err;
+    }
+  }
+
+  async openRead(key: string): Promise<Readable | null> {
+    // Mở file trước rồi mới tạo stream: ENOENT ra ở đây thành null, không thành lỗi giữa lúc đang gửi.
+    try {
+      const handle = await open(this.pathOf(key), "r");
+      // Stream đóng file khi đọc xong hoặc khi bị huỷ (autoClose mặc định).
+      return handle.createReadStream();
     } catch (err) {
       if (err instanceof Error && "code" in err && err.code === "ENOENT") {
         return null;

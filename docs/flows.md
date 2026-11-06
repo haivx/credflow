@@ -46,6 +46,8 @@
 4. Chọn: **Duyệt** / **Từ chối** / **Yêu cầu nộp lại** (bắt buộc ghi lý do khi từ chối hoặc yêu cầu nộp lại).
 5. Lưu `ReviewAction` (kèm `corrections`) → chuyển sang ca tiếp theo.
 
+**API (plan 27):** `GET /review/queue` (keyset, sắp theo hạn hoặc ngày nộp), `GET /review/documents/:id`, `.../file`, `POST .../preview` (bước 3: chấm lại với `asOf` đã lưu, không ghi), `POST .../decision` (bước 4–5: một transaction, khoá `version`; hai người duyệt cùng lúc thì người sau nhận 409). Chỗ sửa chỉ lưu ở `review_actions`, extraction gốc giữ nguyên.
+
 ## F4. Admin theo dõi compliance
 
 1. S4: theo nhân viên, giấy nào đủ / thiếu / sắp hết hạn / đã hết hạn so với yêu cầu theo vai trò. **Đã có API (plan 26):** `GET /staff/:id/compliance` (đủ/thiếu theo `roles.required` của config mọi khách hàng của staff, chỉ tính giấy đã duyệt; chưa xét hạn).

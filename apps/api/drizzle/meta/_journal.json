@@ -43,6 +43,13 @@
       "when": 1793979155565,
       "tag": "0005_soft_shard",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793981010011,
+      "tag": "0006_review_version",
+      "breakpoints": true
     }
   ]
 }

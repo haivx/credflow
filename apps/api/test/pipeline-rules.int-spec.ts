@@ -156,6 +156,8 @@ describe("pipeline nối rule và routing", () => {
     const row = await runCpr("01-expires", "Marisol Quennell");
 
     expect(row.status).toBe("auto_approved");
+    // Plan 27: uploaded → processing → extracted → auto_approved, mỗi bước tăng version 1.
+    expect(row.version).toBe(4);
     expect(row.routing).toEqual({ decision: "auto_approve", reasons: [] });
     expect(row.asOf).toBe(AS_OF);
     expect(row.ruleResults.map((r) => r.code).sort()).toEqual(

@@ -9,6 +9,7 @@
       "sizeBytes": 184320,
       "declaredDocType": "cpr_card",
       "status": "needs_review",
+      "version": 1,
       "classification": {
         "docType": "cpr_card",
         "confidence": 0.97
@@ -107,6 +108,7 @@
       "mimeType": "application/pdf",
       "sizeBytes": 184321,
       "status": "uploaded",
+      "version": 1,
       "createdAt": "2026-10-27T09:01:00Z",
       "updatedAt": "2026-10-27T09:01:00Z"
     }

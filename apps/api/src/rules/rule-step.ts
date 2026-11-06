@@ -1,19 +1,11 @@
-import { Inject, Injectable, Logger } from "@nestjs/common";
-import {
-  type RoutingDecision,
-  type RuleResult,
-  StaffProfile,
-} from "@credflow/contracts";
-import {
-  configsFor,
-  evaluateRulesForConfigs,
-  type RulesConfigSet,
-  route,
-} from "@credflow/rules";
+import { Inject, Injectable } from "@nestjs/common";
+import type { RoutingDecision, RuleResult } from "@credflow/contracts";
 import { eq } from "drizzle-orm";
 import { CLOCK, type Clock } from "../common/clock.js";
 import { type Db, DB } from "../db/db.provider.js";
-import { documents, staff } from "../db/schema.js";
+import { documents } from "../db/schema.js";
+import type { RulesConfigSet } from "@credflow/rules";
+import { scoreDocument } from "./rule-scorer.js";
 import { RULES_CONFIG } from "./rules-config.provider.js";
 
 export interface RuleStepResult {
@@ -39,8 +31,6 @@ export function statusFor(
  */
 @Injectable()
 export class RuleStep {
-  private readonly logger = new Logger("RuleStep");
-
   constructor(
     @Inject(DB) private readonly db: Db,
     @Inject(RULES_CONFIG) private readonly configs: RulesConfigSet,
@@ -64,43 +54,20 @@ export class RuleStep {
       throw new Error("Document chưa có kết quả trích xuất");
     }
 
-    const [staffRow] = await this.db
-      .select({
-        id: staff.id,
-        legalName: staff.legalName,
-        aliases: staff.aliases,
-        role: staff.role,
-        clientIds: staff.clientIds,
-        region: staff.region,
-      })
-      .from(staff)
-      .where(eq(staff.id, doc.staffId));
-    if (staffRow === undefined) throw new Error("Không có staff");
-
     const asOf = this.clock.todayUtc();
     const startedAt = performance.now();
-    const profile = StaffProfile.parse(staffRow);
-    const missing = profile.clientIds.filter(
-      (id) => this.configs.byClient[id] === undefined,
-    );
-    if (missing.length > 0) {
-      // Khách hàng chưa có file config: chấm theo default cho khách đó (plan 25). Chỉ ghi id.
-      this.logger.warn(
-        `document ${documentId}: khách hàng chưa có config riêng, dùng default: ${missing.join(", ")}`,
-      );
-    }
-    // Chấm theo mọi khách hàng của staff, lấy chặt nhất (plan 25, ADR 0011).
-    const ruleResults = evaluateRulesForConfigs(
+    const { ruleResults, routing } = await scoreDocument(
+      this.db,
+      this.configs,
       {
+        documentId,
+        staffId: doc.staffId,
         extraction: doc.extraction,
         classification: doc.classification,
         declaredDocType: doc.declaredDocType ?? undefined,
-        staff: profile,
         asOf,
       },
-      configsFor(this.configs, profile.clientIds),
     );
-    const routing = route(ruleResults);
 
     return {
       status: statusFor(routing.decision),

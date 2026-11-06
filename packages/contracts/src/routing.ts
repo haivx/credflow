@@ -60,6 +60,11 @@ export const DocumentRecord = z
     /** Loại giấy nhân viên chọn lúc upload (có thể sai). */
     declaredDocType: DocType.optional(),
     status: DocumentStatus,
+    /**
+     * Optimistic lock (plan 27): tăng 1 mỗi lần đổi trạng thái. Người duyệt gửi lại `version` đã thấy;
+     * lệch thì 409, không ghi đè thay đổi của người khác hay của worker.
+     */
+    version: z.number().int().min(1),
     classification: Classification.optional(),
     extraction: Extraction.optional(),
     ruleResults: z.array(RuleResult).default([]),
@@ -100,22 +105,32 @@ export const UploadDocumentResponse = z
   .meta({ id: "UploadDocumentResponse" });
 export type UploadDocumentResponse = z.infer<typeof UploadDocumentResponse>;
 
+/**
+ * Một chỗ người duyệt sửa. `fieldPath` dạng `fields.<tên>.value` (vd `fields.expirationDate.value`).
+ * Tách riêng ở plan 27, hình dạng giữ nguyên như plan 07.
+ */
+export const Correction = z
+  .object({
+    fieldPath: z.string(),
+    before: z.string().nullable(),
+    after: z.string().nullable(),
+  })
+  .meta({ id: "Correction" });
+export type Correction = z.infer<typeof Correction>;
+
+export const ReviewActionKind = z
+  .enum(["approve", "reject", "request_reupload"])
+  .meta({ id: "ReviewActionKind" });
+export type ReviewActionKind = z.infer<typeof ReviewActionKind>;
+
 /** Hành động của người duyệt. Mọi chỗ sửa được lưu lại làm dữ liệu eval. */
 export const ReviewAction = z
   .object({
     id: Id,
     documentId: Id,
     reviewerId: Id,
-    action: z.enum(["approve", "reject", "request_reupload"]),
-    corrections: z
-      .array(
-        z.object({
-          fieldPath: z.string(),
-          before: z.string().nullable(),
-          after: z.string().nullable(),
-        }),
-      )
-      .default([]),
+    action: ReviewActionKind,
+    corrections: z.array(Correction).default([]),
     note: z.string().optional(),
     createdAt: IsoTimestamp,
   })
