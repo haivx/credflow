@@ -25,11 +25,11 @@
 - **Plan 15 rule engine CPR (ADR 0009):** merge PR #32 2026-11-05. Rule chưa nối vào pipeline.
 - **Plan 16 nối rule + routing (ADR 0010):** merge PR #33 2026-11-06.
 - **Plan 17 màn upload + kết quả thô:** merge PR #34 2026-11-06. **P1 xong:** đủ 9 tiêu chí hoàn thành (đối chiếu 2026-11-06).
-- **Plan 18 eval harness:** Liam duyệt 2026-11-06. Nhánh `feat/18-eval-harness`. Code xong, `make eval` chạy thật (kịch bản 8–11 qua), baseline ghi ở mục Eval. **Tiếp:** full check, evidence, PR. **Hỏi Liam:** đáp án `courseType`/`validityText` viết tắt hay chép nguyên văn.
+- **Plan 18 eval harness:** merge PR #35 2026-11-06. Sửa đáp án ca 02 (`courseType`, `validityText` theo chữ in): nhánh `fix/eval-dap-an-02`, PR chờ merge.
 
 ## Tiếp theo
 
-1. **Plan 18:** chờ duyệt rồi code.
+1. **Plan 19:** `tools/synth` (CPR 3–5 bố cục, nhiễu, seed, holdout). Đề xuất sau khi PR sửa đáp án merge.
 
 ## Vướng / câu hỏi mở
 
@@ -39,7 +39,7 @@
 
 ## Eval mới nhất
 
-- **Baseline 2026-11-06** (plan 18, run `2026-11-06T04-00-12-008Z`, dev, 6 ca hard-cases, versions pipeline 16 / prompt classify@1+extract-cpr@1 / haiku-5-5 / rules 1): `falseApproveRate` 0% (0/6), `autoApproveRate` 33.3% (01, 06), `classificationAccuracy` 100%, field: holderName/issuerName/expirationDate/cardNumber 100%, completionDate 80%, validityText 66.7%, courseType 50% (đáp án viết tắt so với chữ in đầy đủ); 11 lượt gọi, ~$0.0039; latency p50 3.3s, p95 4.9s. Ca 03 lần này `LOW_CONFIDENCE` (plan 16 từng ra auto_approved).
+- **Baseline 2026-11-06** (plan 18, run `2026-11-06T04-00-12-008Z`, dev, 6 ca hard-cases, versions pipeline 16 / prompt classify@1+extract-cpr@1 / haiku-5-5 / rules 1): `falseApproveRate` 0% (0/6), `autoApproveRate` 33.3% (01, 06), `classificationAccuracy` 100%, field: holderName/issuerName/expirationDate/cardNumber 100%, completionDate 80% (02 để trống ngày `09/02/2025`, cố ý), validityText và courseType 100% sau khi sửa đáp án 02 theo chữ in (Liam 2026-11-06; trước đó 66.7% / 50%); 11 lượt gọi, ~$0.0039; latency p50 3.3s, p95 4.9s. Ca 03 lần này `LOW_CONFIDENCE` (plan 16 từng ra auto_approved).
 
 ## Nhật ký
 

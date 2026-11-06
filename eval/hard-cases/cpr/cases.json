@@ -43,10 +43,10 @@
       "fields": {
         "holderName": "Tobias Arkwright-Lenz",
         "issuerName": "Lifeline Response Institute",
-        "courseType": "HS-CPR-B",
+        "courseType": "HS-CPR-B (Heartsaver CPR, Basic)",
         "completionDate": "2025-09-02",
         "expirationDate": null,
-        "validityText": "Valid 2 years",
+        "validityText": "Valid 2 years from the date of completion.",
         "cardNumber": null
       },
       "decision": "needs_review"
