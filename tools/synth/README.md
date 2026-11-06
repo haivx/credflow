@@ -8,6 +8,7 @@ Sinh thẻ CPR giả lập kèm đáp án (plan 19). Mọi thẻ có watermark `
 pnpm --filter @credflow/synth exec playwright install chromium   # một lần, khoảng 100 MB
 make synth            # SEED=1
 make synth SEED=2     # bộ khác
+make synth ARGS=--cases-only   # chỉ cases.json + HTML, không render, không cần Chromium (make eval-ci dùng)
 ```
 
 Ghi vào `data/synth/cpr/` (không commit): ảnh/PDF `synth-cpr-NNNN.{png,jpg,pdf}`, HTML đã điền (để xem và gỡ lỗi), `cases.json` (`GoldenCase[]`). Thư mục này bị xoá và ghi lại mỗi lần chạy.

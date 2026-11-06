@@ -36,3 +36,5 @@ real-docs/
 
 # Kết quả verify skill (log, screenshot, report, cookie jar)
 .verify/
+# Snapshot, console log của Playwright MCP (plan 20)
+.playwright-mcp/

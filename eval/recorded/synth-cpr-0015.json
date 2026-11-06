@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "8cca889b9261d7d77bf3b526c7f1995cb8ef3dc5d8536df90503ef06d70f7170",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Corwin Kettleby",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Corwin Kettleby"
+        }
+      },
+      "issuerName": {
+        "value": "Silverline Rescue Guild",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Silverline Rescue Guild"
+        }
+      },
+      "courseType": {
+        "value": "Adult, Child and Infant CPR",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Adult, Child and Infant CPR"
+        }
+      },
+      "completionDate": {
+        "value": "2026-07-23",
+        "confidence": 0.92,
+        "evidence": {
+          "quote": "7/23/2026"
+        }
+      },
+      "expirationDate": {
+        "value": "2028-07-23",
+        "confidence": 0.92,
+        "evidence": {
+          "quote": "7/23/2028"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "SRG-336712",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Card No. SRG-336712"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 3947,
+    "outputTokens": 577
+  },
+  "latencyMs": 3160
+}

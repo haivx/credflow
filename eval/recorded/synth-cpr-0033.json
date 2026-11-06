@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "b8fe1b13912302c39b04b6285a1a070fdee879b4af28aaa0bf96c85cd3c8c992",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Yarrow Juniper",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Yarrow Juniper"
+        }
+      },
+      "issuerName": {
+        "value": "Lifeline Response Institute",
+        "confidence": 0.97,
+        "evidence": {
+          "quote": "Lifeline Response Institute"
+        }
+      },
+      "courseType": {
+        "value": "Adult CPR and AED Provider",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Adult CPR and AED Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2025-09-19",
+        "confidence": 0.97,
+        "evidence": {
+          "quote": "Date of Completion September 19, 2025"
+        }
+      },
+      "expirationDate": {
+        "value": "2027-09-19",
+        "confidence": 0.97,
+        "evidence": {
+          "quote": "Expires September 19, 2027"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "LRI-463370",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Certificate No. LRI-463370"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 6313,
+    "outputTokens": 370
+  },
+  "latencyMs": 2619
+}

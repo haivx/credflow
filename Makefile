@@ -1,6 +1,6 @@
 # CredFlow: lệnh phát triển. Recipe là POSIX sh.
 
-.PHONY: setup db-up db-down db-generate db-migrate db-seed build-packages dev dev-packages dev-api dev-worker dev-web test test-int typecheck lint format eval synth
+.PHONY: setup db-up db-down db-generate db-migrate db-seed build-packages dev dev-packages dev-api dev-worker dev-web test test-int typecheck lint format eval eval-ci synth
 
 # Cài deps từ lockfile, bật Postgres và Redis, chạy migration, seed staff giả lập.
 # Chạy lại an toàn: migration đã áp thì bỏ qua, seed không sinh dòng trùng.
@@ -77,4 +77,10 @@ eval: build-packages
 # Sinh thẻ CPR giả lập + đáp án → data/synth/cpr/ (plan 19). SEED= tuỳ chọn (mặc định 1).
 # Lần đầu cần Chromium: pnpm --filter @credflow/synth exec playwright install chromium
 synth: build-packages
-	pnpm --filter @credflow/synth run synth $(if $(SEED),--seed $(SEED))
+	pnpm --filter @credflow/synth run synth $(if $(SEED),--seed $(SEED)) $(ARGS)
+
+# Cổng eval của CI (plan 20): chấm lại rule trên output LLM đã ghi (eval/recorded/), không gọi LLM,
+# không cần khoá. Duyệt nhầm trên dev vượt eval/gate.json thì exit 1.
+eval-ci: build-packages
+	$(MAKE) synth SEED=1 ARGS=--cases-only
+	pnpm --filter @credflow/api eval --recorded --no-save --gate eval/gate.json

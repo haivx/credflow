@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "cc663b9c4aba5734242b13815dd2d57e8c0738e12e4f2a196c80b4a9a11f1298",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Quillon Ashgrove",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Quillon Ashgrove"
+        }
+      },
+      "issuerName": {
+        "value": "Lifeline Response Institute",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Lifeline Response Institute"
+        }
+      },
+      "courseType": {
+        "value": "Basic Life Support (BLS) Provider",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Basic Life Support (BLS) Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2024-08-23",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "8/23/2024"
+        }
+      },
+      "expirationDate": {
+        "value": "2026-08-23",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "8/23/2026"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "LRI-884464",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Card No. LRI-884464"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 3947,
+    "outputTokens": 365
+  },
+  "latencyMs": 2368
+}

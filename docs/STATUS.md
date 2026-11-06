@@ -26,13 +26,13 @@
 - **Plan 16 nối rule + routing (ADR 0010):** merge PR #33 2026-11-06.
 - **Plan 17 màn upload + kết quả thô:** merge PR #34 2026-11-06. **P1 xong:** đủ 9 tiêu chí hoàn thành (đối chiếu 2026-11-06).
 - **Plan 18 eval harness:** merge PR #35; sửa đáp án ca 02 merge PR #36 (2026-11-06).
-- **Plan 19 synth:** nhánh `feat/19-synth-cpr`, đã kiểm (kịch bản 1–12), baseline ở mục Eval. **Tiếp:** evidence, PR. **Phát hiện:** 4 ca duyệt nhầm cùng kiểu confidence 0.85 = ngưỡng (xem mục Eval) → đề xuất plan T3 sửa, trước hoặc sau plan 20 tuỳ Liam.
-- **Plan 20 harness:** Liam đồng ý hướng (script verify api/ui, gitignore `.playwright-mcp/`, eval trong CI trên output đã ghi). Viết plan sau khi plan 19 xong.
+- **Plan 19 synth:** merge PR #37 2026-11-06. Phát hiện 4 ca duyệt nhầm cùng kiểu confidence 0.85 = ngưỡng (mục Eval) → plan 21.
+- **Plan 20 harness:** nhánh `chore/20-harness`, đã kiểm (kịch bản 1–11, evidence dùng chính script mới), PR chờ Liam merge. `make eval-ci` vào CI, `eval/gate.json` = 2.
 
 ## Tiếp theo
 
-1. **Plan 19:** code (đang làm).
-2. **Plan 20:** harness, sau plan 19.
+1. **Plan 21:** sửa duyệt nhầm ở ngưỡng 0.85 (T3), hạ `eval/gate.json` về 0.
+2. Thêm 4 ca khó làm tay để đóng P2.
 
 ## Vướng / câu hỏi mở
 

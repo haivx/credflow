@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "e76a9285ea5882cc96e75f9b3e73308c79a6148c242aa3588473ed88a8ff0797",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Yarrow Ravensworth",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Yarrow Ravensworth"
+        }
+      },
+      "issuerName": {
+        "value": "Lifeline Response Institute",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Lifeline Response Institute"
+        }
+      },
+      "courseType": {
+        "value": "Adult CPR and AED Provider",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Adult CPR and AED Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2026-05-28",
+        "confidence": 0.85,
+        "evidence": {
+          "quote": "5/28/2026 Class Completion Date"
+        }
+      },
+      "expirationDate": {
+        "value": "2028-05-28",
+        "confidence": 0.85,
+        "evidence": {
+          "quote": "5/28/2028 Renewal Date"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "LRI-125515",
+        "confidence": 0.7,
+        "evidence": {
+          "quote": "Card No. LRI-125515 · Electronic card only"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 4363,
+    "outputTokens": 724
+  },
+  "latencyMs": 3844
+}

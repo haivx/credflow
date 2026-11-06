@@ -17,6 +17,15 @@ Mặc định đọc `eval/hard-cases/cpr/cases.json` và `data/synth/cpr/cases.
 
 Exit 0 khi chạy xong, kể cả khi có ca duyệt nhầm (đó là số liệu). Exit 1 khi `cases.json` sai schema, thiếu khoá, hoặc có ca không chạy được (lỗi LLM tạm thời sau khi SDK đã thử lại). Ca đã xong vẫn nằm trong cache, chạy lại không tốn tiền cho chúng.
 
+## Cổng trong CI (plan 20)
+
+`make eval-ci` chạy trong CI: sinh `cases.json` synth (không render), chấm lại rule trên output LLM đã ghi ở `eval/recorded/` (chỉ split dev), không gọi LLM, không cần khoá. Fail khi:
+
+- số ca duyệt nhầm vượt `eval/gate.json` (`maxFalseApproveCount`, hiện 2; hạ/nâng là sửa file này trong PR);
+- thiếu output ghi sẵn của một ca, hoặc output ghi với prompt version / model / input khác hiện tại.
+
+Ghi lại sau khi đổi prompt, model, template synth hay đáp án hard-cases: `make eval ARGS=--record` (gọi LLM nếu cache trượt) rồi commit `eval/recorded/`. `inputSha256` của synth tính trên HTML đã điền (giống byte mọi máy), của hard-cases trên chính file.
+
 ## Dữ liệu
 
 | Nguồn | Nơi | Commit? |
@@ -26,6 +35,8 @@ Exit 0 khi chạy xong, kể cả khi có ca duyệt nhầm (đó là số liệ
 | Giấy giả lập sinh bằng `make synth SEED=…` | `data/synth/` | Không (sinh lại được) |
 | Cache LLM | `eval/cache/` | Không |
 | Kết quả từng lần chạy (`EvalRun`) | `eval/runs/<id>.json` | Không |
+| Output LLM ghi sẵn của ca dev (cho CI) | `eval/recorded/<id>.json` | Có |
+| Mức chặn của cổng | `eval/gate.json` | Có |
 | Báo cáo mới nhất | `eval/report.md` | Có |
 
 `split`: `dev` dùng khi phát triển; `holdout` chỉ chạy khi chốt kết quả cuối phase, không dùng để chỉnh prompt.
@@ -46,4 +57,4 @@ So trường: ngày so chuỗi `YYYY-MM-DD`; `holderName`, `issuerName` dùng c�
 ## Quy tắc
 
 - Mọi thay đổi prompt, model, rule, ngưỡng → `make eval` → dán bảng so sánh trong `eval/report.md` vào PR.
-- Report luôn ghi `versions` của lần chạy. Thử tạm một thay đổi rule thì xoá run thử trong `eval/runs/` trước khi chạy lần chính, để "lần trước" là baseline thật.
+- Report luôn ghi `versions` của lần chạy. Thử tạm một thay đổi rule thì dùng `ARGS=--no-save`, để "lần trước" vẫn là baseline thật.

@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "6c7fe3bf2a13d7a7367a6b6f7100400625d0ed016a8ef6cfe4e3b437352045d5",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Isolde Kettleby",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Isolde Kettleby"
+        }
+      },
+      "issuerName": {
+        "value": "Northbridge Safety Council",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Northbridge Safety Council"
+        }
+      },
+      "courseType": {
+        "value": "Adult, Child and Infant CPR",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Adult, Child and Infant CPR"
+        }
+      },
+      "completionDate": {
+        "value": "2024-11-18",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Date of Completion November 18, 2024"
+        }
+      },
+      "expirationDate": {
+        "value": "2026-11-18",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Expires November 18, 2026"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "NSC-145519",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Certificate No. NSC-145519"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 6315,
+    "outputTokens": 372
+  },
+  "latencyMs": 2731
+}

@@ -33,6 +33,10 @@ export interface CaseDeps {
   config: RulesConfig;
   promptVersion: string;
   model: string;
+  /** Chế độ `--recorded`: lấy output đã ghi, không đọc file, không gọi LLM (plan 20). */
+  recorded?: (gc: GoldenCase) => Promise<CacheEntry>;
+  /** Nhận entry của mỗi ca sau khi có, để `--record` ghi lại. */
+  onEntry?: (gc: GoldenCase, entry: CacheEntry) => void;
 }
 
 const MIME_BY_EXT: Record<string, string> = {
@@ -55,14 +59,11 @@ export async function runCase(
   if (mimeType === undefined) {
     throw new Error(`Ca ${gc.id}: đuôi file không hỗ trợ (${gc.file})`);
   }
-  const content = await deps.readFile(gc.file);
-  const sha256 = createHash("sha256").update(content).digest("hex");
-  const key = cacheKey(sha256, deps.promptVersion, deps.model);
-
-  const hit = deps.readCache ? await deps.cache.get(key) : undefined;
-  const entry =
-    hit ?? (await callLlm({ documentId: gc.id, mimeType, content }, deps));
-  if (hit === undefined) await deps.cache.set(key, entry);
+  const { entry, cached } =
+    deps.recorded === undefined
+      ? await loadOrCall(gc, mimeType, deps)
+      : { entry: await deps.recorded(gc), cached: true };
+  deps.onEntry?.(gc, entry);
 
   const { classification, extraction } = entry;
   const ruleResults =
@@ -98,12 +99,28 @@ export async function runCase(
     fieldMismatches: mismatches,
     fieldsCompared: compared,
     error: entry.error,
-    cached: hit !== undefined,
-    llmCalls: hit === undefined ? entry.usage.calls : 0,
+    cached,
+    llmCalls: cached ? 0 : entry.usage.calls,
     latencyMs: entry.latencyMs,
     inputTokens: entry.usage.inputTokens,
     outputTokens: entry.usage.outputTokens,
   };
+}
+
+/** Cache theo sha256 file; miss thì gọi LLM rồi ghi cache. */
+async function loadOrCall(
+  gc: GoldenCase,
+  mimeType: string,
+  deps: CaseDeps,
+): Promise<{ entry: CacheEntry; cached: boolean }> {
+  const content = await deps.readFile(gc.file);
+  const sha256 = createHash("sha256").update(content).digest("hex");
+  const key = cacheKey(sha256, deps.promptVersion, deps.model);
+  const hit = deps.readCache ? await deps.cache.get(key) : undefined;
+  if (hit !== undefined) return { entry: hit, cached: true };
+  const entry = await callLlm({ documentId: gc.id, mimeType, content }, deps);
+  await deps.cache.set(key, entry);
+  return { entry, cached: false };
 }
 
 async function callLlm(doc: LlmDocument, deps: CaseDeps): Promise<CacheEntry> {

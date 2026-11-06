@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "ab6ac131b0525110b1235b68c6792dc85887d003467359b93f58b124a64bac91",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Quillon Larkspur",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Quillon Larkspur"
+        }
+      },
+      "issuerName": {
+        "value": "Northbridge Safety Council",
+        "confidence": 0.97,
+        "evidence": {
+          "quote": "Northbridge Safety Council"
+        }
+      },
+      "courseType": {
+        "value": "Adult, Child and Infant CPR",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Adult, Child and Infant CPR"
+        }
+      },
+      "completionDate": {
+        "value": "2025-12-19",
+        "confidence": 0.93,
+        "evidence": {
+          "quote": "12/19/2025"
+        }
+      },
+      "expirationDate": {
+        "value": "2027-12-31",
+        "confidence": 0.85,
+        "evidence": {
+          "quote": "Valid through 12/2027"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "NSC-452929",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "NSC-452929"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 3581,
+    "outputTokens": 740
+  },
+  "latencyMs": 4032
+}

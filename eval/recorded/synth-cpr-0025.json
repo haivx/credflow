@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "c2f95bb9eca44c2b8acb4fa976982d6ba6184663c875428cc6e7ca265ce25108",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Mireille Larkspur",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Mireille Larkspur"
+        }
+      },
+      "issuerName": {
+        "value": "Northbridge Safety Council",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Northbridge Safety Council"
+        }
+      },
+      "courseType": {
+        "value": "Basic Life Support (BLS) Provider",
+        "confidence": 0.93,
+        "evidence": {
+          "quote": "Basic Life Support (BLS) Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2026-06-13",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Date of Completion June 13, 2026"
+        }
+      },
+      "expirationDate": {
+        "value": "2028-06-13",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Expires June 13, 2028"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "NSC-284922",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Certificate No. NSC-284922"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 6319,
+    "outputTokens": 376
+  },
+  "latencyMs": 2895
+}

@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "d278ca7dc8ce80fc3cf8702b7318de6b5e5dd17993a8cf3944fcbb9cde17b54c",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Lunet Oakhaven",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Lunet Oakhaven"
+        }
+      },
+      "issuerName": {
+        "value": "Harrowgate First Aid Academy",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Harrowgate First Aid Academy"
+        }
+      },
+      "courseType": {
+        "value": "Basic Life Support (BLS) Provider",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Basic Life Support (BLS) Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2025-11-21",
+        "confidence": 0.93,
+        "evidence": {
+          "quote": "11/21/2025"
+        }
+      },
+      "expirationDate": {
+        "value": "2027-11-21",
+        "confidence": 0.93,
+        "evidence": {
+          "quote": "11/21/2027"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "HFAA-969306",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Card No. HFAA-969306"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 3947,
+    "outputTokens": 589
+  },
+  "latencyMs": 3879
+}

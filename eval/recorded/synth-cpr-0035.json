@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "9b24f841e681b0b950f8520398145739059348b112d92d97f2b8e31d4ae0fb79",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Kestrel Ravensworth",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Kestrel Ravensworth"
+        }
+      },
+      "issuerName": {
+        "value": "Lifeline Response Institute",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Lifeline Response Institute"
+        }
+      },
+      "courseType": {
+        "value": "Adult CPR and AED Provider",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Adult CPR and AED Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2026-05-15",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "5/15/2026 Class Completion Date"
+        }
+      },
+      "expirationDate": {
+        "value": "2028-05-15",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "5/15/2028 Renewal Date"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "LRI-689118",
+        "confidence": 0.6,
+        "evidence": {
+          "quote": "Card No. LRI-689118"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 4363,
+    "outputTokens": 762
+  },
+  "latencyMs": 4203
+}

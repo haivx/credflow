@@ -86,10 +86,11 @@ make typecheck  # tsc mọi package
 make lint       # eslint (có type-check cho apps/api, packages; guardrail A3/A5/A9/A14) + prettier --check + test lint (tools/lint/)
 make format     # prettier --write: sửa định dạng khi make lint báo lỗi prettier
 make eval       # golden set qua LlmService + rule thật → eval/runs/, eval/report.md; cache LLM; ARGS=--no-cache
+make eval-ci    # cổng CI: rule trên output ghi sẵn (eval/recorded/), 0 lời gọi LLM; duyệt nhầm > eval/gate.json → exit ≠ 0
 make synth      # sinh 40 thẻ CPR giả lập + cases.json → data/synth/cpr/ (plan 19), SEED= tuỳ chọn; cần Chromium của Playwright
 ```
 
-CI (`.github/workflows/ci.yml`): mỗi PR và push lên `main` chạy `build-packages`, `lint`, `typecheck`, `test`, `test-int`.
+CI (`.github/workflows/ci.yml`): mỗi PR và push lên `main` chạy `build-packages`, `lint`, `typecheck`, `test`, `test-int`, `eval-ci`.
 
 (Cập nhật mục này khi đổi Makefile.)
 

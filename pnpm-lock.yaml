@@ -23,9 +23,15 @@ importers:
       eslint-plugin-react-hooks:
         specifier: ^7.0.0
         version: 7.1.1(eslint@9.39.5)
+      playwright:
+        specifier: 1.64.1
+        version: 1.64.1
       prettier:
         specifier: ^3.9.0
         version: 3.9.10
+      tsx:
+        specifier: ^4.23.15
+        version: 4.23.15
       typescript:
         specifier: ~5.9.3
         version: 5.9.3
