@@ -45,6 +45,8 @@
 
 ## P2 · Dữ liệu giả lập và eval baseline (5–6 ngày)
 
+> **Xong 2026-11-06** (plan 18–22): synth có seed, `make eval` + report, baseline, cổng `eval-ci` trong CI (`falseApproveRate` dev 0/40), 10 ca khó làm tay.
+
 - **Mục tiêu:** có số liệu đầu tiên; từ đây mọi thay đổi đi qua `make eval`.
 - **Phạm vi:** `tools/synth`: template HTML cho CPR (3–5 bố cục, tham khảo `docs/research/layout-notes.md`), render PNG/PDF, nhiễu (xoay, mờ, chụp lệch, nén JPEG), sinh `GoldenCase` có seed. `eval/`: chạy pipeline trên golden set, tính `EvalMetrics` + cắt theo tag, ghi `eval/runs/` và `eval/report.md`, so với lần trước. Chia dev/holdout. 10 ca khó làm tay trong `eval/hard-cases/`.
 - **🎓 Học được:**

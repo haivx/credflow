@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "014156ca6c7b033f4970446ab69420817cbb463206762fced5aae51f14517c39",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Maren Ostrowe",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Holder: Maren Ostrowe"
+        }
+      },
+      "issuerName": {
+        "value": "Lifeline Response Institute",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Lifeline Response Institute"
+        }
+      },
+      "courseType": {
+        "value": "BLS Provider (Adult, Child and Infant)",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "BLS Provider (Adult, Child and Infant)"
+        }
+      },
+      "completionDate": {
+        "value": null,
+        "confidence": 0,
+        "evidence": {
+          "quote": "Completed 10/9/2025"
+        }
+      },
+      "expirationDate": {
+        "value": null,
+        "confidence": 0,
+        "evidence": {
+          "quote": "Expires 10/9/2027"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "LRI-552901",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "eCard Code LRI-552901"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 3889,
+    "outputTokens": 899
+  },
+  "latencyMs": 6646
+}

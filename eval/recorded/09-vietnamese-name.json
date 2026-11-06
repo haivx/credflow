@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "9a229369570c611301a6c4a97138077d1790d6cd89a040d1423d31ebe6fa7bdb",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "NGUYỄN THỊ LAN ANH",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "NGUYỄN THỊ LAN ANH"
+        }
+      },
+      "issuerName": {
+        "value": "Northbridge Safety Council",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Northbridge Safety Council"
+        }
+      },
+      "courseType": {
+        "value": "Basic Life Support (BLS) Provider",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Basic Life Support (BLS) Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2026-06-20",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Completed June 20, 2026"
+        }
+      },
+      "expirationDate": {
+        "value": "2028-06-20",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Expires June 20, 2028"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "NSC-884213",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "NSC-884213"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 3889,
+    "outputTokens": 383
+  },
+  "latencyMs": 3813
+}

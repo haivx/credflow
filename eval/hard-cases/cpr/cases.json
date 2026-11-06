@@ -152,5 +152,117 @@
     },
     "tags": ["clean"],
     "split": "dev"
+  },
+  {
+    "id": "07-verbatim-ambiguous",
+    "file": "eval/hard-cases/cpr/07-verbatim-ambiguous.png",
+    "staff": {
+      "id": "01M6CRWH00M3S97971WJSR6NWZ",
+      "legalName": "Maren Ostrowe",
+      "aliases": [],
+      "role": "caregiver",
+      "clientIds": [],
+      "region": "CA"
+    },
+    "asOf": "2026-11-06",
+    "expected": {
+      "docType": "cpr_card",
+      "fields": {
+        "holderName": "Maren Ostrowe",
+        "issuerName": "Lifeline Response Institute",
+        "courseType": "BLS Provider (Adult, Child and Infant)",
+        "completionDate": null,
+        "expirationDate": null,
+        "validityText": null,
+        "cardNumber": "LRI-552901"
+      },
+      "decision": "needs_review"
+    },
+    "tags": ["date_format_ambiguous"],
+    "split": "dev"
+  },
+  {
+    "id": "08-ordinal-date",
+    "file": "eval/hard-cases/cpr/08-ordinal-date.png",
+    "staff": {
+      "id": "01M6CRWH00M3S97971WJSR6NXB",
+      "legalName": "Marisol Quennell",
+      "aliases": [],
+      "role": "caregiver",
+      "clientIds": [],
+      "region": "CA"
+    },
+    "asOf": "2026-11-06",
+    "expected": {
+      "docType": "cpr_card",
+      "fields": {
+        "holderName": "Marisol Quennell",
+        "issuerName": "Northbridge Safety Council",
+        "courseType": "Adult CPR and AED Provider",
+        "completionDate": "2026-03-14",
+        "expirationDate": "2028-03-14",
+        "validityText": null,
+        "cardNumber": "NSC-310457"
+      },
+      "decision": "auto_approve"
+    },
+    "tags": ["clean"],
+    "split": "dev"
+  },
+  {
+    "id": "09-vietnamese-name",
+    "file": "eval/hard-cases/cpr/09-vietnamese-name.png",
+    "staff": {
+      "id": "01M6CRWH00M3S97971WJSR6NX4",
+      "legalName": "Nguyen Thi Lan Anh",
+      "aliases": ["Lan Anh Nguyen"],
+      "role": "caregiver",
+      "clientIds": [],
+      "region": "CA"
+    },
+    "asOf": "2026-11-06",
+    "expected": {
+      "docType": "cpr_card",
+      "fields": {
+        "holderName": "NGUYỄN THỊ LAN ANH",
+        "issuerName": "Northbridge Safety Council",
+        "courseType": "Basic Life Support (BLS) Provider",
+        "completionDate": "2026-06-20",
+        "expirationDate": "2028-06-20",
+        "validityText": null,
+        "cardNumber": "NSC-884213"
+      },
+      "decision": "auto_approve"
+    },
+    "tags": ["name_variant"],
+    "split": "dev"
+  },
+  {
+    "id": "10-expired-yesterday",
+    "file": "eval/hard-cases/cpr/10-expired-yesterday.png",
+    "staff": {
+      "id": "01M6CRWH00M3S97971WJSR6NXD",
+      "legalName": "Odalys Venn",
+      "aliases": [],
+      "role": "behavior_technician",
+      "clientIds": [],
+      "region": "WA"
+    },
+    "asOf": "2026-11-06",
+    "expected": {
+      "docType": "cpr_card",
+      "fields": {
+        "holderName": "Odalys Venn",
+        "issuerName": "Lifeline Response Institute",
+        "courseType": "Heartsaver CPR AED",
+        "completionDate": "2024-11-05",
+        "expirationDate": "2026-11-05",
+        "validityText": null,
+        "cardNumber": "LRI-207733"
+      },
+      "decision": "needs_review"
+    },
+    "tags": ["expired"],
+    "split": "dev"
   }
 ]
