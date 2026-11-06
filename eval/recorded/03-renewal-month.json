@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "6c3bc684be3c862ca488001e31cc0303eeed4e494e46f1129583f7bf60dba23c",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "QUENNELL, MARISOL",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "QUENNELL, MARISOL"
+        }
+      },
+      "issuerName": {
+        "value": "Lifeline Response Institute",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Lifeline Response Institute"
+        }
+      },
+      "courseType": {
+        "value": "BLS Provider",
+        "confidence": 0.8,
+        "evidence": {
+          "quote": "BLS Provider eCard"
+        }
+      },
+      "completionDate": {
+        "value": "2026-03-28",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "(Class held 03/28/2026)"
+        }
+      },
+      "expirationDate": {
+        "value": "2028-03-31",
+        "confidence": 0.85,
+        "evidence": {
+          "quote": "Recommended renewal: 03/2028"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "7Q2-KX-9184",
+        "confidence": 0.8,
+        "evidence": {
+          "quote": "Code 7Q2-KX-9184"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 3869,
+    "outputTokens": 821
+  },
+  "latencyMs": 4866
+}

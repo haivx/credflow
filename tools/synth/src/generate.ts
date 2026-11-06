@@ -1,4 +1,5 @@
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import { GoldenCase } from "@credflow/contracts";
@@ -15,7 +16,11 @@ const ROOT = resolve(import.meta.dirname, "..", "..", "..");
 const OUT_DIR = join(ROOT, "data", "synth", "cpr");
 
 const { values: args } = parseArgs({
-  options: { seed: { type: "string", default: "1" } },
+  options: {
+    seed: { type: "string", default: "1" },
+    // Plan 20: chỉ cases.json + HTML, không render, không cần Chromium (cho make eval-ci).
+    "cases-only": { type: "boolean", default: false },
+  },
 });
 const seed = Number(args.seed);
 if (!Number.isInteger(seed) || seed < 0) {
@@ -28,6 +33,26 @@ const config = loadRulesConfig(join(ROOT, "config", "rules", "default.yaml"));
 const accepted = config.acceptedIssuers.cpr_card ?? [];
 const cards = buildCards(seed, accepted);
 const cases = GoldenCase.array().parse(cards.map(toGoldenCase));
+
+const casesText = `${JSON.stringify(cases, null, 2)}\n`;
+const casesPath = join(OUT_DIR, "cases.json");
+
+if (args["cases-only"]) {
+  // Cùng bộ ca với lần sinh trước thì giữ nguyên ảnh đã render (máy dev); khác thì xoá để không
+  // còn ảnh lệch với cases.json.
+  const same =
+    existsSync(casesPath) && (await readFile(casesPath, "utf8")) === casesText;
+  if (!same) await rm(OUT_DIR, { recursive: true, force: true });
+  await mkdir(OUT_DIR, { recursive: true });
+  for (const card of cards) {
+    await writeFile(join(OUT_DIR, `${card.id}.html`), cardHtml(card));
+  }
+  await writeFile(casesPath, casesText);
+  console.log(
+    `make synth --cases-only: seed ${String(seed)}, ${String(cards.length)} ca (cases.json + HTML, ${same ? "giữ ảnh cũ" : "chưa có ảnh"})`,
+  );
+  process.exit(0);
+}
 
 let browser;
 try {
@@ -60,10 +85,7 @@ try {
 } finally {
   await browser.close();
 }
-await writeFile(
-  join(OUT_DIR, "cases.json"),
-  `${JSON.stringify(cases, null, 2)}\n`,
-);
+await writeFile(casesPath, casesText);
 
 const count = (pick: (c: (typeof cards)[number]) => string) =>
   Object.entries(

@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "3adfa56143a596184c6f32796c6c555c9d78b2f9ea05d53dc4a0a8d398e9fb2b",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Ulric Thistlewood",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Ulric Thistlewood"
+        }
+      },
+      "issuerName": {
+        "value": "Lifeline Response Institute",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Lifeline Response Institute"
+        }
+      },
+      "courseType": {
+        "value": "Adult, Child and Infant CPR",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Adult, Child and Infant CPR"
+        }
+      },
+      "completionDate": {
+        "value": "2026-08-15",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "8/15/2026"
+        }
+      },
+      "expirationDate": {
+        "value": "2028-08-15",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "8/15/2028"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "LRI-865082",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Card No. LRI-865082"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 3947,
+    "outputTokens": 361
+  },
+  "latencyMs": 2439
+}

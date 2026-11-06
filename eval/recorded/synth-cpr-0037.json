@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "6304f81133c7acd435e6780bee4f5d3eaf71af7c37505a1cf99ab4f151d2db9d",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Quillon Thistlewood",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Quillon Thistlewood"
+        }
+      },
+      "issuerName": {
+        "value": "Lifeline Response Institute",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Lifeline Response Institute"
+        }
+      },
+      "courseType": {
+        "value": "Adult, Child and Infant CPR",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Adult, Child and Infant CPR"
+        }
+      },
+      "completionDate": {
+        "value": "2025-10-25",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Date of Completion October 25, 2025"
+        }
+      },
+      "expirationDate": {
+        "value": "2027-10-25",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Expires October 25, 2027"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "LRI-927490",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Certificate No. LRI-927490"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 6317,
+    "outputTokens": 374
+  },
+  "latencyMs": 2753
+}

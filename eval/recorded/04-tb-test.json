@@ -1,0 +1,16 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "5121641a3377367521965d9833e70b3b6397018c049a72c8d49293b7fe75b94c",
+  "classification": {
+    "docType": "tb_test",
+    "confidence": 0.97
+  },
+  "error": null,
+  "usage": {
+    "calls": 1,
+    "inputTokens": 1054,
+    "outputTokens": 21
+  },
+  "latencyMs": 746
+}

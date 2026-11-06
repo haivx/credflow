@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "12267b7291c91300aeac63385d3e9bf8945bbe0a089672413e4bc5f3acd024ec",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Tamsin Dunmore",
+        "confidence": 0.97,
+        "evidence": {
+          "quote": "Tamsin Dunmore"
+        }
+      },
+      "issuerName": {
+        "value": "Northbridge Safety Council",
+        "confidence": 0.96,
+        "evidence": {
+          "quote": "Northbridge Safety Council"
+        }
+      },
+      "courseType": {
+        "value": "Basic Life Support (BLS) Provider",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Basic Life Support (BLS) Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2025-10-21",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "10/21/2025"
+        }
+      },
+      "expirationDate": {
+        "value": "2027-10-21",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "10/21/2027"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "NSC-793372",
+        "confidence": 0.93,
+        "evidence": {
+          "quote": "Card No. NSC-793372"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 3947,
+    "outputTokens": 581
+  },
+  "latencyMs": 3171
+}

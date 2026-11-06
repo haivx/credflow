@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "fd779495da8b3c3945058df6bafb4361f046bface31d6908b5e917a478fa2439",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Saoirse Dunmore",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Saoirse Dunmore"
+        }
+      },
+      "issuerName": {
+        "value": "Northbridge Safety Council",
+        "confidence": 0.92,
+        "evidence": {
+          "quote": "Northbridge Safety Council"
+        }
+      },
+      "courseType": {
+        "value": "Adult, Child and Infant CPR",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Adult, Child and Infant CPR"
+        }
+      },
+      "completionDate": {
+        "value": "2026-01-27",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "January 27, 2026"
+        }
+      },
+      "expirationDate": {
+        "value": "2028-01-27",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "January 27, 2028"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "NSC-218728",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "NSC-218728"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 5749,
+    "outputTokens": 575
+  },
+  "latencyMs": 4257
+}

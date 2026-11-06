@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "ffdd73f41f033afd51b193d9096e0cab802048f088d835c582085bba23bfa0e5",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Jorvik Kettleby",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Jorvik Kettleby"
+        }
+      },
+      "issuerName": {
+        "value": "Northbridge Safety Council",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Northbridge Safety Council"
+        }
+      },
+      "courseType": {
+        "value": "Adult CPR and AED Provider",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Adult CPR and AED Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2024-08-23",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Date of Completion August 23, 2024"
+        }
+      },
+      "expirationDate": {
+        "value": "2026-08-23",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Expires August 23, 2026"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "NSC-199135",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Certificate No. NSC-199135"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 6315,
+    "outputTokens": 372
+  },
+  "latencyMs": 2662
+}

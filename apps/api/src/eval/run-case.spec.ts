@@ -180,4 +180,40 @@ describe("runCase", () => {
       runCase(golden({ file: "eval/x/a.gif" }), deps),
     ).rejects.toThrow("đuôi file");
   });
+
+  it("chế độ recorded: không đọc file, không gọi LLM, dùng entry đã ghi", async () => {
+    const readFile = vi.fn<CaseDeps["readFile"]>();
+    const result = await runCase(golden(), {
+      ...deps,
+      readFile,
+      recorded: () =>
+        Promise.resolve({
+          classification: { docType: "cpr_card", confidence: 0.97 },
+          extraction: recorded01,
+          error: null,
+          usage: { calls: 2, inputTokens: 3000, outputTokens: 500 },
+          latencyMs: 1200,
+        }),
+    });
+    expect(readFile).not.toHaveBeenCalled();
+    expect(classify).not.toHaveBeenCalled();
+    expect(result).toMatchObject({
+      decision: "auto_approve",
+      cached: true,
+      llmCalls: 0,
+      inputTokens: 3000,
+      latencyMs: 1200,
+    });
+  });
+
+  it("onEntry nhận đúng entry của ca (để --record ghi lại)", async () => {
+    const seen: string[] = [];
+    await runCase(golden(), {
+      ...deps,
+      onEntry: (gc, entry) => {
+        seen.push(`${gc.id}:${entry.classification?.docType ?? "-"}`);
+      },
+    });
+    expect(seen).toEqual(["01-expires:cpr_card"]);
+  });
 });

@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "e68e1b0dc7e233b9c933f599b08a63a9e47334e722a36f3e80d0f2396d12511e",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Ulric Stoneleigh",
+        "confidence": 0.93,
+        "evidence": {
+          "quote": "Ulric Stoneleigh"
+        }
+      },
+      "issuerName": {
+        "value": "Lifeline Response Institute",
+        "confidence": 0.92,
+        "evidence": {
+          "quote": "Lifeline Response Institute"
+        }
+      },
+      "courseType": {
+        "value": "Adult CPR and AED Provider",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Adult CPR and AED Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2025-10-27",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "10/27/2025"
+        }
+      },
+      "expirationDate": {
+        "value": "2027-10-27",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "10/27/2027"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "LRI-881817",
+        "confidence": 0.85,
+        "evidence": {
+          "quote": "Card No. LRI-881817"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 4363,
+    "outputTokens": 577
+  },
+  "latencyMs": 3094
+}

@@ -1,0 +1,66 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "d450daa4eba7279ba1a3bd24b5e65d0f6052c0ef031974f3df9a9283fad154be",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Odalys Venn",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Awarded to Odalys Venn"
+        }
+      },
+      "issuerName": {
+        "value": "Harrowgate First Aid Academy",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Harrowgate First Aid Academy"
+        }
+      },
+      "courseType": {
+        "value": "CPR / First Aid",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "CPR / First Aid"
+        }
+      },
+      "completionDate": {
+        "value": "2026-01-20",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Completed 2026-01-20"
+        }
+      },
+      "expirationDate": {
+        "value": "2027-01-20",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Expires 2027-01-20"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 3889,
+    "outputTokens": 520
+  },
+  "latencyMs": 2995
+}

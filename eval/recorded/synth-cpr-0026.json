@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "28dd367756d5c2e41206e74cbe96d05f2c40162a4c4405828e1d02fd379557ce",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Kestrel Ravensworth",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Kestrel Ravensworth"
+        }
+      },
+      "issuerName": {
+        "value": "Northbridge Safety Council",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Northbridge Safety Council"
+        }
+      },
+      "courseType": {
+        "value": "Basic Life Support (BLS) Provider",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Basic Life Support (BLS) Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2024-11-26",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "11/26/2024"
+        }
+      },
+      "expirationDate": {
+        "value": "2026-11-26",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "11/26/2026"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "NSC-717737",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Card No. NSC-717737"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 3947,
+    "outputTokens": 367
+  },
+  "latencyMs": 2648
+}

@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "03f3c743699ac597f27bf2e38c8f48c86dfaa42391a95b623e04a7aaeaf60dab",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Marisol Quennell",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Marisol Quennell"
+        }
+      },
+      "issuerName": {
+        "value": "Northbridge Safety Council",
+        "confidence": 0.97,
+        "evidence": {
+          "quote": "Northbridge Safety Council"
+        }
+      },
+      "courseType": {
+        "value": "Adult CPR and AED Provider",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Adult CPR and AED Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2026-03-14",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "March 14, 2026"
+        }
+      },
+      "expirationDate": {
+        "value": "2028-03-14",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "March 14, 2028"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "NSC-448120",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "NSC-448120"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 3889,
+    "outputTokens": 569
+  },
+  "latencyMs": 3885
+}

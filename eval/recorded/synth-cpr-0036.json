@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "54007c82af25f4034ba22d849cf60aa36db762567107e48619cede5a35718896",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Yarrow Oakhaven",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Yarrow Oakhaven"
+        }
+      },
+      "issuerName": {
+        "value": "Lifeline Response Institute",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Lifeline Response Institute"
+        }
+      },
+      "courseType": {
+        "value": "Basic Life Support (BLS) Provider",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Basic Life Support (BLS) Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2025-07-16",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Date of Completion July 16, 2025"
+        }
+      },
+      "expirationDate": {
+        "value": "2027-07-16",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Expires July 16, 2027"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "LRI-709493",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Certificate No. LRI-709493"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 6323,
+    "outputTokens": 380
+  },
+  "latencyMs": 3085
+}

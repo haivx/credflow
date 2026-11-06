@@ -49,3 +49,6 @@ jobs:
       - run: make typecheck
       - run: make test
       - run: make test-int
+      # Cổng eval (plan 20): chấm lại rule trên output LLM ghi sẵn; duyệt nhầm vượt eval/gate.json → đỏ.
+      # Không gọi LLM, không cần secret.
+      - run: make eval-ci

@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "76ae2bd26940339e7a8049260fea5ef40287357902bb15b2598dbf87ed36bff6",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.98
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Corwin Dunmore",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Corwin Dunmore"
+        }
+      },
+      "issuerName": {
+        "value": "Coastal Pulse Training Co.",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Coastal Pulse Training Co."
+        }
+      },
+      "courseType": {
+        "value": "Adult CPR and AED Provider",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Adult CPR and AED Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2025-11-21",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Date of Completion November 21, 2025"
+        }
+      },
+      "expirationDate": {
+        "value": "2027-11-21",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Expires November 21, 2027"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "CPTC-239961",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Certificate No. CPTC-239961"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 6321,
+    "outputTokens": 377
+  },
+  "latencyMs": 4224
+}

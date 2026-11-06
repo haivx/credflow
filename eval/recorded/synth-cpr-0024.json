@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "5401bdfbf044415b33906ccf7d7370cd2a48fc19665d6ee461e3b0963b94ca19",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Quillon Northcott",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Quillon Northcott"
+        }
+      },
+      "issuerName": {
+        "value": "Lifeline Response Institute",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Lifeline Response Institute"
+        }
+      },
+      "courseType": {
+        "value": "Basic Life Support (BLS) Provider",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Basic Life Support (BLS) Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2025-06-26",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "June 26, 2025"
+        }
+      },
+      "expirationDate": {
+        "value": "2027-06-26",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "June 26, 2027"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "LRI-376767",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "LRI-376767"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 5749,
+    "outputTokens": 359
+  },
+  "latencyMs": 3067
+}

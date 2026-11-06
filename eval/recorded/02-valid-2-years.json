@@ -1,0 +1,66 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "5bb87f3d3b1138147de15ef0039c606a3ee06822d2e69f2c1bae8d62270db817",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Tobias Arkwright-Lenz",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Tobias Arkwright-Lenz"
+        }
+      },
+      "issuerName": {
+        "value": "Lifeline Response Institute",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "L I F E L I N E R E S P O N S E I N S T I T U T E"
+        }
+      },
+      "courseType": {
+        "value": "HS-CPR-B (Heartsaver CPR, Basic)",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "HS-CPR-B (Heartsaver CPR, Basic)"
+        }
+      },
+      "completionDate": {
+        "value": null,
+        "confidence": 0,
+        "evidence": {
+          "quote": "on 09/02/2025"
+        }
+      },
+      "expirationDate": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "validityText": {
+        "value": "Valid 2 years from the date of completion.",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Valid 2 years from the date of completion."
+        }
+      },
+      "cardNumber": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 6213,
+    "outputTokens": 791
+  },
+  "latencyMs": 4637
+}

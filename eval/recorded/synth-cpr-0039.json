@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "c18c8b6c20a90e5b5ca74cbe0a98e5c7057d9e8f9671f2a86ae1713c91310b85",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Orsolya Thistlewood",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Orsolya Thistlewood"
+        }
+      },
+      "issuerName": {
+        "value": "Northbridge Safety Council",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Northbridge Safety Council"
+        }
+      },
+      "courseType": {
+        "value": "Basic Life Support (BLS) Provider",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Basic Life Support (BLS) Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2025-11-13",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "11/13/2025"
+        }
+      },
+      "expirationDate": {
+        "value": "2027-11-13",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "11/13/2027"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "NSC-651554",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Card No. NSC-651554"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 3947,
+    "outputTokens": 583
+  },
+  "latencyMs": 3371
+}

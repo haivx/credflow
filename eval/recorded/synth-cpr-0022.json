@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "058340548592739afb8721d7ce50c20007c83c4f11ff795ffc1d8c4a7125941b",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Tamsin Pemberly",
+        "confidence": 0.93,
+        "evidence": {
+          "quote": "Tamsin Pemberly"
+        }
+      },
+      "issuerName": {
+        "value": "Lifeline Response Institute",
+        "confidence": 0.94,
+        "evidence": {
+          "quote": "Lifeline Response Institute"
+        }
+      },
+      "courseType": {
+        "value": "Adult CPR and AED Provider",
+        "confidence": 0.94,
+        "evidence": {
+          "quote": "Adult CPR and AED Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2026-05-26",
+        "confidence": 0.92,
+        "evidence": {
+          "quote": "5/26/2026"
+        }
+      },
+      "expirationDate": {
+        "value": "2028-05-26",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "5/26/2028"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "LRI-234223",
+        "confidence": 0.9,
+        "evidence": {
+          "quote": "Card No. LRI-234223"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 4363,
+    "outputTokens": 359
+  },
+  "latencyMs": 2497
+}

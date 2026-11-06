@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "b386f1f4913a3da3a1c731cb8c18c868c24363393104146b4ef38d034b72ee0f",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.98
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Lunet Oakhaven",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Lunet Oakhaven"
+        }
+      },
+      "issuerName": {
+        "value": "Lifeline Response Institute",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Lifeline Response Institute"
+        }
+      },
+      "courseType": {
+        "value": "Adult, Child and Infant CPR",
+        "confidence": 0.93,
+        "evidence": {
+          "quote": "Adult, Child and Infant CPR"
+        }
+      },
+      "completionDate": {
+        "value": "2025-08-14",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Date of Completion August 14, 2025"
+        }
+      },
+      "expirationDate": {
+        "value": "2027-08-14",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Expires August 14, 2027"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "LRI-802686",
+        "confidence": 0.93,
+        "evidence": {
+          "quote": "Certificate No. LRI-802686"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 6317,
+    "outputTokens": 374
+  },
+  "latencyMs": 2665
+}

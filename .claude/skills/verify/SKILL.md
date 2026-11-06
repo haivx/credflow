@@ -8,9 +8,8 @@ description: Chạy app thật và chứng minh một thay đổi chạy đúng 
 Đọc `docs/agent/VERIFICATION.md` một lần mỗi phiên nếu chưa đọc. Skill này là cách
 thực hiện các rule trong đó.
 
-> **Trạng thái:** các script trong `scripts/` (`up.sh`, `seed.ts`, `api.sh`, `ui.ts`, `fixtures.ts`)
-> **chưa có**, sẽ làm ở Phase 1 bước 4 sau khi Liam duyệt. Trong lúc chờ, dùng lệnh thay thế
-> ghi ở từng bước dưới đây và ghi rõ trong report là đã dùng lệnh thay thế.
+Script trong `scripts/` (plan 20): `up.sh`, `down.sh`, `api.sh`, `ui.mts`. Mỗi lần kiểm chứng đi
+qua các script này, không dựng lệnh tay; thiếu thứ gì thì thêm vào script (xem "Bảo trì").
 
 ## Cần có trước khi bắt đầu
 
@@ -24,23 +23,19 @@ Tính năng chưa có trong FEATURE_MAP.md thì thêm vào như một phần c�
 
 ### 1. Bật app
 ```bash
-.claude/skills/verify/scripts/up.sh
+.claude/skills/verify/scripts/up.sh          # API + worker
+.claude/skills/verify/scripts/up.sh --web    # thêm web localhost:3000 (kiểm UI)
 ```
-- Thoát với mã khác 0 nếu app không khoẻ trong thời gian chờ. Lỗi thì đọc
-  `.verify/logs/` và sửa môi trường trước. Không lách qua một lần khởi động hỏng.
-- Không bao giờ bật app bằng lệnh tuỳ hứng; luôn đi qua `up.sh` để mọi lần
-  kiểm chứng chạy y hệt nhau.
-- **Thay thế khi chưa có script:** `make setup` (Postgres, Redis, migrate, seed) rồi
-  `make build-packages && pnpm --filter @credflow/api build && node apps/api/dist/main.js`
-  (chạy nền), chờ `curl -sf http://127.0.0.1:8787/ready`. Dừng process khi xong.
+- Bật Postgres, Redis, chạy migrate + seed (13 staff + 6 user, xem FEATURE_MAP.md), rồi API, worker
+  (+ web) chạy nền. Log ở `.verify/logs/`. Chờ `/ready` và log "worker started" tối đa 90 giây.
+- Thoát với mã khác 0 nếu app không khoẻ (in log cuối), app đang chạy rồi, hoặc cổng bận.
+  Không lách qua một lần khởi động hỏng.
+- Worker gọi Claude thật (`ANTHROPIC_API_KEY` trong `.env`): **tốn tiền**, ghi số lượt trong report.
 
-### 2. Seed dữ liệu (nếu kịch bản cần)
-```bash
-pnpm tsx .claude/skills/verify/scripts/seed.ts --scenario <name>
-```
-Danh sách kịch bản nằm trong `scripts/seed.ts`. Fixture chỉ là dữ liệu giả lập, có watermark SAMPLE.
-- **Thay thế khi chưa có script:** `make db-seed` (13 staff + 6 user, xem FEATURE_MAP.md).
-- Dữ liệu tạo thêm khi kiểm tay trên DB dev (document, file trong `data/files/`) phải dọn lại sau khi kiểm.
+### 2. Dữ liệu
+- Staff và user đăng nhập: seed sẵn (`up.sh` đã chạy `make db-seed`), mật khẩu `credflow-dev`.
+- Giấy giả lập: `eval/hard-cases/cpr/` (commit sẵn) hoặc `make synth` (`data/synth/cpr/`). Chỉ dữ liệu
+  giả lập có watermark SAMPLE.
 
 ### 3. Chọn mức
 Chọn mức rẻ nhất chứng minh được thay đổi (VERIFICATION.md, Rule 3).
@@ -50,32 +45,39 @@ Backend/pipeline → API trước (`make test-int` + gọi API đang chạy). Ng
 
 **API (L2):**
 ```bash
-.claude/skills/verify/scripts/api.sh GET  /health
-.claude/skills/verify/scripts/api.sh POST /documents @<fixture>.pdf
+.claude/skills/verify/scripts/api.sh GET /health
+.claude/skills/verify/scripts/api.sh --as staff-marisol@example.test POST /documents @eval/hard-cases/cpr/01-expires.png
+.claude/skills/verify/scripts/api.sh --as staff-marisol@example.test GET /documents
 ```
-Output là JSON gọn: status, thời gian, body đã cắt gọn.
-- **Thay thế khi chưa có script:** đăng nhập lấy cookie rồi gọi bằng curl:
-  ```bash
-  curl -s -c .verify/jar -H 'content-type: application/json' \
-    -d '{"email":"staff@example.test","password":"credflow-dev"}' http://127.0.0.1:8787/auth/login
-  curl -s -w ' [%{http_code} %{time_total}s]\n' -b .verify/jar -F file=@<fixture>.pdf http://127.0.0.1:8787/documents
-  ```
+Output: dòng `<status> <thời gian>` rồi body (cắt 2000 ký tự). `--as` đăng nhập bằng user seed, cookie
+riêng mỗi email ở `.verify/`. Không `--as` là gọi chưa đăng nhập.
 - Kiểm thêm trạng thái DB khi cần:
   `docker compose exec -T db psql -U credflow -d credflow -c "SELECT id, status FROM documents ORDER BY created_at DESC LIMIT 5"`.
 
-**UI (L3):** (`apps/web` chưa có màn nào)
+**UI (L3):** (cần `up.sh --web`)
 ```bash
-pnpm tsx .claude/skills/verify/scripts/ui.ts --path /<duong-dan> --shot .verify/shots/<name>.png
+pnpm exec tsx .claude/skills/verify/scripts/ui.mts --login staff-marisol@example.test \
+  --path / --wait-text "Đã tự duyệt" --shot .verify/shots/<name>.png
 ```
-Output: HTTP status, tiêu đề trang, lỗi console, request mạng lỗi, đường dẫn screenshot.
-Mở screenshot bằng tool Read và nhìn thật sự.
+Output JSON: url, status, title, `consoleErrors`, `failedRequests` (≥ 400), đường dẫn ảnh. Exit 1 khi
+đăng nhập lỗi hoặc không thấy `--wait-text` trong 60 giây (vẫn chụp). Mở screenshot bằng tool Read
+và nhìn thật sự. Không dùng Playwright MCP nữa (nó để lại `.playwright-mcp/`).
 
-**Bước pipeline / LLM:** (từ P2)
+**Bước pipeline / LLM:**
 ```bash
-make eval
+make eval                       # golden set qua LLM thật (cache), ghi eval/runs/ + report.md
+make eval ARGS=--no-save        # chạy thử, không ghi run/report
+make eval-ci                    # cổng của CI: output ghi sẵn, 0 lời gọi LLM, không cần khoá
 ```
-Chạy bộ golden fixture; báo qua/không qua cho từng fixture so với các trường chính kỳ vọng,
-và `falseApproveRate` so với lần trước (mục tiêu 0).
+Báo `falseApproveRate` so với lần trước (mục tiêu 0) và ca duyệt nhầm. Đổi prompt/model/template
+synth thì `make eval ARGS=--record` để ghi lại `eval/recorded/`.
+
+### 4b. Tắt và dọn
+```bash
+.claude/skills/verify/scripts/down.sh --clean
+```
+Tắt process do `up.sh` bật; `--clean` liệt kê rồi xoá document (và file) tạo sau lúc `up.sh` chạy,
+trên DB dev. Bắt buộc sau mỗi lần kiểm có tạo dữ liệu.
 
 ### 5. Đánh giá
 - So cái quan sát được với cái kỳ vọng, theo cách người dùng nói.

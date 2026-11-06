@@ -4,7 +4,8 @@
 > Agent dùng file này để biến một báo lỗi mơ hồ ("upload hỏng rồi", một screenshot ghi "???")
 > thành một bước tái hiện cụ thể. Giữ nó luôn mới: map cũ còn tệ hơn không có map.
 >
-> Lấy từ code CredFlow ngày 2026-11-04 (sau plan 11). Chỗ chưa chắc hoặc chưa làm ghi `TODO(verify)`.
+> Lấy từ code CredFlow ngày 2026-11-04 (sau plan 11), cập nhật tới plan 20. Chỗ chưa chắc hoặc chưa làm ghi `TODO(verify)`.
+> Bật/tắt app, gọi API, chụp UI: dùng script trong `scripts/` (xem SKILL.md).
 
 ## Quy ước
 - API chạy ở `http://127.0.0.1:8787` (`make dev-api`), **không có tiền tố `/api`**. Web (P1 sau)
@@ -119,7 +120,8 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 - **Đáp án:** `eval/hard-cases/cpr/cases.json` + `data/synth/cpr/cases.json` nếu có (`GoldenCase[]`, `asOf` cố định); report có cột nguồn; kết quả `eval/runs/<id>.json` (`EvalRun`, gitignore), `eval/report.md` (commit), cache `eval/cache/` (gitignore)
 - **Kỳ vọng:** chạy lần hai không đổi gì → `LLM 0 lượt, cache 6`, metric giống hệt; đổi rule/ngưỡng → 0 lượt gọi LLM, decision đổi theo; `cases.json` sai schema → exit 1 kèm `index.trường`
 - **Duyệt nhầm:** tự duyệt mà đáp án `needs_review` hoặc đọc sai trường có trong đáp án; report liệt kê ở mục "Duyệt nhầm"
-- **Kiểm sẵn có:** `apps/api/src/eval/*.spec.ts` (36 test, không gọi LLM)
+- **Cổng CI (plan 20):** `make eval-ci` = synth `--cases-only` + eval `--recorded --no-save --gate eval/gate.json`; kỳ vọng: không cần khoá, `LLM 0 lượt`, `cổng eval: qua (2 ≤ 2)`; vượt mức, thiếu/cũ output ghi sẵn → exit ≠ 0 kèm lý do từng ca. Ghi lại: `make eval ARGS=--record`
+- **Kiểm sẵn có:** `apps/api/src/eval/*.spec.ts` (51 test, không gọi LLM)
 - **Mức rủi ro:** T2 (số liệu quyết định thay đổi T3)
 
 ## Synth (plan 19)
