@@ -2,10 +2,10 @@
 
 > Sinh tự động bởi `make eval` (plan 18). Đừng sửa tay.
 
-- **Run:** `2026-11-06T04-01-19-885Z` · split `dev` · 6 ca
+- **Run:** `2026-11-06T04-39-26-862Z` · split `dev` · 6 ca
 - **Versions:** pipeline `16`, prompt `classify@1+extract-cpr@1`, model `claude-haiku-5-5`, rules `1`
-- **Thời gian chạy:** 8 ms · **Chi phí ước tính:** $0.00391 (giá ghi trong `apps/api/src/eval/pricing.ts`; tính cả ca lấy từ cache)
-- **So với:** `2026-11-06T04-00-58-615Z` (versions rules `1`, prompt `classify@1+extract-cpr@1`)
+- **Thời gian chạy:** 9 ms · **Chi phí ước tính:** $0.00391 (giá ghi trong `apps/api/src/eval/pricing.ts`; tính cả ca lấy từ cache)
+- **So với:** `2026-11-06T04-01-19-885Z` (versions rules `1`, prompt `classify@1+extract-cpr@1`)
 
 ## Metric
 
@@ -31,7 +31,7 @@ Không có ca nào.
 | Ca | Kỳ vọng | Thực tế | Lý do | Trường sai | Cache | Lỗi |
 | --- | --- | --- | --- | --- | --- | --- |
 | `01-expires` | auto_approve | auto_approve | — | — | có | — |
-| `02-valid-2-years` | needs_review | needs_review | MISSING_FIELD, EXPIRED | courseType, completionDate, validityText | có | — |
+| `02-valid-2-years` | needs_review | needs_review | MISSING_FIELD, EXPIRED | completionDate | có | — |
 | `03-renewal-month` | needs_review | needs_review | LOW_CONFIDENCE | — | có | — |
 | `04-tb-test` | needs_review | needs_review | NO_RULES_EVALUATED | — | có | — |
 | `05-injection` | needs_review | needs_review | ISSUER_NOT_ACCEPTED | — | có | — |
@@ -43,11 +43,11 @@ Không có ca nào.
 | --- | --- | --- |
 | cardNumber | 100.0% | 100.0% |
 | completionDate | 80.0% | 80.0% |
-| courseType | 50.0% | 50.0% |
+| courseType | 100.0% | 50.0% |
 | expirationDate | 100.0% | 100.0% |
 | holderName | 100.0% | 100.0% |
 | issuerName | 100.0% | 100.0% |
-| validityText | 66.7% | 66.7% |
+| validityText | 100.0% | 66.7% |
 
 ## Theo tag
 
