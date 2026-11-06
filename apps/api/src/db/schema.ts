@@ -138,6 +138,13 @@ export const documents = pgTable(
   },
   (t) => [
     uniqueIndex("documents_checksum_unique").on(t.checksum),
+    // Plan 26: danh sách giấy của một staff (GET /documents) và FK.
+    index("documents_staff_id_idx").on(t.staffId),
+    // Plan 26: staff đã đủ bộ giấy chưa. Partial: chỉ giấy đã duyệt; biểu thức phải khớp đúng
+    // câu query trong apps/api/src/staff/compliance.sql.ts thì planner mới dùng.
+    index("documents_staff_approved_doctype_idx")
+      .on(t.staffId, sql`(${t.classification}->>'docType')`)
+      .where(sql`${t.status} IN ('auto_approved', 'approved')`),
     check(
       "documents_status_check",
       sql`${t.status} IN (${sqlList(DocumentStatus.options)})`,

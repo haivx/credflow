@@ -3,7 +3,7 @@
 > Claude Code đọc file này đầu mỗi phiên và cập nhật cuối phiên (`/wrap`). Giữ ngắn, dưới 40 dòng.
 
 **Cập nhật:** 2026-11-06
-**Phase hiện tại:** P3 · Rule engine đầy đủ và routing (`docs/roadmap.md`). P0 xong 2026-11-03, P1 và P2 xong 2026-11-06.
+**Phase hiện tại:** P4 · Hàng chờ và màn duyệt (`docs/roadmap.md`). P0 xong 2026-11-03; P1, P2, P3 xong 2026-11-06.
 
 ## Đang làm
 
@@ -32,11 +32,12 @@
 - **Plan 22 ca khó đóng P2:** merge PR #41 2026-11-06. **P2 xong.**
 - **Plan 23 check vùng theo plan (P3):** merge PR #42 2026-11-06.
 - **Plan 24 ngày dạng thứ tự:** merge PR #43 2026-11-06.
-- **Plan 25 config theo khách hàng (ADR 0011):** nhánh `feat/25-config-khach-hang`, đã kiểm (kịch bản 1–9), PR chờ merge. 40 ca cũ không đổi; 4 ca mới đúng; dev 0/44.
+- **Plan 25 config theo khách hàng (ADR 0011):** merge PR #44 2026-11-06.
+- **Plan 26 staff đủ bộ giấy:** nhánh `feat/26-du-bo-giay`, đã kiểm, PR chờ merge. `EXPLAIN` 20k dòng: Seq Scan cost ~916 → Bitmap Index Scan ~16. **P3 xong** khi PR này merge.
 
 ## Tiếp theo
 
-1. **Plan 26:** query staff đủ bộ giấy (index, `EXPLAIN`), dùng `roles.required` theo config khách hàng.
+1. Sau plan 26: `/next` đề xuất bước đầu P4 (hàng chờ duyệt S2, màn duyệt S3).
 3. Phạm vi P3 chính: config theo khách hàng, `dateOrder`, staff đủ bộ giấy.
 
 ## Kiểm tay để phase cuối (Liam 2026-11-06)
@@ -46,6 +47,7 @@ Liam tự chạy một lượt ở phase cuối; Claude đã tự chạy và có
 - Plan 21: `make eval-ci` (cổng 0); upload ca 03 qua API → `DATE_INCONSISTENT`.
 - Plan 24: `make eval-ci`.
 - Plan 25: `make eval-ci`; upload thẻ 11 bằng Maren (Sunrise) → `auto_approved`, `versions.rules` = `sunrise@1`.
+- Plan 26: `GET /staff/<id>/compliance` bằng reviewer sau khi upload một thẻ được tự duyệt; xem `EXPLAIN` trong evidence.
 
 ## Vướng / câu hỏi mở
 

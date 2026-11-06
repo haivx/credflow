@@ -1,0 +1,2 @@
+CREATE INDEX "documents_staff_id_idx" ON "documents" USING btree ("staff_id");--> statement-breakpoint
+CREATE INDEX "documents_staff_approved_doctype_idx" ON "documents" USING btree ("staff_id",("classification"->>'docType')) WHERE "documents"."status" IN ('auto_approved', 'approved');

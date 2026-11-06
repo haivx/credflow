@@ -48,7 +48,7 @@
 
 ## F4. Admin theo dõi compliance
 
-1. S4: theo nhân viên, giấy nào đủ / thiếu / sắp hết hạn / đã hết hạn so với yêu cầu theo vai trò.
+1. S4: theo nhân viên, giấy nào đủ / thiếu / sắp hết hạn / đã hết hạn so với yêu cầu theo vai trò. **Đã có API (plan 26):** `GET /staff/:id/compliance` (đủ/thiếu theo `roles.required` của config mọi khách hàng của staff, chỉ tính giấy đã duyệt; chưa xét hạn).
 2. Lọc "hết hạn trong 30 ngày". (Gửi nhắc nhở thật: ngoài phạm vi MVP.)
 
 ## Trạng thái dùng chung

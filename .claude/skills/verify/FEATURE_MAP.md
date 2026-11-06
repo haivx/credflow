@@ -59,6 +59,13 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 - **Kiểm sẵn có:** `apps/api/test/documents.int-spec.ts` (14 case)
 - **UI (S1 tối giản, plan 17):** `http://localhost:3000/` sau khi login staff: `upload-form` (`upload-doc-type`, `upload-file`, `upload-submit`), câu báo ở `upload-message` (trùng → "đã nộp file này rồi", 413, 415, 409 có câu riêng). Web gọi API qua rewrite `/api/*` → `API_URL` (mặc định `http://127.0.0.1:8787`), cookie cùng site
 
+## Compliance staff (plan 26)
+- **API:** `GET /staff/:id/compliance` → `200 StaffCompliance` (`status` complete / incomplete / unknown_role, `required`, `present`, `missing`, `configs`)
+- **Vai trò:** `reviewer`, `admin`; `staff` → `403`; id không có → `404`
+- **Kỳ vọng:** chỉ tính giấy `auto_approved`/`approved` (chưa xét hạn); `required` = hợp `roles[role].required` của config mọi khách hàng của staff
+- **Chạy:** `up.sh` → `api.sh --as staff-marisol@example.test POST /documents @eval/hard-cases/cpr/01-expires.png` → chờ tự duyệt → `api.sh --as reviewer@example.test GET /staff/01M6CRWH00M3S97971WJSR6NXB/compliance` → `present` [cpr_card], `configs` [sunrise]
+- **Index:** `documents_staff_id_idx`, `documents_staff_approved_doctype_idx` (partial); `EXPLAIN` trong `apps/api/test/compliance.int-spec.ts` (20k dòng)
+
 ## Đọc giấy của tôi (plan 17)
 - **API:** `GET /documents` → `200 DocumentList` (giấy của staff đang login, mới nhất trước, tối đa 50); `GET /documents/:id` → `200 DocumentView`
 - **Vai trò:** chỉ `staff`; chưa login → `401`; reviewer, admin → `403`; giấy người khác hoặc id không có → cùng `404 NOT_FOUND` "Không tìm thấy giấy"
