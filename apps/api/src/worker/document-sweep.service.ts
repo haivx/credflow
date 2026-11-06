@@ -19,8 +19,8 @@ export const SWEEP_BATCH_SIZE = 100;
 
 /**
  * Cứu document kẹt do dual-write hoặc do job chết giữa chừng (ADR 0007).
- * `uploaded`: đẩy lại job. `processing` không còn job sống: chuyển người duyệt, không chạy lại,
- * để document làm hỏng worker không lặp mãi và không tốn thêm tiền LLM.
+ * `uploaded`: đẩy lại job. `processing` hoặc `extracted` không còn job sống: chuyển người duyệt,
+ * không chạy lại, để document làm hỏng worker không lặp mãi và không tốn thêm tiền LLM.
  */
 @Injectable()
 export class DocumentSweepService {
@@ -57,7 +57,10 @@ export class DocumentSweepService {
             ),
           ),
           and(
-            eq(documents.status, "processing"),
+            or(
+              eq(documents.status, "processing"),
+              eq(documents.status, "extracted"),
+            ),
             lt(
               documents.updatedAt,
               new Date(now.getTime() - PROCESSING_STALE_MS),
@@ -92,7 +95,7 @@ export class DocumentSweepService {
     }
 
     try {
-      await this.status.transition(id, "processing", "needs_review", {
+      await this.status.transition(id, from(status), "needs_review", {
         routing: route([]),
         ruleResults: [],
         // Message cố định, không chép lỗi gốc (A14).
@@ -104,4 +107,10 @@ export class DocumentSweepService {
       if (!(err instanceof DocumentStatusConflictError)) throw err;
     }
   }
+}
+
+/** Sweep chỉ lấy ba trạng thái; `uploaded` đã xử lý riêng ở trên. */
+function from(status: DocumentStatus): "processing" | "extracted" {
+  if (status === "processing" || status === "extracted") return status;
+  throw new Error(`Sweep không xử lý trạng thái ${status}`);
 }

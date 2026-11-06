@@ -1,0 +1,52 @@
+{
+  "fields": {
+    "cardNumber": {
+      "value": "NSC-77F-2093",
+      "evidence": {
+        "quote": "eCard Code NSC-77F-2093"
+      },
+      "confidence": 0.9
+    },
+    "courseType": {
+      "value": "Basic Life Support (BLS) Provider",
+      "evidence": {
+        "quote": "Basic Life Support (BLS) Provider"
+      },
+      "confidence": 0.95
+    },
+    "holderName": {
+      "value": "Maren Ostrowe",
+      "evidence": {
+        "quote": "Maren Ostrowe"
+      },
+      "confidence": 0.95
+    },
+    "issuerName": {
+      "value": "Northbridge Safety Council",
+      "evidence": {
+        "quote": "Northbridge Safety Council"
+      },
+      "confidence": 0.9
+    },
+    "validityText": {
+      "value": null,
+      "evidence": null,
+      "confidence": 0
+    },
+    "completionDate": {
+      "value": "2025-08-19",
+      "evidence": {
+        "quote": "Issue Date August 19, 2025"
+      },
+      "confidence": 0.85
+    },
+    "expirationDate": {
+      "value": "2027-08-19",
+      "evidence": {
+        "quote": "Valid Through August 19, 2027"
+      },
+      "confidence": 0.9
+    }
+  },
+  "docType": "cpr_card"
+}

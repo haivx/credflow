@@ -122,6 +122,7 @@ export function makeProcessedDocument(
       ...extracted,
       ruleResults: [blockPassed, infoFailed],
       routing: autoApprove,
+      asOf: "2026-11-06",
     },
     needs_review: reviewed,
     approved: reviewed,

@@ -1,5 +1,5 @@
 import * as z from "zod";
-import { Id, IsoTimestamp } from "./common.js";
+import { Id, IsoDate, IsoTimestamp } from "./common.js";
 import { Classification, DocType } from "./document.js";
 import { Extraction } from "./extraction.js";
 import { RuleCode, RuleResult } from "./rules.js";
@@ -65,6 +65,8 @@ export const DocumentRecord = z
     ruleResults: z.array(RuleResult).default([]),
     routing: RoutingDecision.optional(),
     versions: Versions.optional(),
+    /** "Hôm nay" (ngày UTC) lúc chấm rule, để chạy lại rule ra đúng kết quả cũ (ADR 0010). */
+    asOf: IsoDate.optional(),
     timingMs: z.record(z.string(), z.number().min(0)).default({}),
     error: z.object({ step: z.string(), message: z.string() }).optional(),
     createdAt: IsoTimestamp,

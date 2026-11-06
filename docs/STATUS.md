@@ -2,7 +2,7 @@
 
 > Claude Code đọc file này đầu mỗi phiên và cập nhật cuối phiên (`/wrap`). Giữ ngắn, dưới 40 dòng.
 
-**Cập nhật:** 2026-11-05
+**Cập nhật:** 2026-11-06
 **Phase hiện tại:** P1 · Lát cắt dọc cho thẻ CPR (`docs/roadmap.md`). P0 xong 2026-11-03.
 
 ## Đang làm
@@ -22,11 +22,12 @@
 - **Plan 12h kịch bản 4:** đạt: prompt hiện, Liam bấm No, tool từ chối, file không đổi. Nghi một lần Yes cho phép cả phiên: chưa kiểm.
 - **Plan 13 sweep + idempotent (ADR 0007):** merge PR #29 2026-11-05.
 - **Plan 14 LLM CPR (ADR 0008):** merge PR #30 2026-11-05. Sửa file tạm sót: merge PR #31.
-- **Plan 15 rule engine CPR (ADR 0009):** nhánh `feat/15-rule-engine-cpr`, đã kiểm chứng, PR chờ Liam chạy kiểm chứng T3 và merge. Rule **chưa nối** vào pipeline. **Bước tiếp theo:** plan 16 sau khi merge.
+- **Plan 15 rule engine CPR (ADR 0009):** merge PR #32 2026-11-05. Rule chưa nối vào pipeline.
+- **Plan 16 nối rule + routing (ADR 0010):** nhánh `feat/16-noi-rule-routing`, đã kiểm chứng (`.verify/reports/2026-11-06-16-noi-rule-routing.md`), PR chờ Liam chạy kịch bản 7 (T3) và merge. Chạy thật: 01, 06 `auto_approved`; 03 cũng `auto_approved` (confidence 0.85 sát ngưỡng, giá trị đúng). **Hỏi Liam:** sửa CLAUDE.md "10 staff + 3 user" → 13 + 6, GUARDRAILS A13 thêm C6 (ngoài vùng đã khai).
 
 ## Tiếp theo
 
-1. **Plan 16:** nối rule + routing + `extracted`, màn upload và kết quả thô, 5 thẻ CPR end-to-end. Fixture phải khớp tên staff seed (hoặc thêm staff). Từ đây có đường tới `auto_approved` thật.
+1. **Plan 17:** màn upload + kết quả thô (web), sau khi plan 16 merge.
 
 ## Vướng / câu hỏi mở
 
@@ -54,4 +55,5 @@
 - 2026-11-05: plan 12 BullMQ: queue, worker process riêng, retry, state machine, pipeline stub (ADR 0006).
 - 2026-11-05: plan 14 Claude thật (`claude-haiku-5-5`, ADR 0008): phân loại, trích xuất CPR, phân loại lỗi, A10, A12.
 - 2026-11-05: plan 13 sweep (`uploaded` đẩy lại, `processing` quá hạn sang người duyệt), xử lý conflict khi chạy trùng job (ADR 0007).
+- 2026-11-06: plan 16 nối rule vào worker: `extracted`, `RuleStep`, `asOf` UTC lưu ở `as_of` + CHECK C6 (ADR 0010), seed 3 chủ thẻ fixture, fixture 06.
 - 2026-11-03: plan 07 chốt contract Document/ReviewAction (+ `checksum`, `extracted`; không tự từ chối), bảng `documents`/`review_actions`, 7 test ràng buộc DB.

@@ -150,7 +150,7 @@ describe("pipeline LLM", () => {
     await worker.close();
   });
 
-  it("thẻ CPR: lưu classification, extraction, versions, timingMs; bỏ box; vẫn chuyển người duyệt", async () => {
+  it("thẻ CPR: lưu classification, extraction, versions, timingMs; bỏ box; tên khác staff nên chuyển người duyệt", async () => {
     create.mockResolvedValueOnce(IS_CPR).mockResolvedValueOnce(FIELDS);
     await startWorker();
 
@@ -160,9 +160,10 @@ describe("pipeline LLM", () => {
     expect(create).toHaveBeenCalledTimes(2);
     const row = await readDocument(id);
     expect(row.status).toBe("needs_review");
+    // Rule chạy thật từ plan 16: HOLDER không phải tên staff của document.
     expect(row.routing).toEqual({
       decision: "needs_review",
-      reasons: ["NO_RULES_EVALUATED"],
+      reasons: ["NAME_MISMATCH"],
     });
     expect(row.classification).toEqual({
       docType: "cpr_card",
@@ -176,7 +177,11 @@ describe("pipeline LLM", () => {
     });
     expect(row.extraction.fields.validityText.value).toBeNull();
     expect(row.versions?.model).toBe("claude-haiku-5-5");
-    expect(Object.keys(row.timingMs).sort()).toEqual(["classify", "extract"]);
+    expect(Object.keys(row.timingMs).sort()).toEqual([
+      "classify",
+      "extract",
+      "rules",
+    ]);
     expect(row.error).toBeNull();
   });
 

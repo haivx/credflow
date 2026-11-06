@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import {
   check,
+  date,
   index,
   integer,
   jsonb,
@@ -116,6 +117,8 @@ export const documents = pgTable(
     extraction: jsonb("extraction").$type<Extraction>(),
     routing: jsonb("routing").$type<RoutingDecision>(),
     versions: jsonb("versions").$type<Versions>(),
+    // Ngày lịch dạng chuỗi YYYY-MM-DD, không đổi sang Date (lệch múi giờ).
+    asOf: date("as_of", { mode: "string" }),
     error: jsonb("error").$type<{ step: string; message: string }>(),
     // Rỗng là giá trị hợp lệ (contract để .default()), nên NOT NULL + default.
     ruleResults: jsonb("rule_results")
@@ -174,6 +177,11 @@ export const documents = pgTable(
     check(
       "documents_extracted_has_result",
       sql`${t.status} NOT IN ('extracted', 'auto_approved') OR (${t.classification} IS NOT NULL AND ${t.extraction} IS NOT NULL)`,
+    ),
+    // C6 (plan 16): tự duyệt phải lưu ngày đã dùng để chấm hạn, để tái lập được.
+    check(
+      "documents_auto_approved_as_of",
+      sql`${t.status} <> 'auto_approved' OR ${t.asOf} IS NOT NULL`,
     ),
     // C5: uploaded không mang kết quả cũ. Xử lý lại đi sang processing, không về uploaded.
     check(

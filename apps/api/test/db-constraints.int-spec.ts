@@ -322,6 +322,8 @@ describe("CHECK trạng thái documents (integration)", () => {
         updateFrom("needs_review", {
           status: "auto_approved",
           ruleResults: [contractFixture("RuleResult", "rule block qua")],
+          // Có asOf để chỉ C1 nổ, không lẫn với C6.
+          asOf: "2026-11-06",
         }),
       ).rejects.toMatchObject(check(name));
     });
@@ -356,6 +358,8 @@ describe("CHECK trạng thái documents (integration)", () => {
         updateFrom("needs_review", {
           status: "auto_approved",
           routing: contractFixture("RoutingDecision", "tự duyệt"),
+          // Có asOf để chỉ C2 nổ, không lẫn với C6.
+          asOf: "2026-11-06",
         }),
       ).rejects.toMatchObject(check(name));
     });
@@ -428,6 +432,38 @@ describe("CHECK trạng thái documents (integration)", () => {
       await expect(
         updateFrom("needs_review", { status: "uploaded" }),
       ).rejects.toMatchObject(check(name));
+    });
+  });
+
+  // Plan 16: tự duyệt phải biết đã chấm hạn theo ngày nào, để tái lập được.
+  describe("C6 documents_auto_approved_as_of", () => {
+    const name = "documents_auto_approved_as_of";
+
+    it("INSERT auto_approved không có asOf → 23514", async () => {
+      const row = makeProcessedDocument(owner.id, "auto_approved", {
+        asOf: null,
+      });
+      await expect(db.insert(documents).values(row)).rejects.toMatchObject(
+        check(name),
+      );
+    });
+
+    it("UPDATE extracted → auto_approved đủ rule và routing, thiếu asOf → 23514", async () => {
+      const approved = makeProcessedDocument(owner.id, "auto_approved");
+      await expect(
+        updateFrom("extracted", {
+          status: "auto_approved",
+          ruleResults: approved.ruleResults,
+          routing: approved.routing,
+        }),
+      ).rejects.toMatchObject(check(name));
+    });
+
+    it("needs_review không có asOf vẫn được (đối chứng)", async () => {
+      const row = makeProcessedDocument(owner.id, "needs_review", {
+        asOf: null,
+      });
+      await db.insert(documents).values(row);
     });
   });
 });

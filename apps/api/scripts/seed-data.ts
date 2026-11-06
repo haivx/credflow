@@ -93,6 +93,31 @@ export const seedStaff: StaffProfile[] = [
     clientIds: [CLIENT_BAYLEAF],
     region: "WA",
   },
+  // Plan 16: chủ thẻ trên fixture CPR (eval/hard-cases/cpr), để chạy end-to-end đúng người.
+  {
+    id: "01M6CRWH00M3S97971WJSR6NXB",
+    legalName: "Marisol Quennell",
+    aliases: [],
+    role: "caregiver",
+    clientIds: [CLIENT_SUNRISE],
+    region: "CA",
+  },
+  {
+    id: "01M6CRWH00M3S97971WJSR6NXC",
+    legalName: "Tobias Arkwright-Lenz",
+    aliases: [],
+    role: "caregiver",
+    clientIds: [CLIENT_SUNRISE],
+    region: "CA",
+  },
+  {
+    id: "01M6CRWH00M3S97971WJSR6NXD",
+    legalName: "Odalys Venn",
+    aliases: [],
+    role: "behavior_technician",
+    clientIds: [CLIENT_BAYLEAF],
+    region: "WA",
+  },
 ];
 
 /**
@@ -109,6 +134,7 @@ interface SeedUser {
 }
 
 // Mỗi vai trò một user. User staff gắn với staff seed đầu tiên (Maren Ostrowe).
+// Thêm một user staff cho mỗi chủ thẻ fixture CPR (plan 16): upload lấy staffId từ session.
 export const seedUsers: SeedUser[] = [
   {
     id: "01M6CRWH00M3S97971WJSR6NY0",
@@ -127,5 +153,23 @@ export const seedUsers: SeedUser[] = [
     email: "admin@example.test",
     role: "admin",
     staffId: null,
+  },
+  {
+    id: "01M6CRWH00M3S97971WJSR6NY3",
+    email: "staff-marisol@example.test",
+    role: "staff",
+    staffId: "01M6CRWH00M3S97971WJSR6NXB",
+  },
+  {
+    id: "01M6CRWH00M3S97971WJSR6NY4",
+    email: "staff-tobias@example.test",
+    role: "staff",
+    staffId: "01M6CRWH00M3S97971WJSR6NXC",
+  },
+  {
+    id: "01M6CRWH00M3S97971WJSR6NY5",
+    email: "staff-odalys@example.test",
+    role: "staff",
+    staffId: "01M6CRWH00M3S97971WJSR6NXD",
   },
 ];
