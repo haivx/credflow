@@ -5,12 +5,14 @@
 #   api.sh --as staff-marisol@example.test POST /documents @eval/hard-cases/cpr/01-expires.png
 #   api.sh --as reviewer@example.test GET /staff
 # Đăng nhập bằng mật khẩu seed (SEED_PASSWORD, mặc định credflow-dev); cookie riêng mỗi email.
+# API_BODY_LIMIT: số byte body in ra (mặc định 2000; 0 = in đủ, để đọc JSON chi tiết).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../../../.." && pwd)"
 cd "$ROOT"
 BASE=${API_BASE:-http://127.0.0.1:8787}
 PASSWORD=${SEED_PASSWORD:-credflow-dev}
+LIMIT=${API_BODY_LIMIT:-2000}
 mkdir -p .verify
 
 AS=""
@@ -50,5 +52,5 @@ trap 'rm -f "$OUT"' EXIT
 STATUS=$(curl -s -o "$OUT" -w '%{http_code} %{time_total}s' -X "$METHOD" \
   ${COOKIE[@]+"${COOKIE[@]}"} ${DATA[@]+"${DATA[@]}"} "$BASE$URL_PATH")
 echo "$STATUS"
-head -c 2000 "$OUT"
+if [[ "$LIMIT" == "0" ]]; then cat "$OUT"; else head -c "$LIMIT" "$OUT"; fi
 echo
