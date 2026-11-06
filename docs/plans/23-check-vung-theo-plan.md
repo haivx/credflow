@@ -50,6 +50,7 @@ Lỗi thật (base/head không tồn tại) → exit 2, không im lặng qua.
 - `tools/lint/plan-zones.mjs`, `tools/lint/plan-zones.test.mjs`
 - `.github/workflows/ci.yml`
 - `docs/agent/GUARDRAILS.md`
+- `CLAUDE.md`
 - `.claude/skills/verify/FEATURE_MAP.md`
 
 (PR này tự chạy qua check mới: các dòng trên chính là phần khai.)
