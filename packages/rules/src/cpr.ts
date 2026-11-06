@@ -107,11 +107,17 @@ function resolveExpiry(fields: CprFields, config: RulesConfig) {
  * Chữ gốc của ngày học/ngày hết hạn có cho biết chắc ngày không (plan 21). LLM có thể đã điền một
  * ngày cụ thể; không tin ngày đó. Message chỉ nêu tên trường, không chép giá trị.
  */
-function dateQuoteProblem(fields: CprFields): string | undefined {
+function dateQuoteProblem(
+  fields: CprFields,
+  order: RulesConfig["dateOrder"],
+): string | undefined {
   for (const name of ["completionDate", "expirationDate"] as const) {
     const field = fields[name];
     if (!hasValue(field) || field.evidence === null) continue;
-    const problem = quoteDateProblem(field.evidence.quote);
+    const problem = quoteDateProblem(field.evidence.quote, order, field.value);
+    if (problem === "order_mismatch") {
+      return `Ngày ${name} điền không khớp chữ in khi đọc theo thứ tự ngày của khách hàng`;
+    }
     if (problem === "ambiguous_order") {
       return `Ngày ${name} trong chữ gốc có thể đọc hai cách (tháng/ngày hoặc ngày/tháng)`;
     }
@@ -122,7 +128,11 @@ function dateQuoteProblem(fields: CprFields): string | undefined {
   return undefined;
 }
 
-function dateProblem(fields: CprFields, asOf: string): string | undefined {
+function dateProblem(
+  fields: CprFields,
+  asOf: string,
+  order: RulesConfig["dateOrder"],
+): string | undefined {
   const { completionDate, expirationDate, validityText } = fields;
   const completion = hasValue(completionDate)
     ? completionDate.value
@@ -137,7 +147,7 @@ function dateProblem(fields: CprFields, asOf: string): string | undefined {
   if (expiration !== undefined && !isRealDate(expiration)) {
     return "Ngày hết hạn không có thật trên lịch";
   }
-  const quoteProblem = dateQuoteProblem(fields);
+  const quoteProblem = dateQuoteProblem(fields, order);
   if (quoteProblem !== undefined) return quoteProblem;
   if (completion !== undefined && completion > asOf) {
     return "Ngày học nằm trong tương lai";
@@ -181,7 +191,7 @@ export function evaluateCpr(input: CprInput): Partial<Record<RuleCode, Check>> {
     input;
   const min = config.minFieldConfidence;
   const expiry = resolveExpiry(fields, config);
-  const problem = dateProblem(fields, asOf);
+  const problem = dateProblem(fields, asOf, config.dateOrder);
 
   const missing = REQUIRED.filter((name) => !hasValue(fields[name]));
   const noEvidence = ALL_FIELDS.filter((name) => {

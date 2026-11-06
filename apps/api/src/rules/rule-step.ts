@@ -1,11 +1,15 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import {
   type RoutingDecision,
   type RuleResult,
-  type RulesConfig,
   StaffProfile,
 } from "@credflow/contracts";
-import { evaluateRules, route } from "@credflow/rules";
+import {
+  configsFor,
+  evaluateRulesForConfigs,
+  type RulesConfigSet,
+  route,
+} from "@credflow/rules";
 import { eq } from "drizzle-orm";
 import { CLOCK, type Clock } from "../common/clock.js";
 import { type Db, DB } from "../db/db.provider.js";
@@ -35,9 +39,11 @@ export function statusFor(
  */
 @Injectable()
 export class RuleStep {
+  private readonly logger = new Logger("RuleStep");
+
   constructor(
     @Inject(DB) private readonly db: Db,
-    @Inject(RULES_CONFIG) private readonly config: RulesConfig,
+    @Inject(RULES_CONFIG) private readonly configs: RulesConfigSet,
     @Inject(CLOCK) private readonly clock: Clock,
   ) {}
 
@@ -73,14 +79,27 @@ export class RuleStep {
 
     const asOf = this.clock.todayUtc();
     const startedAt = performance.now();
-    const ruleResults = evaluateRules({
-      extraction: doc.extraction,
-      classification: doc.classification,
-      declaredDocType: doc.declaredDocType ?? undefined,
-      staff: StaffProfile.parse(staffRow),
-      config: this.config,
-      asOf,
-    });
+    const profile = StaffProfile.parse(staffRow);
+    const missing = profile.clientIds.filter(
+      (id) => this.configs.byClient[id] === undefined,
+    );
+    if (missing.length > 0) {
+      // Khách hàng chưa có file config: chấm theo default cho khách đó (plan 25). Chỉ ghi id.
+      this.logger.warn(
+        `document ${documentId}: khách hàng chưa có config riêng, dùng default: ${missing.join(", ")}`,
+      );
+    }
+    // Chấm theo mọi khách hàng của staff, lấy chặt nhất (plan 25, ADR 0011).
+    const ruleResults = evaluateRulesForConfigs(
+      {
+        extraction: doc.extraction,
+        classification: doc.classification,
+        declaredDocType: doc.declaredDocType ?? undefined,
+        staff: profile,
+        asOf,
+      },
+      configsFor(this.configs, profile.clientIds),
+    );
     const routing = route(ruleResults);
 
     return {

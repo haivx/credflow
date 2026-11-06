@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "cb78aac72cdec2085fc3870e5c5f2515ae4fcf09fdfe81cf3e242e8cca9c9655",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Maren Ostrowe",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Maren Ostrowe"
+        }
+      },
+      "issuerName": {
+        "value": "Northbridge Safety Council",
+        "confidence": 0.97,
+        "evidence": {
+          "quote": "Northbridge Safety Council"
+        }
+      },
+      "courseType": {
+        "value": "Adult CPR and AED Provider",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Adult CPR and AED Provider"
+        }
+      },
+      "completionDate": {
+        "value": "2026-03-09",
+        "confidence": 0.93,
+        "evidence": {
+          "quote": "Completed 3/9/2026"
+        }
+      },
+      "expirationDate": {
+        "value": "2028-03-09",
+        "confidence": 0.93,
+        "evidence": {
+          "quote": "Expires 3/9/2028"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "NSC-619204",
+        "confidence": 0.94,
+        "evidence": {
+          "quote": "Card No. NSC-619204"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 3889,
+    "outputTokens": 365
+  },
+  "latencyMs": 4442
+}

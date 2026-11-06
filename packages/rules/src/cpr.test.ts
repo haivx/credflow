@@ -3,7 +3,7 @@ import type {
   Classification,
   Extraction,
   RuleCode,
-  RulesConfig,
+  RulesConfigInput,
   StaffProfile,
 } from "@credflow/contracts";
 import { evaluateRules, type RuleInput, route } from "./index.js";
@@ -41,7 +41,7 @@ const STAFF: StaffProfile = {
   region: "CA",
 };
 
-const CONFIG: RulesConfig = {
+const CONFIG: RulesConfigInput = {
   version: 1,
   minFieldConfidence: 0.85,
   expiringSoonDays: 30,

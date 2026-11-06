@@ -2,6 +2,13 @@
 # Không phải quy định pháp lý thật. Mỗi khách hàng có file riêng; schema: RulesConfig (packages/contracts).
 version: 1
 
+# Tên ghi vào versions.rules (plan 25). File khách hàng ở clients/<clientId>.yaml phải có tên riêng.
+name: default
+
+# Ngày số a/b/yyyy mà a, b đều ≤ 12: strict = coi là mơ hồ, chuyển người duyệt (plan 21).
+# MDY / DMY = đọc theo thứ tự đó và kiểm ngày LLM điền khớp chữ in (plan 25).
+dateOrder: strict
+
 # Bất kỳ trường bắt buộc nào dưới ngưỡng này → không tự duyệt.
 minFieldConfidence: 0.85
 

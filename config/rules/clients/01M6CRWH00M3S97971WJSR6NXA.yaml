@@ -1,0 +1,38 @@
+# Cấu hình rule MINH HOẠ cho Bayleaf Behavioral (khách hàng hư cấu, clientId 01M6CRWH00M3S97971WJSR6NXA).
+# Không phải quy định pháp lý thật. Mỗi khách hàng có file riêng; schema: RulesConfig (packages/contracts).
+version: 1
+
+# Tên ghi vào versions.rules (plan 25). File khách hàng ở clients/<clientId>.yaml phải có tên riêng.
+name: bayleaf
+
+# Ngày số a/b/yyyy mà a, b đều ≤ 12: strict = coi là mơ hồ, chuyển người duyệt (plan 21).
+# MDY / DMY = đọc theo thứ tự đó và kiểm ngày LLM điền khớp chữ in (plan 25).
+dateOrder: strict
+
+# Bất kỳ trường bắt buộc nào dưới ngưỡng này → không tự duyệt.
+minFieldConfidence: 0.85
+
+# Còn hạn nhưng hết hạn trong số ngày này → cảnh báo (info).
+expiringSoonDays: 30
+
+roles:
+  caregiver:
+    required: [cpr_card, tb_test, background_check, vaccination_record]
+  behavior_technician:
+    required: [cpr_card, professional_license, tb_test, background_check]
+
+# Dùng khi giấy không in ngày hết hạn (ví dụ TB test, hoặc thẻ chỉ ghi "Valid 2 years" thì đọc từ validityText trước).
+defaultValidityMonths:
+  cpr_card: 24
+  tb_test: 12
+  background_check: 24
+  vaccination_record: 12
+
+# Tổ chức cấp được chấp nhận. Tên đều hư cấu.
+acceptedIssuers:
+  cpr_card:
+    - Lifeline Response Institute
+    - Northbridge Safety Council
+    - Harrowgate First Aid Academy
+  professional_license:
+    - Board of Behavioral Practice (SAMPLE)

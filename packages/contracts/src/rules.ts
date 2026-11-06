@@ -43,6 +43,19 @@ export type RuleResult = z.infer<typeof RuleResult>;
 export const RulesConfig = z
   .object({
     version: z.literal(1),
+    /**
+     * Tên ngắn của config, ghi vào `versions.rules` (plan 25). Mặc định "default"; file khách hàng
+     * phải có tên riêng (bộ nạp kiểm).
+     */
+    name: z
+      .string()
+      .regex(/^[a-z0-9-]+$/)
+      .default("default"),
+    /**
+     * Cách đọc ngày số `a/b/yyyy` mà a, b đều ≤ 12 (plan 25). `strict`: coi là mơ hồ, không tự duyệt.
+     * `MDY` / `DMY`: đọc theo thứ tự đó và kiểm ngày LLM điền khớp chữ in.
+     */
+    dateOrder: z.enum(["MDY", "DMY", "strict"]).default("strict"),
     /** Dưới ngưỡng này ở bất kỳ trường bắt buộc nào → không tự duyệt. */
     minFieldConfidence: z.number().min(0).max(1),
     expiringSoonDays: z.number().int().min(0),
@@ -56,3 +69,5 @@ export const RulesConfig = z
   })
   .meta({ id: "RulesConfig" });
 export type RulesConfig = z.infer<typeof RulesConfig>;
+/** Config như viết trong file hoặc test: `name`, `dateOrder` được bỏ trống (lấy mặc định). */
+export type RulesConfigInput = z.input<typeof RulesConfig>;

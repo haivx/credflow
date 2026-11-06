@@ -1,15 +1,16 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
+import { type DocumentStatus, ProcessDocumentJob } from "@credflow/contracts";
 import {
-  type DocumentStatus,
-  ProcessDocumentJob,
-  type RulesConfig,
-} from "@credflow/contracts";
-import { route } from "@credflow/rules";
+  configsFor,
+  route,
+  type RulesConfigSet,
+  rulesVersion,
+} from "@credflow/rules";
 import { type Job, UnrecoverableError } from "bullmq";
 import { eq } from "drizzle-orm";
 import { formatErrorForLog } from "../common/pg-error.js";
 import { type Db, DB } from "../db/db.provider.js";
-import { documents } from "../db/schema.js";
+import { documents, staff } from "../db/schema.js";
 import {
   DocumentStatusConflictError,
   DocumentStatusService,
@@ -30,7 +31,7 @@ export class DocumentProcessor {
   constructor(
     @Inject(DB) private readonly db: Db,
     @Inject(PIPELINE) private readonly pipeline: Pipeline,
-    @Inject(RULES_CONFIG) private readonly rules: RulesConfig,
+    @Inject(RULES_CONFIG) private readonly rules: RulesConfigSet,
     private readonly status: DocumentStatusService,
     private readonly ruleStep: RuleStep,
   ) {}
@@ -77,7 +78,10 @@ export class DocumentProcessor {
       await this.status.transition(documentId, "uploaded", "processing", {
         versions: {
           ...PIPELINE_VERSIONS,
-          rules: String(this.rules.version),
+          // Các config sẽ dùng, theo khách hàng của staff (plan 25): "default@1", "bayleaf@1+sunrise@1".
+          rules: rulesVersion(
+            configsFor(this.rules, await this.readClientIds(documentId)),
+          ),
         },
       });
     } else if (status !== "processing" && status !== "extracted") {
@@ -147,6 +151,15 @@ export class DocumentProcessor {
         },
       });
     }
+  }
+
+  private async readClientIds(documentId: string): Promise<string[]> {
+    const [row] = await this.db
+      .select({ clientIds: staff.clientIds })
+      .from(documents)
+      .innerJoin(staff, eq(staff.id, documents.staffId))
+      .where(eq(documents.id, documentId));
+    return row?.clientIds ?? [];
   }
 
   private async readStatus(

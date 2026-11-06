@@ -31,12 +31,21 @@
 - **Plan 21 ngày mơ hồ:** merge PR #39 2026-11-06 (gate 0). `api.sh` `API_BODY_LIMIT`: PR #40 chờ merge.
 - **Plan 22 ca khó đóng P2:** merge PR #41 2026-11-06. **P2 xong.**
 - **Plan 23 check vùng theo plan (P3):** merge PR #42 2026-11-06.
-- **Plan 24 ngày dạng thứ tự:** nhánh `feat/24-ngay-dang-thu-tu`, đã kiểm, PR chờ Liam merge (T3: xem chạy `make eval-ci`). Chỉ ca 08 đổi sang auto_approve; dev 0/40, tự duyệt 57.5%; holdout không đổi.
+- **Plan 24 ngày dạng thứ tự:** merge PR #43 2026-11-06.
+- **Plan 25 config theo khách hàng (ADR 0011):** nhánh `feat/25-config-khach-hang`, đã kiểm (kịch bản 1–9), PR chờ merge. 40 ca cũ không đổi; 4 ca mới đúng; dev 0/44.
 
 ## Tiếp theo
 
-1. Sau plan 24: phạm vi P3 chính (config theo khách hàng, `dateOrder`, staff đủ bộ giấy) — `/next` đề xuất.
+1. **Plan 26:** query staff đủ bộ giấy (index, `EXPLAIN`), dùng `roles.required` theo config khách hàng.
 3. Phạm vi P3 chính: config theo khách hàng, `dateOrder`, staff đủ bộ giấy.
+
+## Kiểm tay để phase cuối (Liam 2026-11-06)
+
+Liam tự chạy một lượt ở phase cuối; Claude đã tự chạy và có evidence cho từng mục.
+
+- Plan 21: `make eval-ci` (cổng 0); upload ca 03 qua API → `DATE_INCONSISTENT`.
+- Plan 24: `make eval-ci`.
+- Plan 25: `make eval-ci`; upload thẻ 11 bằng Maren (Sunrise) → `auto_approved`, `versions.rules` = `sunrise@1`.
 
 ## Vướng / câu hỏi mở
 
@@ -46,6 +55,7 @@
 
 ## Eval mới nhất
 
+- **2026-11-06, plan 25 (pipeline 24, rules `bayleaf@1+default@1+sunrise@1`):** dev **44 ca** `falseApproveRate` **0/44**, `autoApproveRate` 56.8% (25 ca). 40 ca cũ không đổi decision; 11-mdy-date (Sunrise) auto, 11-…-default needs_review, 12-issuer-bayleaf auto, 12-…-two-clients needs_review. `eval-ci` cổng 0 xanh.
 - **2026-11-06, plan 24 (pipeline 24, rules 1):** dev 40 ca `falseApproveRate` **0/40**, `autoApproveRate` **57.5%** (23 ca; ca 08 hết chặn thừa); holdout 0/10, 50% (không đổi). `eval-ci` cổng 0 xanh.
 - **2026-11-06, plan 22 (pipeline 21, rules 1):** dev **40 ca** (10 hard + 30 synth): `falseApproveRate` **0% (0/40)**, `autoApproveRate` 55% (hard-cases 30%, synth 63.3%), classification 100%. Ca mới: 07 needs_review (Haiku để trống ngày mơ hồ), 08 **chặn thừa** (`DATE_INCONSISTENT` với "14th day of March, 2028", đáp án auto_approve), 09 tự duyệt (tên có dấu), 10 `EXPIRED`. `eval-ci` cổng 0 xanh.
 - **2026-11-06, plan 21 (pipeline 21, rules 1; output ghi sẵn plan 19, 0 lời gọi LLM):** dev 36 ca `falseApproveRate` **0% (0/36)**, `autoApproveRate` 58.3% (21 ca, đều đúng; trước là 23 ca gồm 2 duyệt nhầm); holdout 10 ca **0/10**, tự duyệt 50%. Chỉ 0006, 0021 đổi decision. `eval/gate.json` = 0 (CI chặn từ nay). Chạy thật ca 03 (Haiku): `LOW_CONFIDENCE` qua lần này, chỉ `DATE_INCONSISTENT` chặn.
