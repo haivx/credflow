@@ -1,7 +1,6 @@
 packages:
   - apps/*
   - packages/*
-  - eval
   - tools/*
 trustPolicy: off
 allowBuilds:

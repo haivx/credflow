@@ -152,19 +152,6 @@ importers:
         specifier: ^18.3.0
         version: 18.3.7(@types/react@18.3.31)
 
-  eval:
-    dependencies:
-      '@credflow/contracts':
-        specifier: workspace:*
-        version: link:../packages/contracts
-      '@credflow/rules':
-        specifier: workspace:*
-        version: link:../packages/rules
-    devDependencies:
-      tsx:
-        specifier: ^4.23.0
-        version: 4.23.15
-
   packages/contracts:
     dependencies:
       zod:

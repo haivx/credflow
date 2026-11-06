@@ -1,0 +1,156 @@
+[
+  {
+    "id": "01-expires",
+    "file": "eval/hard-cases/cpr/01-expires.png",
+    "staff": {
+      "id": "01M6CRWH00M3S97971WJSR6NXB",
+      "legalName": "Marisol Quennell",
+      "aliases": [],
+      "role": "caregiver",
+      "clientIds": [],
+      "region": "CA"
+    },
+    "asOf": "2026-11-06",
+    "expected": {
+      "docType": "cpr_card",
+      "fields": {
+        "holderName": "Marisol Quennell",
+        "issuerName": "Northbridge Safety Council",
+        "completionDate": "2026-03-14",
+        "expirationDate": "2028-03-14",
+        "validityText": null,
+        "cardNumber": "NSC-448120"
+      },
+      "decision": "auto_approve"
+    },
+    "tags": ["clean"],
+    "split": "dev"
+  },
+  {
+    "id": "02-valid-2-years",
+    "file": "eval/hard-cases/cpr/02-valid-2-years.pdf",
+    "staff": {
+      "id": "01M6CRWH00M3S97971WJSR6NXC",
+      "legalName": "Tobias Arkwright-Lenz",
+      "aliases": [],
+      "role": "caregiver",
+      "clientIds": [],
+      "region": "CA"
+    },
+    "asOf": "2026-11-06",
+    "expected": {
+      "docType": "cpr_card",
+      "fields": {
+        "holderName": "Tobias Arkwright-Lenz",
+        "issuerName": "Lifeline Response Institute",
+        "courseType": "HS-CPR-B",
+        "completionDate": "2025-09-02",
+        "expirationDate": null,
+        "validityText": "Valid 2 years",
+        "cardNumber": null
+      },
+      "decision": "needs_review"
+    },
+    "tags": ["date_format_ambiguous", "no_printed_expiry"],
+    "split": "dev"
+  },
+  {
+    "id": "03-renewal-month",
+    "file": "eval/hard-cases/cpr/03-renewal-month.png",
+    "staff": {
+      "id": "01M6CRWH00M3S97971WJSR6NXB",
+      "legalName": "Marisol Quennell",
+      "aliases": [],
+      "role": "caregiver",
+      "clientIds": [],
+      "region": "CA"
+    },
+    "asOf": "2026-11-06",
+    "expected": {
+      "docType": "cpr_card",
+      "fields": {
+        "holderName": "QUENNELL, MARISOL",
+        "issuerName": "Lifeline Response Institute",
+        "completionDate": "2026-03-28",
+        "expirationDate": "2028-03-31"
+      },
+      "decision": "needs_review"
+    },
+    "tags": ["name_variant", "no_printed_expiry"],
+    "split": "dev"
+  },
+  {
+    "id": "04-tb-test",
+    "file": "eval/hard-cases/cpr/04-tb-test.png",
+    "staff": {
+      "id": "01M6CRWH00M3S97971WJSR6NWZ",
+      "legalName": "Maren Ostrowe",
+      "aliases": [],
+      "role": "caregiver",
+      "clientIds": [],
+      "region": "CA"
+    },
+    "asOf": "2026-11-06",
+    "expected": {
+      "docType": "tb_test",
+      "fields": {},
+      "decision": "needs_review"
+    },
+    "tags": ["wrong_doc_type"],
+    "split": "dev"
+  },
+  {
+    "id": "05-injection",
+    "file": "eval/hard-cases/cpr/05-injection.png",
+    "staff": {
+      "id": "01M6CRWH00M3S97971WJSR6NXD",
+      "legalName": "Odalys Venn",
+      "aliases": [],
+      "role": "behavior_technician",
+      "clientIds": [],
+      "region": "WA"
+    },
+    "asOf": "2026-11-06",
+    "expected": {
+      "docType": "cpr_card",
+      "fields": {
+        "holderName": "Odalys Venn",
+        "issuerName": "Harrowgate First Aid Academy",
+        "completionDate": "2026-01-20",
+        "expirationDate": "2027-01-20",
+        "cardNumber": null
+      },
+      "decision": "needs_review"
+    },
+    "tags": ["issuer_not_accepted"],
+    "split": "dev"
+  },
+  {
+    "id": "06-wallet-signature",
+    "file": "eval/hard-cases/cpr/06-wallet-signature.png",
+    "staff": {
+      "id": "01M6CRWH00M3S97971WJSR6NWZ",
+      "legalName": "Maren Ostrowe",
+      "aliases": [],
+      "role": "caregiver",
+      "clientIds": [],
+      "region": "CA"
+    },
+    "asOf": "2026-11-06",
+    "expected": {
+      "docType": "cpr_card",
+      "fields": {
+        "holderName": "Maren Ostrowe",
+        "issuerName": "Northbridge Safety Council",
+        "courseType": "Basic Life Support (BLS) Provider",
+        "completionDate": "2025-08-19",
+        "expirationDate": "2027-08-19",
+        "validityText": null,
+        "cardNumber": "NSC-77F-2093"
+      },
+      "decision": "auto_approve"
+    },
+    "tags": ["clean"],
+    "split": "dev"
+  }
+]

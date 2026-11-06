@@ -2,7 +2,7 @@ import { AuthUser } from "./auth.js";
 import { Classification, DocType } from "./document.js";
 import { ApiError } from "./error.js";
 import { Extraction } from "./extraction.js";
-import { EvalRun, GoldenCase } from "./eval.js";
+import { EvalCaseResult, EvalRun, GoldenCase } from "./eval.js";
 import {
   DocumentList,
   DocumentRecord,
@@ -41,6 +41,7 @@ export const Schemas = {
   ReviewAction,
   GoldenCase,
   EvalRun,
+  EvalCaseResult,
   ApiError,
   AuthUser,
   UploadDocumentResponse,
