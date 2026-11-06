@@ -6,6 +6,7 @@ import type {
   RulesConfig,
   StaffProfile,
 } from "@credflow/contracts";
+import { quoteDateProblem } from "./date-quote.js";
 import { addDays, addMonths, daysBetween, isRealDate } from "./dates.js";
 import { issuerMatches, nameMatches } from "./names.js";
 
@@ -102,6 +103,25 @@ function resolveExpiry(fields: CprFields, config: RulesConfig) {
     : addMonths(completionDate.value, months);
 }
 
+/**
+ * Chữ gốc của ngày học/ngày hết hạn có cho biết chắc ngày không (plan 21). LLM có thể đã điền một
+ * ngày cụ thể; không tin ngày đó. Message chỉ nêu tên trường, không chép giá trị.
+ */
+function dateQuoteProblem(fields: CprFields): string | undefined {
+  for (const name of ["completionDate", "expirationDate"] as const) {
+    const field = fields[name];
+    if (!hasValue(field) || field.evidence === null) continue;
+    const problem = quoteDateProblem(field.evidence.quote);
+    if (problem === "ambiguous_order") {
+      return `Ngày ${name} trong chữ gốc có thể đọc hai cách (tháng/ngày hoặc ngày/tháng)`;
+    }
+    if (problem === "no_day") {
+      return `Ngày ${name} trong chữ gốc chỉ có tháng và năm, ngày cụ thể là suy đoán`;
+    }
+  }
+  return undefined;
+}
+
 function dateProblem(fields: CprFields, asOf: string): string | undefined {
   const { completionDate, expirationDate, validityText } = fields;
   const completion = hasValue(completionDate)
@@ -117,6 +137,8 @@ function dateProblem(fields: CprFields, asOf: string): string | undefined {
   if (expiration !== undefined && !isRealDate(expiration)) {
     return "Ngày hết hạn không có thật trên lịch";
   }
+  const quoteProblem = dateQuoteProblem(fields);
+  if (quoteProblem !== undefined) return quoteProblem;
   if (completion !== undefined && completion > asOf) {
     return "Ngày học nằm trong tương lai";
   }
