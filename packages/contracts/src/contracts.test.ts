@@ -173,6 +173,29 @@ describe("DocumentView", () => {
     expect(view).not.toHaveProperty("storageKey");
     expect(view).not.toHaveProperty("checksum");
     expect(view.status).toBe("needs_review");
+    expect(view).not.toHaveProperty("lastReview");
+  });
+
+  it("lastReview không mang reviewerId, corrections (parse bỏ key lạ)", () => {
+    const cases = JSON.parse(
+      readFileSync(join(FIXTURE_DIR, "DocumentView.json"), "utf8"),
+    ) as FixtureCase[];
+    const base = DocumentView.parse(cases[1]?.data);
+    const view = DocumentView.parse({
+      ...base,
+      lastReview: {
+        action: "reject",
+        note: "Sai tên",
+        decidedAt: "2026-10-28T08:00:00Z",
+        reviewerId: "01JREV000000000000000001",
+        corrections: [],
+      },
+    });
+    expect(view.lastReview).toEqual({
+      action: "reject",
+      note: "Sai tên",
+      decidedAt: "2026-10-28T08:00:00Z",
+    });
   });
 });
 

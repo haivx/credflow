@@ -27,7 +27,7 @@
    - Đã nộp đúng file này rồi (cùng sha256) → trả document cũ, không tạo mới.
    - File đó đã thuộc nhân viên khác → báo lỗi 409.
    - Quá 10 MB → 413; không phải PDF/PNG/JPEG → 415.
-3. S1 hiện trạng thái: Đang xử lý → Đã duyệt / Đang chờ duyệt / Cần nộp lại (kèm lý do người duyệt ghi).
+3. S1 hiện trạng thái: Đang xử lý → Đã duyệt / Đang chờ duyệt / Cần nộp lại (kèm lý do người duyệt ghi). Lý do lấy từ `DocumentView.lastReview` (plan 28).
 
 ## F2. Xử lý tự động (job nền)
 
@@ -45,6 +45,8 @@
 3. Sửa trường inline nếu cần → rule chạy lại ngay với giá trị đã sửa.
 4. Chọn: **Duyệt** / **Từ chối** / **Yêu cầu nộp lại** (bắt buộc ghi lý do khi từ chối hoặc yêu cầu nộp lại).
 5. Lưu `ReviewAction` (kèm `corrections`) → chuyển sang ca tiếp theo.
+
+**UI (plan 28):** S2 `/review?reason=&sort=`, S3 `/review/<id>` (giữ bộ lọc trên URL). Preview chạy khi rời ô đã sửa. Quyết định xong tự mở ca đầu hàng chờ cùng bộ lọc. Chưa có highlight `box` (P5).
 
 **API (plan 27):** `GET /review/queue` (keyset, sắp theo hạn hoặc ngày nộp), `GET /review/documents/:id`, `.../file`, `POST .../preview` (bước 3: chấm lại với `asOf` đã lưu, không ghi), `POST .../decision` (bước 4–5: một transaction, khoá `version`; hai người duyệt cùng lúc thì người sau nhận 409). Chỗ sửa chỉ lưu ở `review_actions`, extraction gốc giữ nguyên.
 
