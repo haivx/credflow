@@ -22,7 +22,7 @@ Một hai câu: làm xong thì có gì mà bây giờ chưa có.
 | --- | --- |
 
 ## Vùng kiến trúc bị chạm
-(liệt kê file theo `docs/agent/architecture-zones.txt` sẽ sửa, hoặc "không")
+(liệt kê file theo `docs/agent/architecture-zones.txt` sẽ sửa, mỗi đường dẫn hoặc glob trong backtick, ví dụ `` `packages/contracts/src/**` ``; hoặc "không". CI `plan-zones` đọc đúng mục này, plan 23)
 
 ## Contract / config / prompt bị ảnh hưởng
 (nếu có, cần Liam duyệt riêng)

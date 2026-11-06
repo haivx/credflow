@@ -29,11 +29,13 @@
 - **Plan 19 synth:** merge PR #37 2026-11-06. Phát hiện 4 ca duyệt nhầm cùng kiểu confidence 0.85 = ngưỡng (mục Eval) → plan 21.
 - **Plan 20 harness:** merge PR #38 2026-11-06 (CI có `eval-ci`).
 - **Plan 21 ngày mơ hồ:** merge PR #39 2026-11-06 (gate 0). `api.sh` `API_BODY_LIMIT`: PR #40 chờ merge.
-- **Plan 22 ca khó đóng P2:** nhánh `feat/22-ca-kho`, 10 ca hard-cases, `eval-ci` 0/40, PR chờ Liam merge. **P2 xong** (đủ tiêu chí roadmap). Ca 08 cho thấy rule plan 21 chặn thừa ngày dạng "14th day of March, 2028"; ca 07 Haiku để trống ngày mơ hồ nên đường "quote bị chuẩn hoá" vẫn chưa kiểm được.
+- **Plan 22 ca khó đóng P2:** merge PR #41 2026-11-06. **P2 xong.**
+- **Plan 23 check vùng theo plan (P3):** PR #42 chờ Liam merge; CI có bước `plan-zones` (đã thử đỏ → BLOCKED → xanh). Watchlist 2026-11-05 thành luật A8.
 
 ## Tiếp theo
 
-1. Sau khi plan 22 merge: `/next` đề xuất bước đầu P3 (ứng viên: sửa chặn thừa ngày dạng thứ tự; `dateOrder` theo khách hàng; nhiều file config khách hàng).
+2. **Plan 24:** sửa chặn thừa ngày dạng "14th day of" (T3, ca 08).
+3. Phạm vi P3 chính: config theo khách hàng, `dateOrder`, staff đủ bộ giấy.
 
 ## Vướng / câu hỏi mở
 

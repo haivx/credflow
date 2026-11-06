@@ -74,7 +74,7 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 - **Hiện tại (plan 16):** upload đẩy job (`jobId = documentId`), worker gọi Claude thật (`claude-haiku-5-5`, ADR 0008): phân loại mọi file, trích xuất chỉ khi `cpr_card`. CPR đi `uploaded → processing → extracted → auto_approved | needs_review`: `RuleStep` (`apps/api/src/rules/rule-step.ts`) chấm rule với staff của document, `asOf` = ngày UTC (ADR 0010), ghi `ruleResults`, `routing`, `as_of`, `timingMs.rules`. Loại giấy khác đi thẳng `processing → needs_review`, `NO_RULES_EVALUATED`, `as_of` NULL. `versions = { pipeline: "21", prompt: "classify@1+extract-cpr@1", model: "claude-haiku-5-5", rules: "1" }`. `evidence.box` bị bỏ trong code
 - **Chạy thật end-to-end (kịch bản 7 plan 16):** `make db-migrate db-seed`, `make dev-api` + `make dev-worker`; login từng user rồi `curl -F file=@eval/hard-cases/cpr/<fixture> /documents`: 01, 03 → `staff-marisol@example.test`; 02 → `staff-tobias@`; 05 → `staff-odalys@`; 04, 06 → `staff@` (mật khẩu `credflow-dev`). Xem `psql`: `select file_name, status, routing, as_of, timing_ms from documents`. Kỳ vọng: 01, 06 `auto_approved`; 02 `MISSING_FIELD`+`EXPIRED`; 04 `NO_RULES_EVALUATED`; 05 `ISSUER_NOT_ACCEPTED`; 03 dao động quanh ngưỡng confidence (`LOW_CONFIDENCE` hoặc `auto_approved` với giá trị đúng)
 - **Chạy:** `make dev-api` + `make dev-worker` (worker cần `ANTHROPIC_API_KEY`, **tốn tiền thật**). Xem trạng thái bằng `GET /documents/:id` (staff chủ giấy), màn S1, hoặc `psql`. Log worker có token từng lượt để cộng chi phí
-- **Fixture:** `eval/hard-cases/cpr/` (6 giấy SAMPLE: 5 CPR + 1 TB, nguồn HTML, đáp án `cases.json`)
+- **Fixture:** `eval/hard-cases/cpr/` (10 giấy SAMPLE: 9 CPR + 1 TB, nguồn HTML, đáp án `cases.json`; 07–10 thêm ở plan 22)
 - **Lỗi (ADR 0006):**
   - timeout, mất kết nối, 408, 409, 429, 5xx: thử tối đa 3 lần (chờ 1s, 2s), hết lượt → `needs_review`, `error.step = "pipeline"`
   - 4xx khác, `refusal`: 1 lượt, `needs_review`, `error.step` là `classify` hoặc `extract`, giữ phần đã đọc được
@@ -120,7 +120,7 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 - **Đáp án:** `eval/hard-cases/cpr/cases.json` + `data/synth/cpr/cases.json` nếu có (`GoldenCase[]`, `asOf` cố định); report có cột nguồn; kết quả `eval/runs/<id>.json` (`EvalRun`, gitignore), `eval/report.md` (commit), cache `eval/cache/` (gitignore)
 - **Kỳ vọng:** chạy lần hai không đổi gì → `LLM 0 lượt, cache 6`, metric giống hệt; đổi rule/ngưỡng → 0 lượt gọi LLM, decision đổi theo; `cases.json` sai schema → exit 1 kèm `index.trường`
 - **Duyệt nhầm:** tự duyệt mà đáp án `needs_review` hoặc đọc sai trường có trong đáp án; report liệt kê ở mục "Duyệt nhầm"
-- **Cổng CI (plan 20):** `make eval-ci` = synth `--cases-only` + eval `--recorded --no-save --gate eval/gate.json`; kỳ vọng: không cần khoá, `LLM 0 lượt`, `cổng eval: qua (0 ≤ 0)`; vượt mức, thiếu/cũ output ghi sẵn → exit ≠ 0 kèm lý do từng ca. Ghi lại: `make eval ARGS=--record`
+- **Cổng CI (plan 20):** `make eval-ci` = synth `--cases-only` + eval `--recorded --no-save --gate eval/gate.json`; kỳ vọng: không cần khoá, `LLM 0 lượt`, 40 ca dev, `cổng eval: qua (0 ≤ 0)`; vượt mức, thiếu/cũ output ghi sẵn → exit ≠ 0 kèm lý do từng ca. Ghi lại: `make eval ARGS=--record`
 - **Kiểm sẵn có:** `apps/api/src/eval/*.spec.ts` (51 test, không gọi LLM)
 - **Mức rủi ro:** T2 (số liệu quyết định thay đổi T3)
 
