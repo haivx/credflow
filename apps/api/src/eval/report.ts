@@ -1,4 +1,5 @@
-import type { EvalMetrics, EvalRun } from "@credflow/contracts";
+import type { EvalCaseResult, EvalMetrics, EvalRun } from "@credflow/contracts";
+import { computeMetrics } from "./metrics.js";
 
 type Row = [
   label: string,
@@ -24,6 +25,11 @@ const ROWS: Row[] = [
   ["lượt gọi LLM lần này", "llmCalls", int],
   ["ca lấy từ cache", "cacheHits", int],
 ];
+
+/** Ca synth có id `synth-…` (plan 19); còn lại là ca làm tay trong `eval/hard-cases/`. */
+export function caseSource(id: string): "synth" | "hard-cases" {
+  return id.startsWith("synth-") ? "synth" : "hard-cases";
+}
 
 /** Report markdown của một lần chạy, so với lần trước nếu có. Chỉ tên trường, không giá trị. */
 export function renderReport(run: EvalRun, previous?: EvalRun): string {
@@ -73,13 +79,22 @@ export function renderReport(run: EvalRun, previous?: EvalRun): string {
 
   lines.push(
     "",
+    "## Theo nguồn",
+    "",
+    "| Nguồn | n | falseApproveRate | autoApproveRate | classificationAccuracy |",
+    "| --- | --- | --- | --- | --- |",
+    ...bySource(run.cases).map(
+      ([source, m]) =>
+        `| ${source} | ${String(m.n)} | ${pct(m.falseApproveRate)} | ${pct(m.autoApproveRate)} | ${pct(m.classificationAccuracy)} |`,
+    ),
+    "",
     "## Từng ca",
     "",
-    "| Ca | Kỳ vọng | Thực tế | Lý do | Trường sai | Cache | Lỗi |",
-    "| --- | --- | --- | --- | --- | --- | --- |",
+    "| Ca | Nguồn | Kỳ vọng | Thực tế | Lý do | Trường sai | Cache | Lỗi |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- |",
     ...run.cases.map((c) => {
       const flag = c.falseApprove ? " ⚠️" : "";
-      return `| \`${c.id}\` | ${c.expectedDecision} | ${c.decision}${flag} | ${c.reasons.join(", ") || "—"} | ${c.fieldMismatches.join(", ") || "—"} | ${c.cached ? "có" : "không"} | ${c.error ?? "—"} |`;
+      return `| \`${c.id}\` | ${caseSource(c.id)} | ${c.expectedDecision} | ${c.decision}${flag} | ${c.reasons.join(", ") || "—"} | ${c.fieldMismatches.join(", ") || "—"} | ${c.cached ? "có" : "không"} | ${c.error ?? "—"} |`;
     }),
     "",
     "## Độ chính xác từng trường",
@@ -108,4 +123,15 @@ export function renderReport(run: EvalRun, previous?: EvalRun): string {
   return lines
     .filter((line, i, all) => !(line === "" && all[i - 1] === ""))
     .join("\n");
+}
+
+function bySource(cases: readonly EvalCaseResult[]): [string, EvalMetrics][] {
+  const sources = ["hard-cases", "synth"] as const;
+  return sources
+    .map((source): [string, EvalCaseResult[]] => [
+      source,
+      cases.filter((c) => caseSource(c.id) === source),
+    ])
+    .filter(([, group]) => group.length > 0)
+    .map(([source, group]) => [source, computeMetrics(group)]);
 }

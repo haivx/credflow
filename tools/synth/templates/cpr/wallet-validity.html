@@ -1,0 +1,80 @@
+<!doctype html>
+<meta charset="utf-8" />
+<!-- Thẻ khổ ví hai cột, ngày ISO, KHÔNG in ngày hết hạn, chỉ câu hiệu lực. Dữ liệu hư cấu. -->
+<style>
+  body {
+    margin: 0;
+    padding: 40px;
+    font-family: Verdana, Arial, sans-serif;
+    background: #fff;
+  }
+  #card {
+    position: relative;
+    width: 600px;
+    height: 360px;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    box-shadow: 0 0 0 2px #2b6777;
+    background: #fff;
+  }
+  .side {
+    width: 170px;
+    background: #2b6777;
+    color: #fff;
+    padding: 22px 16px;
+    box-sizing: border-box;
+    font-size: 16px;
+    line-height: 1.35;
+    font-weight: 700;
+  }
+  .main {
+    flex: 1;
+    padding: 22px 24px;
+    box-sizing: border-box;
+    font-size: 15px;
+  }
+  .k {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #2b6777;
+    margin-top: 12px;
+  }
+  .v {
+    font-size: 18px;
+  }
+  .valid {
+    margin-top: 18px;
+    font-size: 13px;
+    font-style: italic;
+    color: #333;
+  }
+  .wm {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 96px;
+    font-weight: 700;
+    color: rgba(200, 30, 30, 0.17);
+    transform: rotate(-15deg);
+    pointer-events: none;
+  }
+</style>
+<div id="card">
+  <div class="side">{{issuerName}}</div>
+  <div class="main">
+    <div class="k">Participant</div>
+    <div class="v">{{holderName}}</div>
+    <div class="k">Course</div>
+    <div class="v">{{courseType}}</div>
+    <div class="k">Issued</div>
+    <div class="v">{{completionText}}</div>
+    <div class="k">Card ID</div>
+    <div class="v">{{cardNumber}}</div>
+    <div class="valid">{{validityText}}</div>
+  </div>
+  <div class="wm">SAMPLE</div>
+</div>

@@ -78,4 +78,19 @@ describe("renderReport", () => {
     );
     expect(md).toContain("Không có ca nào.");
   });
+
+  it("cột nguồn theo tiền tố id, và bảng metric theo nguồn", () => {
+    const md = renderReport(
+      run("r1", [
+        result({ id: "01-expires" }),
+        result({ id: "synth-cpr-0001", decision: "needs_review" }),
+        result({ id: "synth-cpr-0002" }),
+      ]),
+    );
+    expect(md).toContain("| `01-expires` | hard-cases |");
+    expect(md).toContain("| `synth-cpr-0001` | synth |");
+    expect(md).toContain("## Theo nguồn");
+    expect(md).toContain("| hard-cases | 1 | 0.0% | 100.0% |");
+    expect(md).toContain("| synth | 2 | 0.0% | 50.0% |");
+  });
 });

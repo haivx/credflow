@@ -8,10 +8,12 @@ Dữ liệu và kết quả của eval. Code nằm ở `apps/api/src/eval/` và 
 make eval                          # split dev, dùng cache LLM
 make eval ARGS=--no-cache          # gọi LLM lại cho mọi ca (vẫn ghi cache mới)
 make eval ARGS="--split holdout"   # chỉ khi chốt kết quả cuối phase
-make eval ARGS="--cases eval/hard-cases/cpr/cases.json"
+make eval ARGS="--cases eval/hard-cases/cpr/cases.json"   # chỉ một nguồn; lặp --cases để thêm file
 ```
 
 Cần `ANTHROPIC_API_KEY` trong `.env`. Không cần DB, Redis hay worker.
+
+Mặc định đọc `eval/hard-cases/cpr/cases.json` và `data/synth/cpr/cases.json` (nếu đã `make synth`). Report có cột nguồn và bảng metric theo nguồn (`hard-cases` / `synth`, suy từ tiền tố id `synth-`).
 
 Exit 0 khi chạy xong, kể cả khi có ca duyệt nhầm (đó là số liệu). Exit 1 khi `cases.json` sai schema, thiếu khoá, hoặc có ca không chạy được (lỗi LLM tạm thời sau khi SDK đã thử lại). Ca đã xong vẫn nằm trong cache, chạy lại không tốn tiền cho chúng.
 

@@ -65,7 +65,7 @@ packages/contracts/  Zod schema dùng chung, nguồn sự thật cho kiểu dữ
 packages/rules/      Rule engine thuần + đọc config
 config/rules/        Cấu hình rule theo khách hàng (YAML, validate bằng RulesConfig)
 eval/                Dữ liệu eval: hard-cases/ (ca khó làm tay, giả lập, cases.json), report.md; code eval ở apps/api/src/eval + scripts/eval.ts
-tools/synth/         Bộ sinh giấy tờ giả lập + đáp án
+tools/synth/         Bộ sinh thẻ giả lập + đáp án (Playwright, seed, bảng kịch bản src/policy.ts)
 docs/                product.md, flows.md, doc-types.md, data-policy.md, roadmap.md, STATUS.md, plans/, decisions/, research/, learning/ (lưu trữ, dừng cập nhật 2026-11-05), agent/ (rule kiểm chứng, guardrails, mẫu)
 .claude/             commands/ (/tiep, /next, /wrap), agents/ (pr-reviewer), hooks/, skills/verify/ (quy trình kiểm chứng, FEATURE_MAP.md), settings.json (deny + ask dùng chung, guardrail A8)
 ```
@@ -86,7 +86,7 @@ make typecheck  # tsc mọi package
 make lint       # eslint (có type-check cho apps/api, packages; guardrail A3/A5/A9/A14) + prettier --check + test lint (tools/lint/)
 make format     # prettier --write: sửa định dạng khi make lint báo lỗi prettier
 make eval       # golden set qua LlmService + rule thật → eval/runs/, eval/report.md; cache LLM; ARGS=--no-cache
-make synth      # sinh dữ liệu giả lập → data/synth/ (P2), SEED= tuỳ chọn
+make synth      # sinh 40 thẻ CPR giả lập + cases.json → data/synth/cpr/ (plan 19), SEED= tuỳ chọn; cần Chromium của Playwright
 ```
 
 CI (`.github/workflows/ci.yml`): mỗi PR và push lên `main` chạy `build-packages`, `lint`, `typecheck`, `test`, `test-int`.

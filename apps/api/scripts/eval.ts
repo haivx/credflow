@@ -34,7 +34,8 @@ const { values: args } = parseArgs({
   options: {
     split: { type: "string", default: "dev" },
     "no-cache": { type: "boolean", default: false },
-    cases: { type: "string", default: "eval/hard-cases/cpr/cases.json" },
+    // Lặp lại được. Không truyền thì dùng hard-cases + synth (nếu đã `make synth`).
+    cases: { type: "string", multiple: true },
   },
 });
 
@@ -51,20 +52,36 @@ const split = args.split;
 if (split !== "dev" && split !== "holdout")
   fail("--split phải là dev hoặc holdout");
 
-const casesFile = resolve(ROOT, args.cases);
-let goldenCases: GoldenCase[];
-try {
-  goldenCases = parseJson(
-    GoldenCase.array(),
-    await readFile(casesFile, "utf8"),
-  );
-} catch (err) {
-  if (!(err instanceof z.ZodError)) fail(`${args.cases}: JSON không hợp lệ`);
-  const lines = err.issues.map(
-    (issue) => `  ${issue.path.join(".")}: ${issue.message}`,
-  );
-  fail(`${args.cases} sai schema GoldenCase:\n${lines.join("\n")}`);
+const DEFAULT_CASES = [
+  "eval/hard-cases/cpr/cases.json",
+  "data/synth/cpr/cases.json",
+];
+const caseFiles =
+  args.cases ?? DEFAULT_CASES.filter((file) => existsSync(join(ROOT, file)));
+
+const goldenCases: GoldenCase[] = [];
+for (const file of caseFiles) {
+  try {
+    goldenCases.push(
+      ...parseJson(
+        GoldenCase.array(),
+        await readFile(resolve(ROOT, file), "utf8"),
+      ),
+    );
+  } catch (err) {
+    if (!(err instanceof z.ZodError))
+      fail(`${file}: không đọc được hoặc JSON không hợp lệ`);
+    const lines = err.issues.map(
+      (issue) => `  ${issue.path.join(".")}: ${issue.message}`,
+    );
+    fail(`${file} sai schema GoldenCase:\n${lines.join("\n")}`);
+  }
 }
+const duplicate = goldenCases.find(
+  (c, i) => goldenCases.findIndex((other) => other.id === c.id) !== i,
+);
+if (duplicate !== undefined)
+  fail(`id ca bị trùng giữa các file: ${duplicate.id}`);
 const cases = goldenCases.filter((c) => c.split === split);
 if (cases.length === 0) fail(`không có ca nào thuộc split ${split}`);
 
@@ -109,7 +126,7 @@ const deps = {
 
 const startedAt = Date.now();
 console.log(
-  `make eval: ${String(cases.length)} ca, split ${split}, song song ${String(CONCURRENCY)}`,
+  `make eval: ${String(cases.length)} ca từ ${caseFiles.join(", ")}, split ${split}, song song ${String(CONCURRENCY)}`,
 );
 const failures: string[] = [];
 const results = await mapWithLimit(cases, CONCURRENCY, async (gc, i) => {
