@@ -36,7 +36,7 @@
 - **Plan 26 staff đủ bộ giấy:** merge PR #45 2026-11-06. **P3 xong.**
 - **P4:** chia 27 (API duyệt) / 28 (UI S2, S3) / 29 (báo cáo trường hay sửa, 10 ca bằng UI). Liam chọn cả 6 câu theo khuyến nghị (2026-11-06).
 - **Plan 27 API duyệt:** merge PR #46 2026-11-06.
-- **Plan 28 UI duyệt:** nhánh `feat/28-ui-duyet`, đã kiểm (evidence `.verify/reports/2026-11-06-28-ui-duyet.md`, L3 đạt 8 kịch bản, ⚠️ PDF trong khung chưa kiểm được ở headless). `make test-int` local đêm 06/07 đỏ ngẫu nhiên vì máy ngủ sâu (pmset, 15 phút/lần), từng file chạy riêng đều xanh, nên dựa vào CI. PR chờ CI + Liam.
+- **Plan 28 UI duyệt:** nhánh `feat/28-ui-duyet`, đã kiểm (evidence `.verify/reports/2026-11-06-28-ui-duyet.md`, L3 đạt 8 kịch bản, ⚠️ PDF trong khung chưa kiểm được ở headless). `make test-int` local đêm 06/07 đỏ ngẫu nhiên vì máy ngủ sâu (pmset, 15 phút/lần), từng file chạy riêng đều xanh, CI của PR #47 xanh: test-int 16 file đều qua (chạy 1 phút trên CI). Chờ Liam merge.
 
 ## Tiếp theo
 
