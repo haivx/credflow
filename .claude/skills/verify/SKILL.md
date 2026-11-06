@@ -50,7 +50,7 @@ Backend/pipeline → API trước (`make test-int` + gọi API đang chạy). Ng
 .claude/skills/verify/scripts/api.sh --as staff-marisol@example.test GET /documents
 ```
 Output: dòng `<status> <thời gian>` rồi body (cắt 2000 ký tự). `--as` đăng nhập bằng user seed, cookie
-riêng mỗi email ở `.verify/`. Không `--as` là gọi chưa đăng nhập.
+riêng mỗi email ở `.verify/`. Không `--as` là gọi chưa đăng nhập. `API_BODY_LIMIT=0` để in đủ body (đọc JSON chi tiết của một document).
 - Kiểm thêm trạng thái DB khi cần:
   `docker compose exec -T db psql -U credflow -d credflow -c "SELECT id, status FROM documents ORDER BY created_at DESC LIMIT 5"`.
 
