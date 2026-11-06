@@ -30,11 +30,10 @@
 - **Plan 20 harness:** merge PR #38 2026-11-06 (CI có `eval-ci`).
 - **Plan 21 ngày mơ hồ:** merge PR #39 2026-11-06 (gate 0). `api.sh` `API_BODY_LIMIT`: PR #40 chờ merge.
 - **Plan 22 ca khó đóng P2:** merge PR #41 2026-11-06. **P2 xong.**
-- **Plan 23 check vùng theo plan (P3):** Liam duyệt 2026-11-06, nhánh `chore/23-check-vung-theo-plan`. Script + 12 test (đỏ trước, 2 phép phá bắt được); lịch sử #37–#41 khớp dự đoán (#40 đỏ). **Tiếp:** CI, thử đỏ có chủ đích, PR.
+- **Plan 23 check vùng theo plan (P3):** PR #42 chờ Liam merge; CI có bước `plan-zones` (đã thử đỏ → BLOCKED → xanh). Watchlist 2026-11-05 thành luật A8.
 
 ## Tiếp theo
 
-1. **Plan 23:** đang làm.
 2. **Plan 24:** sửa chặn thừa ngày dạng "14th day of" (T3, ca 08).
 3. Phạm vi P3 chính: config theo khách hàng, `dateOrder`, staff đủ bộ giấy.
 
