@@ -4,9 +4,19 @@ import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
 import Anthropic from "@anthropic-ai/sdk";
-import { EvalRun, GoldenCase, parseJson } from "@credflow/contracts";
+import {
+  EvalRun,
+  GoldenCase,
+  parseJson,
+  type RulesConfig,
+} from "@credflow/contracts";
 import * as z from "zod";
-import { assertRulesReady, loadRulesConfig } from "@credflow/rules";
+import {
+  assertRulesReady,
+  configsFor,
+  loadRulesConfigSet,
+  rulesVersion,
+} from "@credflow/rules";
 import { envSchema } from "../src/config/env.schema.js";
 import { type CacheEntry, EvalCache } from "../src/eval/cache.js";
 import { checkGate, Gate } from "../src/eval/gate.js";
@@ -116,8 +126,10 @@ if (duplicate !== undefined)
 const cases = goldenCases.filter((c) => c.split === split);
 if (cases.length === 0) fail(`không có ca nào thuộc split ${split}`);
 
-const config = loadRulesConfig(resolve(API_DIR, env.RULES_CONFIG_PATH));
-assertRulesReady(config);
+const configs = loadRulesConfigSet(resolve(API_DIR, env.RULES_CONFIG_PATH));
+for (const rules of [configs.default, ...Object.values(configs.byClient)]) {
+  assertRulesReady(rules);
+}
 const prompts = await loadAllPrompts();
 // SDK tự thử lại 429/5xx 2 lần; worker để BullMQ lo việc này, eval không có BullMQ.
 const client = new Anthropic({
@@ -164,7 +176,7 @@ const deps: CaseDeps = {
   newLlmSession,
   cache: new EvalCache(CACHE_DIR),
   readCache: !args["no-cache"],
-  config,
+  configs,
   promptVersion: PROMPT_VERSION,
   model: LLM_MODEL,
   ...(args.recorded
@@ -217,7 +229,8 @@ const run = EvalRun.parse({
   id: createdAt.replace(/[:.]/g, "-"),
   createdAt,
   split,
-  versions: { ...PIPELINE_VERSIONS, rules: String(config.version) },
+  // Mọi config mà các ca trong run đã dùng (plan 25).
+  versions: { ...PIPELINE_VERSIONS, rules: runRulesVersion(cases) },
   durationMs: Date.now() - startedAt,
   metrics: computeMetrics(caseResults),
   byTag: metricsByTag(caseResults),
@@ -292,4 +305,16 @@ async function latestRun(wanted: string): Promise<EvalRun | undefined> {
     }
   }
   return runs.sort((a, b) => a.createdAt.localeCompare(b.createdAt)).at(-1);
+}
+
+/** `versions.rules` của cả run: hợp các config mà từng ca dùng, sắp theo tên. */
+function runRulesVersion(gcs: readonly GoldenCase[]): string {
+  const used = new Map<string, RulesConfig>();
+  for (const gc of gcs) {
+    for (const c of configsFor(configs, gc.staff.clientIds))
+      used.set(c.name, c);
+  }
+  return rulesVersion(
+    [...used.values()].sort((a, b) => a.name.localeCompare(b.name)),
+  );
 }

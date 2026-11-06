@@ -3,14 +3,14 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Extraction, type GoldenCase, parseJson } from "@credflow/contracts";
-import { loadRulesConfig } from "@credflow/rules";
+import { loadRulesConfigSet } from "@credflow/rules";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LlmError } from "../llm/llm.service.js";
 import { EvalCache } from "./cache.js";
 import { type CaseDeps, type CaseLlm, runCase } from "./run-case.js";
 
 const ROOT = join(import.meta.dirname, "..", "..", "..", "..");
-const config = loadRulesConfig(join(ROOT, "config", "rules", "default.yaml"));
+const configs = loadRulesConfigSet(join(ROOT, "config", "rules"));
 const recorded01 = parseJson(
   Extraction,
   readFileSync(
@@ -61,7 +61,7 @@ describe("runCase", () => {
       }),
       cache: new EvalCache(dir),
       readCache: true,
-      config,
+      configs,
       promptVersion: "classify@1+extract-cpr@1",
       model: "claude-haiku-5-5",
     };

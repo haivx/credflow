@@ -80,8 +80,8 @@ describe("pipeline nối rule và routing", () => {
     await worker.init();
   };
 
-  const addStaff = async (legalName: string) => {
-    const row = makeStaff({ legalName });
+  const addStaff = async (legalName: string, clientIds: string[] = []) => {
+    const row = makeStaff({ legalName, clientIds });
     await db.insert(staff).values(row);
     return row.id;
   };
@@ -116,11 +116,15 @@ describe("pipeline nối rule và routing", () => {
   };
 
   /** Một thẻ CPR đi trọn từ job tới kết quả. */
-  const runCpr = async (fixture: string, legalName: string) => {
+  const runCpr = async (
+    fixture: string,
+    legalName: string,
+    clientIds: string[] = [],
+  ) => {
     create
       .mockResolvedValueOnce(IS_CPR)
       .mockResolvedValueOnce(reply(recordedFields(fixture)));
-    const id = await addDocument(await addStaff(legalName));
+    const id = await addDocument(await addStaff(legalName, clientIds));
     await waitForJob(id);
     return readDocument(id);
   };
@@ -257,4 +261,47 @@ describe("pipeline nối rule và routing", () => {
     expect(row.error?.step).toBe("rules");
     expect(JSON.stringify(row.error)).not.toContain(SECRET);
   }, 20_000);
+
+  // Plan 25: chấm theo config của mọi khách hàng của staff, lấy chặt nhất.
+  describe("config theo khách hàng", () => {
+    const SUNRISE = "01M6CRWH00M3S97971WJSR6NX9";
+    const BAYLEAF = "01M6CRWH00M3S97971WJSR6NXA";
+
+    it("tổ chức chỉ Bayleaf chấp nhận, staff chỉ làm cho Bayleaf: auto_approved, versions.rules bayleaf@1", async () => {
+      await startWorker();
+      const row = await runCpr("05-injection", "Odalys Venn", [BAYLEAF]);
+
+      expect(row.status).toBe("auto_approved");
+      expect(row.versions?.rules).toBe("bayleaf@1");
+    });
+
+    it("staff làm cho cả Sunrise và Bayleaf: needs_review, lý do nêu config trượt", async () => {
+      await startWorker();
+      const row = await runCpr("05-injection", "Odalys Venn", [
+        SUNRISE,
+        BAYLEAF,
+      ]);
+
+      expect(row.status).toBe("needs_review");
+      expect(row.routing).toEqual({
+        decision: "needs_review",
+        reasons: ["ISSUER_NOT_ACCEPTED"],
+      });
+      const issuer = row.ruleResults.find(
+        (r) => r.code === "ISSUER_NOT_ACCEPTED",
+      );
+      expect(issuer?.message.startsWith("[sunrise] ")).toBe(true);
+      expect(row.versions?.rules).toBe("bayleaf@1+sunrise@1");
+    });
+
+    it("khách hàng chưa có file config: chấm theo default", async () => {
+      await startWorker();
+      const row = await runCpr("05-injection", "Odalys Venn", [
+        "01KHONGCOCONFIG0000000000",
+      ]);
+
+      expect(row.status).toBe("needs_review");
+      expect(row.versions?.rules).toBe("default@1");
+    });
+  });
 });

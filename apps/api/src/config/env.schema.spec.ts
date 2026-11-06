@@ -34,7 +34,7 @@ describe("envSchema", () => {
       SESSION_TTL_DAYS: 7,
       COOKIE_SECURE: false,
       UPLOAD_MAX_BYTES: 10485760,
-      RULES_CONFIG_PATH: "../../config/rules/default.yaml",
+      RULES_CONFIG_PATH: "../../config/rules",
     });
   });
 

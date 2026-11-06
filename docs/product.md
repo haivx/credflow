@@ -111,7 +111,7 @@ Hàm thuần `evaluateRules({extraction, classification, declaredDocType?, staff
 
 **So khớp tên:** chuẩn hoá (bỏ dấu, viết thường, đảo "LAST, FIRST", bỏ tên đệm viết tắt) rồi so với `legalName` và `aliases`. Không fuzzy-match lỏng: không khớp chắc thì `NAME_MISMATCH`, để người duyệt quyết.
 
-**Cấu hình:** `config/rules/<client>.yaml`, validate bằng `RulesConfig`. Giá trị trong repo là minh hoạ. Rule nào áp cho loại giấy nào và severity của nó cố định trong code (`packages/rules/src/registry.ts`), khách hàng không đổi được. Lúc khởi động, `assertRulesReady` kiểm mọi loại giấy mà `roles` yêu cầu đều có ít nhất một rule `block` và mã không trùng; sai thì app không chạy.
+**Cấu hình:** `config/rules/default.yaml` + `config/rules/clients/<clientId>.yaml` (plan 25, ADR 0011), mỗi file validate bằng `RulesConfig`, có `name` riêng và `dateOrder` (`MDY` / `DMY` / `strict`). Một giấy được chấm theo config của **mọi** khách hàng của staff; một rule chỉ qua khi qua ở mọi config (chặt nhất); staff không có khách hàng, hoặc khách hàng chưa có file → `default`. `versions.rules` ghi các config đã dùng (`bayleaf@1+sunrise@1`). Giá trị trong repo là minh hoạ. Rule nào áp cho loại giấy nào và severity của nó cố định trong code (`packages/rules/src/registry.ts`), khách hàng không đổi được. Lúc khởi động, `assertRulesReady` kiểm mọi loại giấy mà `roles` yêu cầu đều có ít nhất một rule `block` và mã không trùng; sai thì app không chạy.
 
 ## 6. Màn hình và luồng
 

@@ -28,11 +28,11 @@ export const envSchema = z.object({
     .int()
     .min(1, "UPLOAD_MAX_BYTES must be at least 1")
     .default(10 * 1024 * 1024),
-  // Tính từ thư mục chạy là apps/api (nest start, vitest).
+  // Thư mục config rule: default.yaml + clients/<clientId>.yaml (plan 25). Tính từ apps/api.
   RULES_CONFIG_PATH: z
     .string()
     .min(1, "RULES_CONFIG_PATH must not be empty")
-    .default("../../config/rules/default.yaml"),
+    .default("../../config/rules"),
 });
 
 export type Env = z.infer<typeof envSchema>;

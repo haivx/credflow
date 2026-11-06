@@ -22,21 +22,38 @@ const NUMERIC_MONTH_YEAR = /(?<![\d/.-])(\d{1,2})[/.-](\d{4})(?![\d/.-])/g;
 /** Chỉ tháng/năm bằng chữ: "March 2028", "Sept. 2027". */
 const NAMED_MONTH_YEAR = new RegExp(`\\b(?:${MONTH})\\.?,?\\s+\\d{4}\\b`, "i");
 
-export type QuoteDateProblem = "ambiguous_order" | "no_day";
+export type QuoteDateProblem = "ambiguous_order" | "order_mismatch" | "no_day";
+export type DateOrder = "MDY" | "DMY" | "strict";
 
 /**
  * Lý do chữ gốc không đủ để biết chắc ngày; `undefined` là rõ ràng (hoặc không có ngày nào).
- * - `ambiguous_order`: có ngày số mà ngày và tháng đều ≤ 12 và khác nhau (`10/9/2025`).
+ * - `ambiguous_order` (chỉ khi `order` = `strict`): có ngày số mà ngày và tháng đều ≤ 12 và khác
+ *   nhau (`10/9/2025`).
+ * - `order_mismatch` (khi `order` = `MDY`/`DMY` và có `value`): chữ in có đúng một ngày số, đọc theo
+ *   `order` ra ngày khác `value` mà LLM điền.
  * - `no_day`: không có ngày đầy đủ nào, chỉ có tháng/năm (`Valid through 12/2027`).
  */
-export function quoteDateProblem(quote: string): QuoteDateProblem | undefined {
+export function quoteDateProblem(
+  quote: string,
+  order: DateOrder = "strict",
+  value?: string,
+): QuoteDateProblem | undefined {
   const numeric = [...quote.matchAll(NUMERIC_DATE)];
-  const ambiguous = numeric.some((m) => {
-    const a = Number(m[1]);
-    const b = Number(m[2]);
-    return a <= 12 && b <= 12 && a !== b;
-  });
-  if (ambiguous) return "ambiguous_order";
+  if (order === "strict") {
+    const ambiguous = numeric.some((m) => {
+      const a = Number(m[1]);
+      const b = Number(m[2]);
+      return a <= 12 && b <= 12 && a !== b;
+    });
+    if (ambiguous) return "ambiguous_order";
+  } else if (value !== undefined && numeric.length === 1 && numeric[0]) {
+    // Khách hàng đã chốt thứ tự: ngày LLM điền phải đúng là chữ in đọc theo thứ tự đó (plan 25).
+    const [, a, b, y] = numeric[0];
+    const year = (y ?? "").length === 2 ? `20${y ?? ""}` : (y ?? "");
+    const [month, day] = order === "MDY" ? [a, b] : [b, a];
+    const expected = `${year}-${(month ?? "").padStart(2, "0")}-${(day ?? "").padStart(2, "0")}`;
+    if (expected !== value) return "order_mismatch";
+  }
 
   const hasFullDate =
     numeric.length > 0 || ISO_DATE.test(quote) || NAMED_DATE.test(quote);

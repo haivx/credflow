@@ -1,0 +1,68 @@
+{
+  "promptVersion": "classify@1+extract-cpr@1",
+  "model": "claude-haiku-5-5",
+  "inputSha256": "ad62bf17e047cc1765d09ca5f6787f7dc206f60d71d9f8d08a6d14da95594997",
+  "classification": {
+    "docType": "cpr_card",
+    "confidence": 0.97
+  },
+  "extraction": {
+    "docType": "cpr_card",
+    "fields": {
+      "holderName": {
+        "value": "Odalys Venn",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Participant: Odalys Venn"
+        }
+      },
+      "issuerName": {
+        "value": "Harrowgate First Aid Academy",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Harrowgate First Aid Academy"
+        }
+      },
+      "courseType": {
+        "value": "Heartsaver CPR AED",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Heartsaver CPR AED"
+        }
+      },
+      "completionDate": {
+        "value": "2026-07-21",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Completed July 21, 2026"
+        }
+      },
+      "expirationDate": {
+        "value": "2028-07-21",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Expires July 21, 2028"
+        }
+      },
+      "validityText": {
+        "value": null,
+        "confidence": 0,
+        "evidence": null
+      },
+      "cardNumber": {
+        "value": "HFA-440187",
+        "confidence": 0.95,
+        "evidence": {
+          "quote": "Card No. HFA-440187"
+        }
+      }
+    }
+  },
+  "error": null,
+  "usage": {
+    "calls": 2,
+    "inputTokens": 3889,
+    "outputTokens": 369
+  },
+  "latencyMs": 4189
+}

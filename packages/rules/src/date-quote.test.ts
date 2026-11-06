@@ -77,3 +77,18 @@ describe("quoteDateProblem", () => {
     );
   });
 });
+
+describe("quoteDateProblem với dateOrder (plan 25)", () => {
+  it.each([
+    ["3/9/2026", "MDY", "2026-03-09", undefined],
+    ["3/9/2026", "MDY", "2026-09-03", "order_mismatch"],
+    ["3/9/2026", "DMY", "2026-09-03", undefined],
+    ["3/9/2026", "DMY", "2026-03-09", "order_mismatch"],
+    ["3/9/2026", "strict", "2026-03-09", "ambiguous_order"],
+    ["Completed 3/9/26", "MDY", "2026-03-09", undefined],
+    ["Valid through 12/2027", "MDY", "2027-12-31", "no_day"],
+    ["March 14, 2026", "MDY", "2026-03-14", undefined],
+  ] as const)("%s, %s, value %s → %s", (quote, order, value, expected) => {
+    expect(quoteDateProblem(quote, order, value)).toBe(expected);
+  });
+});

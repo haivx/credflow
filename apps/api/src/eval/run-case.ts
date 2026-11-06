@@ -5,9 +5,13 @@ import type {
   EvalCaseResult,
   Extraction,
   GoldenCase,
-  RulesConfig,
 } from "@credflow/contracts";
-import { evaluateRules, route } from "@credflow/rules";
+import {
+  configsFor,
+  evaluateRulesForConfigs,
+  type RulesConfigSet,
+  route,
+} from "@credflow/rules";
 import { LlmError, type LlmDocument } from "../llm/llm.service.js";
 import { type CacheEntry, cacheKey, type EvalCache } from "./cache.js";
 import { compareFields, isFalseApprove } from "./compare.js";
@@ -30,7 +34,8 @@ export interface CaseDeps {
   cache: EvalCache;
   /** `false` khi chạy `--no-cache`: vẫn ghi kết quả mới vào cache. */
   readCache: boolean;
-  config: RulesConfig;
+  /** Config theo khách hàng (plan 25): ca chấm theo `configsFor(configs, gc.staff.clientIds)`. */
+  configs: RulesConfigSet;
   promptVersion: string;
   model: string;
   /** Chế độ `--recorded`: lấy output đã ghi, không đọc file, không gọi LLM (plan 20). */
@@ -69,14 +74,16 @@ export async function runCase(
   const ruleResults =
     classification === undefined || extraction === undefined
       ? []
-      : evaluateRules({
-          extraction,
-          classification,
-          declaredDocType: gc.declaredDocType,
-          staff: gc.staff,
-          config: deps.config,
-          asOf: gc.asOf,
-        });
+      : evaluateRulesForConfigs(
+          {
+            extraction,
+            classification,
+            declaredDocType: gc.declaredDocType,
+            staff: gc.staff,
+            asOf: gc.asOf,
+          },
+          configsFor(deps.configs, gc.staff.clientIds),
+        );
   const routing = route(ruleResults);
   const { compared, mismatches } = compareFields(
     gc.expected.fields,

@@ -264,5 +264,115 @@
     },
     "tags": ["expired"],
     "split": "dev"
+  },
+  {
+    "id": "11-mdy-date",
+    "file": "eval/hard-cases/cpr/11-mdy-date.png",
+    "staff": {
+      "id": "01M6CRWH00M3S97971WJSR6NWZ",
+      "legalName": "Maren Ostrowe",
+      "aliases": [],
+      "role": "caregiver",
+      "clientIds": ["01M6CRWH00M3S97971WJSR6NX9"],
+      "region": "CA"
+    },
+    "asOf": "2026-11-06",
+    "expected": {
+      "docType": "cpr_card",
+      "fields": {
+        "holderName": "Maren Ostrowe",
+        "issuerName": "Northbridge Safety Council",
+        "courseType": "Adult CPR and AED Provider",
+        "cardNumber": "NSC-619204",
+        "validityText": null,
+        "completionDate": "2026-03-09",
+        "expirationDate": "2028-03-09"
+      },
+      "decision": "auto_approve"
+    },
+    "tags": ["date_format_ambiguous"],
+    "split": "dev"
+  },
+  {
+    "id": "11-mdy-date-default",
+    "file": "eval/hard-cases/cpr/11-mdy-date.png",
+    "staff": {
+      "id": "01M6CRWH00M3S97971WJSR6NWZ",
+      "legalName": "Maren Ostrowe",
+      "aliases": [],
+      "role": "caregiver",
+      "clientIds": [],
+      "region": "CA"
+    },
+    "asOf": "2026-11-06",
+    "expected": {
+      "docType": "cpr_card",
+      "fields": {
+        "holderName": "Maren Ostrowe",
+        "issuerName": "Northbridge Safety Council",
+        "courseType": "Adult CPR and AED Provider",
+        "cardNumber": "NSC-619204",
+        "validityText": null
+      },
+      "decision": "needs_review"
+    },
+    "tags": ["date_format_ambiguous"],
+    "split": "dev"
+  },
+  {
+    "id": "12-issuer-bayleaf",
+    "file": "eval/hard-cases/cpr/12-issuer-bayleaf.png",
+    "staff": {
+      "id": "01M6CRWH00M3S97971WJSR6NXD",
+      "legalName": "Odalys Venn",
+      "aliases": [],
+      "role": "behavior_technician",
+      "clientIds": ["01M6CRWH00M3S97971WJSR6NXA"],
+      "region": "WA"
+    },
+    "asOf": "2026-11-06",
+    "expected": {
+      "docType": "cpr_card",
+      "fields": {
+        "holderName": "Odalys Venn",
+        "issuerName": "Harrowgate First Aid Academy",
+        "courseType": "Heartsaver CPR AED",
+        "completionDate": "2026-07-21",
+        "expirationDate": "2028-07-21",
+        "validityText": null,
+        "cardNumber": "HFA-440187"
+      },
+      "decision": "auto_approve"
+    },
+    "tags": ["issuer_not_accepted"],
+    "split": "dev"
+  },
+  {
+    "id": "12-issuer-two-clients",
+    "file": "eval/hard-cases/cpr/12-issuer-bayleaf.png",
+    "staff": {
+      "id": "01M6CRWH00M3S97971WJSR6NXD",
+      "legalName": "Odalys Venn",
+      "aliases": [],
+      "role": "behavior_technician",
+      "clientIds": ["01M6CRWH00M3S97971WJSR6NX9", "01M6CRWH00M3S97971WJSR6NXA"],
+      "region": "WA"
+    },
+    "asOf": "2026-11-06",
+    "expected": {
+      "docType": "cpr_card",
+      "fields": {
+        "holderName": "Odalys Venn",
+        "issuerName": "Harrowgate First Aid Academy",
+        "courseType": "Heartsaver CPR AED",
+        "completionDate": "2026-07-21",
+        "expirationDate": "2028-07-21",
+        "validityText": null,
+        "cardNumber": "HFA-440187"
+      },
+      "decision": "needs_review"
+    },
+    "tags": ["issuer_not_accepted"],
+    "split": "dev"
   }
 ]
