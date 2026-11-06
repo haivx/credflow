@@ -35,7 +35,7 @@
 - **Plan 25 config theo khách hàng (ADR 0011):** merge PR #44 2026-11-06.
 - **Plan 26 staff đủ bộ giấy:** merge PR #45 2026-11-06. **P3 xong.**
 - **P4:** chia 27 (API duyệt) / 28 (UI S2, S3) / 29 (báo cáo trường hay sửa, 10 ca bằng UI). Liam chọn cả 6 câu theo khuyến nghị (2026-11-06).
-- **Plan 27 API duyệt:** nhánh `feat/27-api-duyet`, đã kiểm (evidence `.verify/reports/2026-11-06-27-api-duyet.md`: lint/typecheck/test/test-int 193/eval-ci xanh, L2 API thật 3 lượt LLM, EXPLAIN 20k). PR #46 chờ CI + Liam merge.
+- **Plan 27 API duyệt:** nhánh `feat/27-api-duyet`, đã kiểm (evidence `.verify/reports/2026-11-06-27-api-duyet.md`: lint/typecheck/test/test-int 193/eval-ci xanh, L2 API thật 3 lượt LLM, EXPLAIN 20k). PR #46, CI xanh (architecture-zones, check), chờ Liam merge.
 
 ## Tiếp theo
 
