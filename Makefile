@@ -69,9 +69,10 @@ lint:
 format:
 	pnpm exec prettier --write .
 
-# Chạy golden set qua pipeline hiện tại → eval/report.md (stub đến P2).
+# Chạy golden set qua LlmService + rule engine thật → eval/runs/, eval/report.md (plan 18).
+# Cần ANTHROPIC_API_KEY. Có cache LLM ở eval/cache/; đổi code gọi LLM thì: make eval ARGS=--no-cache
 eval: build-packages
-	pnpm --filter @credflow/eval run eval
+	pnpm --filter @credflow/api eval $(ARGS)
 
 # Sinh giấy tờ giả lập + đáp án → data/synth/ (stub đến P2). SEED= tuỳ chọn.
 synth: build-packages

@@ -3,7 +3,7 @@
 > Claude Code đọc file này đầu mỗi phiên và cập nhật cuối phiên (`/wrap`). Giữ ngắn, dưới 40 dòng.
 
 **Cập nhật:** 2026-11-06
-**Phase hiện tại:** P1 · Lát cắt dọc cho thẻ CPR (`docs/roadmap.md`). P0 xong 2026-11-03.
+**Phase hiện tại:** P2 · Dữ liệu giả lập và eval baseline (`docs/roadmap.md`). P0 xong 2026-11-03, P1 xong 2026-11-06.
 
 ## Đang làm
 
@@ -24,11 +24,12 @@
 - **Plan 14 LLM CPR (ADR 0008):** merge PR #30 2026-11-05. Sửa file tạm sót: merge PR #31.
 - **Plan 15 rule engine CPR (ADR 0009):** merge PR #32 2026-11-05. Rule chưa nối vào pipeline.
 - **Plan 16 nối rule + routing (ADR 0010):** merge PR #33 2026-11-06.
-- **Plan 17 màn upload + kết quả thô:** nhánh `feat/17-man-upload-ket-qua`, đã kiểm chứng L0–L3 (`.verify/reports/2026-11-06-17-man-upload-ket-qua.md`), PR chờ Liam merge. Lệch plan: polling hỏi `GET /documents` thay vì `/:id`.
+- **Plan 17 màn upload + kết quả thô:** merge PR #34 2026-11-06. **P1 xong:** đủ 9 tiêu chí hoàn thành (đối chiếu 2026-11-06).
+- **Plan 18 eval harness:** Liam duyệt 2026-11-06. Nhánh `feat/18-eval-harness`. Code xong, `make eval` chạy thật (kịch bản 8–11 qua), baseline ghi ở mục Eval. **Tiếp:** full check, evidence, PR. **Hỏi Liam:** đáp án `courseType`/`validityText` viết tắt hay chép nguyên văn.
 
 ## Tiếp theo
 
-1. Sau khi plan 17 merge: đối chiếu tiêu chí hoàn thành P1 (roadmap) rồi đề xuất bước đầu P2.
+1. **Plan 18:** chờ duyệt rồi code.
 
 ## Vướng / câu hỏi mở
 
@@ -38,7 +39,7 @@
 
 ## Eval mới nhất
 
-- Chưa có (bắt đầu từ P2).
+- **Baseline 2026-11-06** (plan 18, run `2026-11-06T04-00-12-008Z`, dev, 6 ca hard-cases, versions pipeline 16 / prompt classify@1+extract-cpr@1 / haiku-5-5 / rules 1): `falseApproveRate` 0% (0/6), `autoApproveRate` 33.3% (01, 06), `classificationAccuracy` 100%, field: holderName/issuerName/expirationDate/cardNumber 100%, completionDate 80%, validityText 66.7%, courseType 50% (đáp án viết tắt so với chữ in đầy đủ); 11 lượt gọi, ~$0.0039; latency p50 3.3s, p95 4.9s. Ca 03 lần này `LOW_CONFIDENCE` (plan 16 từng ra auto_approved).
 
 ## Nhật ký
 

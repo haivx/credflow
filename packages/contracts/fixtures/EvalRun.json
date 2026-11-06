@@ -1,0 +1,96 @@
+[
+  {
+    "name": "một ca duyệt nhầm",
+    "data": {
+      "id": "2026-11-06T04-00-00Z",
+      "createdAt": "2026-11-06T04:00:00Z",
+      "split": "dev",
+      "versions": {
+        "pipeline": "16",
+        "prompt": "classify@1+extract-cpr@1",
+        "model": "claude-haiku-5-5",
+        "rules": "1"
+      },
+      "durationMs": 5200,
+      "metrics": {
+        "n": 2,
+        "classificationAccuracy": 1,
+        "fieldAccuracy": {
+          "holderName": 1,
+          "expirationDate": 0.5
+        },
+        "falseApproveCount": 1,
+        "falseApproveRate": 0.5,
+        "autoApproveRate": 1,
+        "llmCalls": 2,
+        "cacheHits": 1,
+        "inputTokens": 3900,
+        "outputTokens": 570,
+        "costUsdTotal": 0.000675,
+        "costUsdPerDoc": 0.0003375,
+        "latencyMsP50": 3600,
+        "latencyMsP95": 4300
+      },
+      "byTag": {
+        "clean": {
+          "n": 2,
+          "classificationAccuracy": 1,
+          "fieldAccuracy": {
+            "holderName": 1,
+            "expirationDate": 0.5
+          },
+          "falseApproveCount": 1,
+          "falseApproveRate": 0.5,
+          "autoApproveRate": 1,
+          "llmCalls": 2,
+          "cacheHits": 1,
+          "inputTokens": 3900,
+          "outputTokens": 570,
+          "costUsdTotal": 0.000675,
+          "costUsdPerDoc": 0.0003375,
+          "latencyMsP50": 3600,
+          "latencyMsP95": 4300
+        }
+      },
+      "cases": [
+        {
+          "id": "01-expires",
+          "tags": ["clean"],
+          "expectedDecision": "auto_approve",
+          "decision": "auto_approve",
+          "reasons": [],
+          "expectedDocType": "cpr_card",
+          "docType": "cpr_card",
+          "falseApprove": false,
+          "fieldMismatches": [],
+          "fieldsCompared": ["holderName", "expirationDate"],
+          "error": null,
+          "cached": true,
+          "latencyMs": 3600,
+          "inputTokens": 1950,
+          "outputTokens": 285,
+          "llmCalls": 0
+        },
+        {
+          "id": "03-renewal-month",
+          "tags": ["name_variant"],
+          "expectedDecision": "needs_review",
+          "decision": "auto_approve",
+          "reasons": [],
+          "expectedDocType": "cpr_card",
+          "docType": "cpr_card",
+          "falseApprove": true,
+          "fieldMismatches": ["expirationDate"],
+          "fieldsCompared": ["holderName", "expirationDate"],
+          "error": null,
+          "cached": false,
+          "latencyMs": 3600,
+          "inputTokens": 1950,
+          "outputTokens": 285,
+          "llmCalls": 2
+        }
+      ],
+      "previousRunId": "2026-11-05T09-00-00Z"
+    }
+  }
+]
