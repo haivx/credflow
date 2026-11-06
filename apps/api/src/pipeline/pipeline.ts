@@ -46,7 +46,7 @@ export class UnreadableFileError extends Error {
 
 /** Ghi lúc vào `processing`. Phần `rules` lấy từ config đang chạy. */
 export const PIPELINE_VERSIONS = {
-  pipeline: "21",
+  pipeline: "24",
   prompt: PROMPT_VERSION,
   model: LLM_MODEL,
 };

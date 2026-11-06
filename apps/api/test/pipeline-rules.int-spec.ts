@@ -167,7 +167,7 @@ describe("pipeline nối rule và routing", () => {
         "WRONG_DOC_TYPE",
       ].sort(),
     );
-    expect(row.versions?.pipeline).toBe("21");
+    expect(row.versions?.pipeline).toBe("24");
     expect(Object.keys(row.timingMs).sort()).toEqual([
       "classify",
       "extract",

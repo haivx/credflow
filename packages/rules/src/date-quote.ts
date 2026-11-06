@@ -9,9 +9,12 @@ const MONTH =
 const NUMERIC_DATE =
   /(?<![\d/.-])(\d{1,2})[/.-](\d{1,2})[/.-](\d{4}|\d{2})(?![\d/.-])/g;
 const ISO_DATE = /\b\d{4}-\d{2}-\d{2}\b/;
-/** "March 14, 2026", "Aug. 19, 2027", "14 March 2026". */
+/**
+ * "March 14, 2026", "Aug. 19, 2027", "14 March 2026", và dạng thứ tự kiểu văn bản (plan 24):
+ * "14th day of March 2026", "the 14th of March, 2028". Số ngày phải đứng ngay trước "of <tháng>".
+ */
 const NAMED_DATE = new RegExp(
-  `\\b(?:(?:${MONTH})\\.?\\s+\\d{1,2}(?:st|nd|rd|th)?,?\\s+\\d{4}|\\d{1,2}(?:st|nd|rd|th)?\\s+(?:${MONTH})\\.?,?\\s+\\d{4})\\b`,
+  `\\b(?:(?:${MONTH})\\.?\\s+\\d{1,2}(?:st|nd|rd|th)?,?\\s+\\d{4}|\\d{1,2}(?:st|nd|rd|th)?\\s+(?:${MONTH})\\.?,?\\s+\\d{4}|\\d{1,2}(?:st|nd|rd|th)?\\s+(?:day\\s+)?of\\s+(?:${MONTH})\\.?,?\\s+\\d{4})\\b`,
   "i",
 );
 /** Chỉ tháng/năm: "12/2027", "03/2028". */

@@ -51,4 +51,29 @@ describe("quoteDateProblem", () => {
     expect(quoteDateProblem("Since 2019")).toBeUndefined();
     expect(quoteDateProblem("Code 7Q2-KX-9184")).toBeUndefined();
   });
+
+  // Plan 24: ngày dạng thứ tự kiểu văn bản là ngày đầy đủ.
+  it.each([
+    "on this 14th day of March 2026.",
+    "This certification is valid until the 14th day of March, 2028.",
+    "the 14th of March, 2028",
+    "1st day of May 2027",
+    "the 3rd day of Sept. 2027",
+    "22nd day of October 2026",
+  ])("ngày dạng thứ tự: %s → undefined", (quote) => {
+    expect(quoteDateProblem(quote)).toBeUndefined();
+  });
+
+  it.each([
+    "valid through the month of March 2028",
+    "the 14th day of the month following completion, March 2028",
+  ])('không có số ngày ngay trước "of <tháng>": %s → no_day', (quote) => {
+    expect(quoteDateProblem(quote)).toBe("no_day");
+  });
+
+  it("thứ tự D/M mơ hồ vẫn ưu tiên dù có ngày dạng thứ tự", () => {
+    expect(quoteDateProblem("10/9/2025 or the 14th day of March 2026")).toBe(
+      "ambiguous_order",
+    );
+  });
 });

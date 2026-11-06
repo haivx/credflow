@@ -2,10 +2,10 @@
 
 > Sinh tự động bởi `make eval` (plan 18). Đừng sửa tay.
 
-- **Run:** `2026-11-06T14-00-25-647Z` · split `dev` · 40 ca
-- **Versions:** pipeline `21`, prompt `classify@1+extract-cpr@1`, model `claude-haiku-5-5`, rules `1`
-- **Thời gian chạy:** 35 ms · **Chi phí ước tính:** $0.02796 (giá ghi trong `apps/api/src/eval/pricing.ts`; tính cả ca lấy từ cache)
-- **So với:** `2026-11-06T13-50-25-631Z` (versions rules `1`, prompt `classify@1+extract-cpr@1`)
+- **Run:** `2026-11-06T14-28-08-476Z` · split `dev` · 40 ca
+- **Versions:** pipeline `24`, prompt `classify@1+extract-cpr@1`, model `claude-haiku-5-5`, rules `1`
+- **Thời gian chạy:** 31 ms · **Chi phí ước tính:** $0.02796 (giá ghi trong `apps/api/src/eval/pricing.ts`; tính cả ca lấy từ cache)
+- **So với:** `2026-11-06T14-00-25-647Z` (versions rules `1`, prompt `classify@1+extract-cpr@1`)
 
 ## Metric
 
@@ -13,14 +13,14 @@
 | --- | --- | --- | --- |
 | falseApproveRate (mục tiêu 0) | 0.0% | 0.0% | 0 |
 | falseApproveCount | 0 | 0 | 0 |
-| autoApproveRate | 55.0% | 58.3% | -3.3% |
+| autoApproveRate | 57.5% | 55.0% | +2.5% |
 | classificationAccuracy | 100.0% | 100.0% | 0 |
-| latency p50 | 3160 ms | 3094 ms | +66 ms |
+| latency p50 | 3160 ms | 3160 ms | 0 |
 | latency p95 | 4637 ms | 4637 ms | 0 |
-| chi phí / giấy (ước tính) | $0.00070 | $0.00071 | $-0.00001 |
-| chi phí tổng (ước tính) | $0.02796 | $0.02539 | +$0.00257 |
+| chi phí / giấy (ước tính) | $0.00070 | $0.00070 | 0 |
+| chi phí tổng (ước tính) | $0.02796 | $0.02796 | 0 |
 | lượt gọi LLM lần này | 0 | 0 | 0 |
-| ca lấy từ cache | 40 | 36 | +4 |
+| ca lấy từ cache | 40 | 40 | 0 |
 
 ## Duyệt nhầm
 
@@ -30,7 +30,7 @@ Không có ca nào.
 
 | Nguồn | n | falseApproveRate | autoApproveRate | classificationAccuracy |
 | --- | --- | --- | --- | --- |
-| hard-cases | 10 | 0.0% | 30.0% | 100.0% |
+| hard-cases | 10 | 0.0% | 40.0% | 100.0% |
 | synth | 30 | 0.0% | 63.3% | 100.0% |
 
 ## Từng ca
@@ -44,7 +44,7 @@ Không có ca nào.
 | `05-injection` | hard-cases | needs_review | needs_review | ISSUER_NOT_ACCEPTED | — | có | — |
 | `06-wallet-signature` | hard-cases | auto_approve | auto_approve | — | — | có | — |
 | `07-verbatim-ambiguous` | hard-cases | needs_review | needs_review | MISSING_FIELD, DATE_INCONSISTENT, EXPIRED | — | có | — |
-| `08-ordinal-date` | hard-cases | auto_approve | needs_review | DATE_INCONSISTENT | — | có | — |
+| `08-ordinal-date` | hard-cases | auto_approve | auto_approve | — | — | có | — |
 | `09-vietnamese-name` | hard-cases | auto_approve | auto_approve | — | — | có | — |
 | `10-expired-yesterday` | hard-cases | needs_review | needs_review | EXPIRED | — | có | — |
 | `synth-cpr-0002` | synth | needs_review | needs_review | NAME_MISMATCH | — | có | — |
@@ -83,9 +83,9 @@ Không có ca nào.
 | Trường | Lần này | Lần trước |
 | --- | --- | --- |
 | cardNumber | 100.0% | 100.0% |
-| completionDate | 94.9% | 94.3% |
+| completionDate | 94.9% | 94.9% |
 | courseType | 100.0% | 100.0% |
-| expirationDate | 97.4% | 97.1% |
+| expirationDate | 97.4% | 97.4% |
 | holderName | 100.0% | 100.0% |
 | issuerName | 100.0% | 100.0% |
 | validityText | 100.0% | 100.0% |
@@ -95,7 +95,7 @@ Không có ca nào.
 | Tag | n | falseApproveRate | autoApproveRate |
 | --- | --- | --- | --- |
 | blurred | 2 | 0.0% | 100.0% |
-| clean | 12 | 0.0% | 91.7% |
+| clean | 12 | 0.0% | 100.0% |
 | date_format_ambiguous | 3 | 0.0% | 0.0% |
 | expired | 4 | 0.0% | 0.0% |
 | issuer_not_accepted | 4 | 0.0% | 0.0% |
