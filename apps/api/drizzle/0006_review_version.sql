@@ -1,0 +1,3 @@
+ALTER TABLE "documents" ADD COLUMN "version" integer DEFAULT 1 NOT NULL;--> statement-breakpoint
+CREATE INDEX "documents_review_queue_due_idx" ON "documents" USING btree ((COALESCE("extraction" -> 'fields' -> 'expirationDate' ->> 'value', '9999-12-31')),"id") WHERE "documents"."status" = 'needs_review';--> statement-breakpoint
+ALTER TABLE "documents" ADD CONSTRAINT "documents_version_check" CHECK ("documents"."version" >= 1);

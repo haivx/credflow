@@ -4,7 +4,7 @@
 > Agent dùng file này để biến một báo lỗi mơ hồ ("upload hỏng rồi", một screenshot ghi "???")
 > thành một bước tái hiện cụ thể. Giữ nó luôn mới: map cũ còn tệ hơn không có map.
 >
-> Lấy từ code CredFlow ngày 2026-11-04 (sau plan 11), cập nhật tới plan 20. Chỗ chưa chắc hoặc chưa làm ghi `TODO(verify)`.
+> Lấy từ code CredFlow ngày 2026-11-04 (sau plan 11), cập nhật tới plan 27. Chỗ chưa chắc hoặc chưa làm ghi `TODO(verify)`.
 > Bật/tắt app, gọi API, chụp UI: dùng script trong `scripts/` (xem SKILL.md).
 
 ## Quy ước
@@ -108,10 +108,19 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 - **Golden kỳ vọng:** `make eval` (mục Eval)
 - **Mức rủi ro:** T3 khi đổi prompt / model / rule / ngưỡng
 
-## Hàng chờ duyệt (P4, chưa làm)
-- **UI:** `TODO(verify)`: S2 hàng chờ, S3 màn duyệt (`docs/flows.md` F3)
-- **API:** `TODO(verify)`
-- **Kỳ vọng:** chỉ document `needs_review`; quyết định ghi `review_actions` (kèm `corrections`), `reviewerId` là user thật
+## Duyệt ca (P4, API plan 27)
+- **UI:** `TODO(verify)`: S2 hàng chờ, S3 màn duyệt (`docs/flows.md` F3), plan 28
+- **API** (chỉ `reviewer`; staff → `403`):
+  - `GET /review/queue?reason=<RuleCode>&sort=due|submitted&limit=1..100&cursor=` → `200 ReviewQueuePage { items, nextCursor }`; chỉ `needs_review`; keyset, cursor sai/khác bộ lọc → `400`
+  - `GET /review/documents/:id` → `200 ReviewDocumentDetail { document (có version), staff, reviewActions }`; không có → `404`
+  - `GET /review/documents/:id/file` → stream file, `Content-Type` đã lưu, `nosniff`; file mất → `404`
+  - `POST /review/documents/:id/preview` body `{ corrections }` → `200 { asOf, ruleResults, routing }`, không ghi DB; chưa có extraction → `409`
+  - `POST /review/documents/:id/decision` body `{ action, version, corrections?, note? }` → `200 { document, reviewAction }`; `version` cũ / không còn `needs_review` → `409 CONFLICT`; thiếu note khi reject/reupload, correction sai → `400`
+  - Staff: `GET /documents/:id/file` (chỉ giấy của mình, giấy người khác → `404`)
+- **Correction:** `fieldPath` = `fields.<tên>.value`, `before` phải khớp giá trị gốc, ngày `YYYY-MM-DD`
+- **Dữ liệu:** `documents.status`, `documents.version` (+1 mỗi lần đổi trạng thái), `review_actions` (chỉ insert); `documents.extraction` không bị sửa
+- **Test:** `apps/api/test/review-queue.int-spec.ts`, `review-decision.int-spec.ts`, `review-file.int-spec.ts`
+- **Kỳ vọng:** 2 quyết định cùng `version` → đúng 1 thành công; mọi chỗ sửa nằm trong `review_actions.corrections`
 
 ## Dashboard compliance, cấu hình rule (P5, chưa làm)
 - **UI:** `TODO(verify)`: S4, S5 (`docs/flows.md` F4, F0)

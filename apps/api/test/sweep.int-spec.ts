@@ -225,6 +225,8 @@ describe("sweep", () => {
     expect(run).not.toHaveBeenCalled();
     const row = await readDocument(doc.id);
     expect(row.status).toBe("needs_review");
+    // Plan 27: sweep cũng tăng version, để quyết định dựa trên bản cũ bị 409.
+    expect(row.version).toBe(before.version + 1);
     expect(row.routing).toEqual({
       decision: "needs_review",
       reasons: ["NO_RULES_EVALUATED"],

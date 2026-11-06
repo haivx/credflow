@@ -1,6 +1,7 @@
 import { mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { buffer } from "node:stream/consumers";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { LocalStorage } from "./local-storage.js";
 
@@ -44,5 +45,18 @@ describe("LocalStorage", () => {
   it("key thoát ra ngoài thư mục files → throw", () => {
     expect(() => storage.pathOf("../tmp/x")).toThrow(/không hợp lệ/);
     expect(() => storage.pathOf("../../etc/passwd")).toThrow(/không hợp lệ/);
+  });
+  it("openRead stream đúng nội dung; không có file → null; key thoát root → throw", async () => {
+    const tmpPath = join(storage.tmpDir, "upload-2");
+    await writeFile(tmpPath, "SAMPLE-STREAM");
+    await storage.putFromTemp(tmpPath, "documents/doc2.png");
+
+    const stream = await storage.openRead("documents/doc2.png");
+    expect(stream).not.toBeNull();
+    if (stream === null) return;
+    expect((await buffer(stream)).toString("utf8")).toBe("SAMPLE-STREAM");
+
+    expect(await storage.openRead("documents/khong-co.png")).toBeNull();
+    await expect(storage.openRead("../ngoai.txt")).rejects.toThrow();
   });
 });

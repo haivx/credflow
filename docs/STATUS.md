@@ -33,11 +33,13 @@
 - **Plan 23 check vùng theo plan (P3):** merge PR #42 2026-11-06.
 - **Plan 24 ngày dạng thứ tự:** merge PR #43 2026-11-06.
 - **Plan 25 config theo khách hàng (ADR 0011):** merge PR #44 2026-11-06.
-- **Plan 26 staff đủ bộ giấy:** nhánh `feat/26-du-bo-giay`, đã kiểm, PR chờ merge. `EXPLAIN` 20k dòng: Seq Scan cost ~916 → Bitmap Index Scan ~16. **P3 xong** khi PR này merge.
+- **Plan 26 staff đủ bộ giấy:** merge PR #45 2026-11-06. **P3 xong.**
+- **P4:** chia 27 (API duyệt) / 28 (UI S2, S3) / 29 (báo cáo trường hay sửa, 10 ca bằng UI). Liam chọn cả 6 câu theo khuyến nghị (2026-11-06).
+- **Plan 27 API duyệt:** nhánh `feat/27-api-duyet`, đã kiểm (evidence `.verify/reports/2026-11-06-27-api-duyet.md`: lint/typecheck/test/test-int 193/eval-ci xanh, L2 API thật 3 lượt LLM, EXPLAIN 20k). PR chờ Liam merge.
 
 ## Tiếp theo
 
-1. Sau plan 26: `/next` đề xuất bước đầu P4 (hàng chờ duyệt S2, màn duyệt S3).
+1. Sau khi PR plan 27 merge: `/next` → plan 28 (UI S2 hàng chờ, S3 màn duyệt).
 3. Phạm vi P3 chính: config theo khách hàng, `dateOrder`, staff đủ bộ giấy.
 
 ## Kiểm tay để phase cuối (Liam 2026-11-06)
@@ -47,6 +49,7 @@ Liam tự chạy một lượt ở phase cuối; Claude đã tự chạy và có
 - Plan 21: `make eval-ci` (cổng 0); upload ca 03 qua API → `DATE_INCONSISTENT`.
 - Plan 24: `make eval-ci`.
 - Plan 25: `make eval-ci`; upload thẻ 11 bằng Maren (Sunrise) → `auto_approved`, `versions.rules` = `sunrise@1`.
+- Plan 27: `make test-int`; 2 decision song song cùng `version` → 200 + 409; preview sửa ngày → rule chấm lại.
 - Plan 26: `GET /staff/<id>/compliance` bằng reviewer sau khi upload một thẻ được tự duyệt; xem `EXPLAIN` trong evidence.
 
 ## Vướng / câu hỏi mở

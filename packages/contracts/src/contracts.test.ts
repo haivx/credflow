@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   ApiError,
   AuthUser,
+  DecisionRequest,
   DocumentRecord,
   DocumentView,
   Extraction,
@@ -11,6 +12,7 @@ import {
   type SchemaName,
   LoginRequest,
   ProcessDocumentJob,
+  ReviewQueueQuery,
   StaffListQuery,
   UploadDocumentFields,
 } from "./index.js";
@@ -171,5 +173,54 @@ describe("DocumentView", () => {
     expect(view).not.toHaveProperty("storageKey");
     expect(view).not.toHaveProperty("checksum");
     expect(view.status).toBe("needs_review");
+  });
+});
+
+describe("DecisionRequest", () => {
+  it("approve không cần note, corrections mặc định rỗng", () => {
+    const req = DecisionRequest.parse({ action: "approve", version: 2 });
+    expect(req.corrections).toEqual([]);
+  });
+
+  it.each(["reject", "request_reupload"] as const)(
+    "%s thiếu note hoặc note chỉ có khoảng trắng → lỗi ở path note",
+    (action) => {
+      for (const note of [undefined, "", "   "]) {
+        const result = DecisionRequest.safeParse({ action, version: 1, note });
+        expect(result.success).toBe(false);
+        expect(result.error?.issues[0]?.path).toEqual(["note"]);
+      }
+      expect(
+        DecisionRequest.safeParse({ action, version: 1, note: "Mờ" }).success,
+      ).toBe(true);
+    },
+  );
+
+  it("từ chối version < 1, key lạ", () => {
+    expect(
+      DecisionRequest.safeParse({ action: "approve", version: 0 }).success,
+    ).toBe(false);
+    expect(
+      DecisionRequest.safeParse({
+        action: "approve",
+        version: 1,
+        reviewerId: "x",
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe("ReviewQueueQuery", () => {
+  it("mặc định sort=due, limit=20; limit từ chuỗi query", () => {
+    expect(ReviewQueueQuery.parse({})).toEqual({ sort: "due", limit: 20 });
+    expect(ReviewQueueQuery.parse({ limit: "5" }).limit).toBe(5);
+  });
+
+  it("từ chối reason lạ, limit quá lớn, key lạ", () => {
+    expect(ReviewQueueQuery.safeParse({ reason: "FOO" }).success).toBe(false);
+    expect(ReviewQueueQuery.safeParse({ limit: "101" }).success).toBe(false);
+    expect(ReviewQueueQuery.safeParse({ status: "approved" }).success).toBe(
+      false,
+    );
   });
 });

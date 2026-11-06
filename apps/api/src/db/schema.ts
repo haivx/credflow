@@ -110,6 +110,8 @@ export const documents = pgTable(
       .notNull()
       .default("uploaded"),
     declaredDocType: text("declared_doc_type").$type<DocType>(),
+    // Plan 27: optimistic lock. Chỉ DocumentStatusService tăng (mỗi lần đổi trạng thái).
+    version: integer("version").notNull().default(1),
     checksum: text("checksum").notNull(),
     sizeBytes: integer("size_bytes").notNull(),
     // Kết quả pipeline: NULL = bước đó chưa chạy (contract để .optional()).
@@ -145,6 +147,15 @@ export const documents = pgTable(
     index("documents_staff_approved_doctype_idx")
       .on(t.staffId, sql`(${t.classification}->>'docType')`)
       .where(sql`${t.status} IN ('auto_approved', 'approved')`),
+    // Plan 27: hàng chờ sắp theo hạn. Biểu thức phải khớp đúng `QUEUE_DUE_KEY` trong
+    // apps/api/src/review/review-queue.service.ts thì planner mới dùng.
+    index("documents_review_queue_due_idx")
+      .on(
+        sql`(COALESCE(${t.extraction} -> 'fields' -> 'expirationDate' ->> 'value', '9999-12-31'))`,
+        t.id,
+      )
+      .where(sql`${t.status} = 'needs_review'`),
+    check("documents_version_check", sql`${t.version} >= 1`),
     check(
       "documents_status_check",
       sql`${t.status} IN (${sqlList(DocumentStatus.options)})`,

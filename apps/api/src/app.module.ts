@@ -11,6 +11,7 @@ import { AllExceptionsFilter } from "./common/all-exceptions.filter.js";
 import { DocumentsModule } from "./documents/documents.module.js";
 import { HealthModule } from "./health/health.module.js";
 import { baseConfig } from "./config/config.options.js";
+import { ReviewModule } from "./review/review.module.js";
 import { StaffModule } from "./staff/staff.module.js";
 
 @Module({
@@ -19,6 +20,7 @@ import { StaffModule } from "./staff/staff.module.js";
     AuthModule,
     DocumentsModule,
     HealthModule,
+    ReviewModule,
     StaffModule,
   ],
   // Đăng ký ở module (không phải main.ts) để integration test dựng từ AppModule cũng có filter.

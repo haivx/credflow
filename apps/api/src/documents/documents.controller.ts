@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Inject,
   NotFoundException,
   Param,
   Post,
@@ -18,6 +19,8 @@ import {
 import type { Request, Response } from "express";
 import { CurrentUser, Roles } from "../auth/decorators.js";
 import { ZodValidationPipe } from "../common/zod-validation.pipe.js";
+import { sendStoredFile } from "../storage/send-file.js";
+import { STORAGE, type Storage } from "../storage/storage.js";
 import { DocumentsReadService } from "./documents-read.service.js";
 import { DocumentsService } from "./documents.service.js";
 import { parseUpload } from "./upload-parser.js";
@@ -27,6 +30,7 @@ export class DocumentsController {
   constructor(
     private readonly documentsService: DocumentsService,
     private readonly readService: DocumentsReadService,
+    @Inject(STORAGE) private readonly storage: Storage,
   ) {}
 
   /**
@@ -73,6 +77,21 @@ export class DocumentsController {
       throw new NotFoundException("Không tìm thấy giấy");
     }
     return doc;
+  }
+
+  /** File gốc của giấy mình (plan 27). Giấy người khác → cùng 404 như `GET /documents/:id`. */
+  @Roles("staff")
+  @Get(":id/file")
+  async file(
+    @CurrentUser() user: AuthUser,
+    @Param("id", new ZodValidationPipe(Id)) id: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    const meta = await this.readService.fileMetaForStaff(staffIdOf(user), id);
+    if (meta === undefined) {
+      throw new NotFoundException("Không tìm thấy giấy");
+    }
+    await sendStoredFile(res, this.storage, meta);
   }
 }
 

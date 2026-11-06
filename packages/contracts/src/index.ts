@@ -11,6 +11,12 @@ import {
   RoutingDecision,
   UploadDocumentResponse,
 } from "./routing.js";
+import {
+  DecisionResponse,
+  PreviewResponse,
+  ReviewDocumentDetail,
+  ReviewQueuePage,
+} from "./review.js";
 import { RuleResult, RulesConfig } from "./rules.js";
 import { StaffCompliance, StaffProfile } from "./staff.js";
 
@@ -20,6 +26,7 @@ export * from "./extraction.js";
 export * from "./staff.js";
 export * from "./rules.js";
 export * from "./routing.js";
+export * from "./review.js";
 export * from "./eval.js";
 export * from "./error.js";
 export * from "./auth.js";
@@ -46,5 +53,9 @@ export const Schemas = {
   ApiError,
   AuthUser,
   UploadDocumentResponse,
+  ReviewQueuePage,
+  ReviewDocumentDetail,
+  PreviewResponse,
+  DecisionResponse,
 } as const;
 export type SchemaName = keyof typeof Schemas;

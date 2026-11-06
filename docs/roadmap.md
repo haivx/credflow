@@ -148,6 +148,8 @@ Vượt mức middle; mỗi mục ghi chỗ trong CredFlow sẽ cần nó. Làm 
 | SSE/WebSocket đẩy trạng thái document về trình duyệt | Polling `GET /documents` 2 giây, dừng sau 2 phút | P1 màn upload (plan 17) |
 | E2E UI tự động trong CI (Playwright test) | Kiểm L3 tay bằng Playwright MCP, screenshot vào evidence | P1 màn upload (plan 17) |
 | Bảng append-only bằng trigger/quyền DB, hash chain | Chặn ở tầng code | Audit log |
+| Cursor phân trang có ký (HMAC) | Cursor base64 JSON không ký, kiểm bằng Zod | P4 hàng chờ (plan 27) |
+| Cột tính sẵn (generated column) cho khoá hạn theo từng loại giấy | Biểu thức jsonb `expirationDate` + expression index | P4 hàng chờ, P5 thêm loại giấy |
 | Postgres Row-Level Security | Lọc `tenantId` ở query | Nhiều tenant |
 | Migration expand/contract không downtime | Migration trước khi deploy | P6 |
 | Redis AOF, HA | Chấp nhận mất, sweep job | Vận hành |
