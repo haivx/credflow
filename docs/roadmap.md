@@ -5,6 +5,7 @@
 > **Mục tiêu cá nhân:** vừa build CredFlow vừa lên mức middle–intermediate Node.js. Mỗi mục 🎓 là kiến thức gắn với phase đó, **không còn bắt buộc tự code** (từ 2026-11-05 Claude code toàn bộ plan, Liam duyệt plan và PR; xem mục "Quyết định đáng nhớ" trong `CLAUDE.md`). `docs/learning/` giữ làm lưu trữ.
 > Kiến thức vượt mức middle được ghi ở mục **Học nâng cao** cuối file, không làm trong MVP.
 > Ước lượng: 9–10 tuần, không có hạn chót. Ưu tiên hiểu chắc hơn làm nhanh.
+> **Thứ tự làm (Liam 2026-11-07):** P0 → P1 → P2 → P3 → P4 → P4.5 → **P6a (deploy Railway)** → P5 → P6b. P6a nằm cuối file cạnh P6b cho dễ đọc.
 
 ## P0 · Nền tảng và contract (4–5 ngày)
 
@@ -119,21 +120,36 @@
   - Đo thời gian từng bước, lưu `timingMs`, tính p95 bằng SQL.
   - Mở rộng code cho loại giấy mới mà không sửa lung tung (một chỗ đăng ký loại giấy).
 - **Tiêu chí hoàn thành:** đạt chỉ số MVP ở `docs/product.md` mục 1 trên **holdout**; report có bảng theo loại giấy và theo tag; lọc log theo `documentId` thấy đủ hành trình của một document; có số liệu p95 thời gian xử lý mỗi document và chi phí trung bình mỗi document trong `docs/STATUS.md`.
-- **Phụ thuộc:** P4.5.
+- **Phụ thuộc:** P4.5, P6a.
 
-## P6 · Deploy, writeup, demo (3–4 ngày)
+## P6a · Deploy lên Railway (4–6 ngày)
 
-- **Mục tiêu:** người lạ mở link là hiểu và dùng thử được.
-- **Phạm vi:** deploy demo (dữ liệu giả lập, có giới hạn chi phí); README tiếng Anh; `docs/case-study.md` hoàn chỉnh (vấn đề → kiến trúc → trade-off → số liệu eval → giới hạn); video demo 3 phút.
+> Thêm 2026-11-07 (Liam): tách P6 làm hai, deploy làm ngay sau P4.5 (trước P5) để các phase sau deploy liên tục. Nền tảng: ADR 0013. Liam tự thao tác Railway theo bài hướng dẫn từng bước; Claude code phần app cần đổi.
+
+- **Mục tiêu:** CredFlow chạy trên Railway với link HTTPS, deploy tự động khi merge `main` (sau CI xanh), không mất job khi deploy lại; Liam dùng Railway thành thạo cho các app sau.
+- **Phạm vi:**
+  - Hạ tầng (Liam): project, Postgres, Redis (`noeviction`), Bucket; service `api`, `worker`, `web` từ monorepo (build/start command, watch paths, Wait for CI); biến môi trường bằng reference variable; chỉ `web` công khai; migration bằng pre-deploy; seed một lần với mật khẩu riêng.
+  - Code (Claude): `S3Storage` + `STORAGE_DRIVER` (plan 33); seed đọc `SEED_PASSWORD`, từ chối mật khẩu dev trên database không phải local (plan 33).
+  - Vận hành: Hobby + Usage Limits, trần chi tiêu Anthropic, rate limit (`@nestjs/throttler`), tự xoá file sau N giờ, backup Postgres và thử khôi phục, deploy lại khi có job đang chạy không mất job, staging environment, cấu hình bằng code (`.railway/railway.ts`).
 - **🎓 Học được:**
-  - Secrets và env khi deploy: không nằm trong repo hay image; giới hạn chi tiêu API key LLM.
-  - Dockerfile cho API và worker (multi-stage build).
-  - Chạy migration khi deploy, trước khi app mới nhận traffic.
+  - Mô hình Railway: project, service, environment, deployment, variables; mạng nội bộ; volume chỉ gắn một service; bucket.
+  - Build và start tách riêng; watch paths cho monorepo; staged changes và xem lại trước khi deploy.
+  - Secrets và env khi deploy: không nằm trong repo; reference variable; giới hạn chi tiêu API key LLM.
+  - Chạy migration khi deploy, trước khi app mới nhận traffic; healthcheck và zero-downtime deploy.
   - Graceful shutdown: `app.enableShutdownHooks()`, `worker.close()` chờ job đang chạy xong.
   - Rate limit theo IP bằng `@nestjs/throttler`.
+  - Backup và **thử khôi phục**.
+- **Tiêu chí hoàn thành:** link demo HTTPS hoạt động; merge `main` thì tự deploy; deploy bản mới trong lúc có job đang chạy không làm mất job; demo công khai bị chặn khi vượt rate limit; có backup đã thử khôi phục; cấu hình Railway nằm trong repo để dựng lại được.
+- **Phụ thuộc:** P4 (P4.5 nên xong trước để demo có UI mới, nhưng không chặn).
+
+## P6b · Writeup, demo (2–3 ngày)
+
+- **Mục tiêu:** người lạ mở link là hiểu và dùng thử được.
+- **Phạm vi:** README tiếng Anh; `docs/case-study.md` hoàn chỉnh (vấn đề → kiến trúc → trade-off → số liệu eval → giới hạn); video demo 3 phút.
+- **🎓 Học được:**
   - Case study có mục "Quyết định backend": dual-write + sweep job, dedupe, optimistic locking, kèm giới hạn và cách nâng cấp.
-- **Tiêu chí hoàn thành:** máy mới clone, điền `.env`, `make setup && make dev` là chạy; link demo hoạt động; case study có bảng số liệu holdout; deploy bản mới trong lúc có job đang chạy không làm mất job; demo công khai bị chặn khi vượt rate limit.
-- **Phụ thuộc:** P5.
+- **Tiêu chí hoàn thành:** máy mới clone, điền `.env`, `make setup && make dev` là chạy; case study có bảng số liệu holdout; video demo trên link thật.
+- **Phụ thuộc:** P5, P6a.
 
 ## Để sau MVP
 

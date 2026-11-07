@@ -139,11 +139,11 @@ Xem `docs/flows.md`. Các màn chính:
 | DB | Postgres 16 (docker compose), Drizzle ORM; nguồn sự thật cho trạng thái | Chấp nhận |
 | Job queue | BullMQ + Redis 7 (`noeviction`); dual-write xử lý bằng sweep job (ADR 0001) | Chấp nhận |
 | Đăng nhập | Email + mật khẩu (scrypt), session trong Postgres, cookie `httpOnly`; guard toàn cục + `@Roles` | Chấp nhận (ADR 0004) |
-| Lưu file | File system local (`DATA_DIR`), đổi sang S3-compatible khi deploy | Đề xuất |
+| Lưu file | Dev: file system local (`DATA_DIR`). Production: Railway Bucket (S3) qua `S3Storage`, chọn bằng `STORAGE_DRIVER` | Chấp nhận (ADR 0013) |
 | LLM | `claude-haiku-5-5`, vision + structured output (ADR 0008); đo lại bằng eval ở P2 | Chấp nhận |
 | Contract | Zod 4 trong `packages/contracts` | Chấp nhận |
 | Eval | TypeScript (`eval/`) | Chấp nhận |
-| Deploy | Chốt ở P6 | Mở |
+| Deploy | Railway (Singapore): web, api, worker, Postgres, Redis, Bucket; chỉ web công khai; migration bằng pre-deploy | Chấp nhận (ADR 0013) |
 
 ### Quyết định còn mở (chốt ở P0, trừ khi ghi khác)
 
@@ -152,7 +152,7 @@ Xem `docs/flows.md`. Các màn chính:
 3. ~~Model LLM và nhà cung cấp (P1).~~ Đã chốt 2026-11-05: `claude-haiku-5-5` (ADR 0008).
 4. ~~Có cho phép **tự từ chối** ca chắc chắn hết hạn không?~~ Đã chốt 2026-11-03: **không**. Mọi ca không qua đều vào hàng chờ; người duyệt từ chối (hàng chờ lọc theo lý do, P4).
 5. Vision thuần hay OCR + LLM cho bản cuối (P5, quyết theo số liệu eval).
-6. Nơi deploy và lưu file khi demo (P6).
+6. ~~Nơi deploy và lưu file khi demo (P6).~~ Đã chốt 2026-11-07: Railway, file trên Railway Bucket (ADR 0013).
 
 ## 9. Ngoài phạm vi, để sau
 
