@@ -1,6 +1,6 @@
 # CredFlow: lệnh phát triển. Recipe là POSIX sh.
 
-.PHONY: setup db-up db-down db-generate db-migrate db-seed build-packages dev dev-packages dev-api dev-worker dev-web test test-int typecheck lint format eval eval-ci synth
+.PHONY: setup db-up db-down db-generate db-migrate db-seed build-packages dev dev-packages dev-api dev-worker dev-web test test-int typecheck lint format eval eval-ci synth report-corrections
 
 # Cài deps từ lockfile, bật Postgres và Redis, chạy migration, seed staff giả lập.
 # Chạy lại an toàn: migration đã áp thì bỏ qua, seed không sinh dòng trùng.
@@ -84,3 +84,8 @@ synth: build-packages
 eval-ci: build-packages
 	$(MAKE) synth SEED=1 ARGS=--cases-only
 	pnpm --filter @credflow/api eval --recorded --no-save --gate eval/gate.json
+
+# Báo cáo trường hay bị sửa nhất từ review_actions của DATABASE_URL (plan 29), in Markdown.
+# Chỉ đọc DB. Ghi ra file: make report-corrections ARGS="--out .verify/corrections.md"
+report-corrections: build-packages
+	pnpm --silent --filter @credflow/api report:corrections $(ARGS)

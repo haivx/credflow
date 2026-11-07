@@ -87,6 +87,7 @@ make lint       # eslint (có type-check cho apps/api, packages; guardrail A3/A5
 make format     # prettier --write: sửa định dạng khi make lint báo lỗi prettier
 make eval       # golden set qua LlmService + rule thật → eval/runs/, eval/report.md; cache LLM; ARGS=--no-cache
 make eval-ci    # cổng CI: rule trên output ghi sẵn (eval/recorded/), 0 lời gọi LLM; duyệt nhầm > eval/gate.json → exit ≠ 0
+make report-corrections  # báo cáo trường hay bị sửa nhất từ review_actions (plan 29), chỉ đọc DB; ARGS="--out <file>"
 make synth      # sinh 40 thẻ CPR giả lập + cases.json → data/synth/cpr/ (plan 19), SEED= tuỳ chọn; cần Chromium của Playwright
 ```
 

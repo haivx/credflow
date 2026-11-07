@@ -5,7 +5,8 @@
 // Bước: click:<testid> · fill:<testid>=<giá trị> · select:<testid>=<giá trị> · blur:<testid>
 //       wait:<chữ> · gone:<chữ> · url:<chuỗi con của URL> · goto:<path> · shot:<file.png>
 //       sleep:<ms> (chờ để một lệnh khác chen vào giữa, vd đổi dữ liệu qua api.sh để thử 409)
-// In JSON: url, status, title, consoleErrors, failedRequests, shot, steps. Exit 1 khi đăng nhập lỗi,
+//       mark:<nhãn> (plan 29: ghi ms kể từ lúc mở trang vào `marks`, để bấm giờ từng ca)
+// In JSON: url, status, title, consoleErrors, failedRequests, shot, steps, marks. Exit 1 khi đăng nhập lỗi,
 // không thấy --wait-text trong 60 giây, hoặc một bước lỗi (dừng ở bước đó; vẫn chụp ảnh để xem).
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -36,6 +37,9 @@ const context = await browser.newContext({
 let exitCode = 0;
 const consoleErrors: string[] = [];
 const failedRequests: string[] = [];
+// mark:<nhãn> → ms kể từ trước page.goto (plan 29). Trùng nhãn thì báo lỗi bước.
+const marks: Record<string, number> = {};
+let startedAt = 0;
 try {
   if (args.login !== undefined) {
     // Gọi qua rewrite /api của web: cookie đặt cho đúng site của trang.
@@ -66,6 +70,7 @@ try {
     );
   });
 
+  startedAt = performance.now();
   const response = await page.goto(`${args.base}${args.path}`);
   let waitError: string | undefined;
   if (args["wait-text"] !== undefined) {
@@ -106,6 +111,7 @@ try {
         failedRequests,
         shot: args.shot,
         ...(args.step.length === 0 ? {} : { steps }),
+        ...(Object.keys(marks).length === 0 ? {} : { marks }),
         ...(waitError === undefined ? {} : { error: waitError }),
       },
       null,
@@ -164,6 +170,11 @@ async function runStep(page: Page, step: string): Promise<void> {
       return;
     case "sleep":
       await page.waitForTimeout(Number(arg));
+      return;
+    case "mark":
+      if (arg === "") throw new Error("mark cần nhãn");
+      if (arg in marks) throw new Error(`nhãn "${arg}" đã dùng`);
+      marks[arg] = Math.round(performance.now() - startedAt);
       return;
     case "shot":
       mkdirSync(dirname(arg), { recursive: true });
