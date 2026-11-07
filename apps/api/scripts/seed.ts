@@ -5,7 +5,8 @@ import { Pool } from "pg";
 import { envSchema } from "../src/config/env.schema.js";
 import * as schema from "../src/db/schema.js";
 import { hashPassword } from "../src/auth/password.js";
-import { SEED_PASSWORD, seedStaff, seedUsers } from "./seed-data.js";
+import { resolveSeedPassword } from "../src/db/seed-password.js";
+import { seedStaff, seedUsers } from "./seed-data.js";
 
 // Script chạy một lần rồi thoát: không cần Nest, tự nạp .env ở gốc repo (scripts/ → apps/api → apps → gốc).
 // Biến môi trường thật vẫn thắng .env.
@@ -15,6 +16,11 @@ if (existsSync(envFile)) process.loadEnvFile(envFile);
 const { DATABASE_URL } = envSchema
   .pick({ DATABASE_URL: true })
   .parse(process.env);
+// Kiểm mật khẩu trước khi mở kết nối: sai thì dừng, không ghi dòng nào (plan 33).
+const seedPassword = resolveSeedPassword({
+  DATABASE_URL,
+  SEED_PASSWORD: process.env.SEED_PASSWORD,
+});
 
 const pool = new Pool({ connectionString: DATABASE_URL });
 const db = drizzle({ client: pool, schema });
@@ -31,7 +37,7 @@ try {
   );
 
   // Staff phải có trước: users.staff_id là FK sang staff. Trùng id hoặc email thì bỏ qua.
-  const passwordHash = await hashPassword(SEED_PASSWORD);
+  const passwordHash = await hashPassword(seedPassword);
   const insertedUsers = await db
     .insert(schema.users)
     .values(seedUsers.map((u) => ({ ...u, passwordHash })))

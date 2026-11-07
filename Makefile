@@ -54,7 +54,7 @@ test: build-packages
 
 # Integration test của apps/api trên Postgres test (cổng 5433, tmpfs) và Redis thật.
 test-int: build-packages
-	docker compose up -d --wait db-test redis
+	docker compose up -d --wait db-test redis s3-test
 	pnpm --filter @credflow/api test:int
 
 typecheck:
