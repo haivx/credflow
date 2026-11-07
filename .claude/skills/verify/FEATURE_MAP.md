@@ -125,6 +125,8 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 - **Dữ liệu:** `documents.status`, `documents.version` (+1 mỗi lần đổi trạng thái), `review_actions` (chỉ insert); `documents.extraction` không bị sửa
 - **Test:** `apps/api/test/review-queue.int-spec.ts`, `review-decision.int-spec.ts`, `review-file.int-spec.ts`
 - **Kỳ vọng:** 2 quyết định cùng `version` → đúng 1 thành công; mọi chỗ sửa nằm trong `review_actions.corrections`
+- **Báo cáo trường hay sửa (plan 29):** `make report-corrections [ARGS="--out <file>"]` đọc `review_actions` của `DATABASE_URL` (chỉ đọc), in Markdown: giấy đã duyệt, số action theo loại, mỗi `fieldPath` có lần sửa / giấy bị sửa / % giấy đã duyệt / AI để trống → điền / đổi giá trị / xoá giá trị. Chưa có chỗ sửa → "Chưa có chỗ sửa nào.". Code `apps/api/src/review/corrections-report.ts`, test `corrections-report.spec.ts`, `apps/api/test/corrections-report.int-spec.ts`. Đối chiếu tay: `SELECT c->>'fieldPath', count(*) FROM review_actions, jsonb_array_elements(corrections) c GROUP BY 1`
+- **Bấm giờ trên UI (plan 29):** bước `mark:<nhãn>` của `ui.mts` → JSON có `marks` (ms từ lúc mở trang); hiệu hai mark là thời gian một ca
 
 ## Dashboard compliance, cấu hình rule (P5, chưa làm)
 - **UI:** `TODO(verify)`: S4, S5 (`docs/flows.md` F4, F0)

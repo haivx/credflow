@@ -75,6 +75,8 @@
 
 ## P4 · Hàng chờ và màn duyệt (5–6 ngày)
 
+> **Xong 2026-11-07** (plan 27–29): API duyệt (optimistic lock, keyset, chỉ insert `review_actions`), UI S2/S3, `make report-corrections`, 10 ca thật chỉ bằng UI (evidence `.verify/reports/2026-11-07-29-bao-cao-10-ca.md`). Chưa làm: highlight `box` (P5); 30 giây/ca của người đo ở lượt kiểm tay cuối.
+
 - **Mục tiêu:** người duyệt xử lý một ca trong dưới 30 giây.
 - **Phạm vi:** hàng chờ (lọc theo lý do, sắp theo hạn); màn duyệt (ảnh + trường + evidence + rule không qua); sửa trường inline; duyệt / từ chối / yêu cầu nộp lại; lưu `ReviewAction` có `corrections`; trạng thái phía nhân viên. Highlight vùng chữ khi có `box`.
 - **🎓 Học được:**

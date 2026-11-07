@@ -2,8 +2,8 @@
 
 > Claude Code đọc file này đầu mỗi phiên và cập nhật cuối phiên (`/wrap`). Giữ ngắn, dưới 40 dòng.
 
-**Cập nhật:** 2026-11-06
-**Phase hiện tại:** P4 · Hàng chờ và màn duyệt (`docs/roadmap.md`). P0 xong 2026-11-03; P1, P2, P3 xong 2026-11-06.
+**Cập nhật:** 2026-11-07
+**Phase hiện tại:** P5 · Đủ 5 loại giấy và ca khó (`docs/roadmap.md`). P0 xong 2026-11-03; P1, P2, P3 xong 2026-11-06; P4 xong 2026-11-07 (chờ merge PR plan 29).
 
 ## Đang làm
 
@@ -28,7 +28,7 @@
 - **Plan 18 eval harness:** merge PR #35; sửa đáp án ca 02 merge PR #36 (2026-11-06).
 - **Plan 19 synth:** merge PR #37 2026-11-06. Phát hiện 4 ca duyệt nhầm cùng kiểu confidence 0.85 = ngưỡng (mục Eval) → plan 21.
 - **Plan 20 harness:** merge PR #38 2026-11-06 (CI có `eval-ci`).
-- **Plan 21 ngày mơ hồ:** merge PR #39 2026-11-06 (gate 0). `api.sh` `API_BODY_LIMIT`: PR #40 chờ merge.
+- **Plan 21 ngày mơ hồ:** merge PR #39 2026-11-06 (gate 0). `api.sh` `API_BODY_LIMIT`: merge PR #40.
 - **Plan 22 ca khó đóng P2:** merge PR #41 2026-11-06. **P2 xong.**
 - **Plan 23 check vùng theo plan (P3):** merge PR #42 2026-11-06.
 - **Plan 24 ngày dạng thứ tự:** merge PR #43 2026-11-06.
@@ -36,11 +36,13 @@
 - **Plan 26 staff đủ bộ giấy:** merge PR #45 2026-11-06. **P3 xong.**
 - **P4:** chia 27 (API duyệt) / 28 (UI S2, S3) / 29 (báo cáo trường hay sửa, 10 ca bằng UI). Liam chọn cả 6 câu theo khuyến nghị (2026-11-06).
 - **Plan 27 API duyệt:** merge PR #46 2026-11-06.
-- **Plan 28 UI duyệt:** nhánh `feat/28-ui-duyet`, đã kiểm (evidence `.verify/reports/2026-11-06-28-ui-duyet.md`, L3 đạt 8 kịch bản, ⚠️ PDF trong khung chưa kiểm được ở headless). `make test-int` local đêm 06/07 đỏ ngẫu nhiên vì máy ngủ sâu (pmset, 15 phút/lần), từng file chạy riêng đều xanh, CI của PR #47 xanh: test-int 16 file đều qua (chạy 1 phút trên CI). Chờ Liam merge.
+- **Plan 28 UI duyệt:** merge PR #47 2026-11-06 (evidence `.verify/reports/2026-11-06-28-ui-duyet.md`, ⚠️ PDF trong khung chưa kiểm ở headless).
+- **Plan 29 báo cáo + 10 ca (đóng P4):** Liam duyệt 2026-11-07, nhánh `feat/29-bao-cao-10-ca`. Xong: evidence `.verify/reports/2026-11-07-29-bao-cao-10-ca.md` (✅, L3 10 ca, báo cáo khớp psql, test-int 196, eval-ci 0/44). Ca 05 tự duyệt đúng theo `bayleaf@1` (eval dùng default), thay bằng synth 0016. **P4 xong.** PR #48 CI xanh (architecture-zones + check), chờ Liam merge.
 
 ## Tiếp theo
 
-1. Sau khi PR plan 28 merge: plan 29 (báo cáo trường hay sửa, 10 ca bằng UI, đo thời gian mỗi ca).
+1. Liam merge PR plan 29, rồi `/next` cho P5.
+2. Việc nhỏ ghi lại từ plan 29: màn staff hiện `LOW_CONFIDENCE` ở cột Lý do cho giấy **đã duyệt**; ca 05 trong eval dùng default còn seed Odalys thuộc Bayleaf (cân nhắc ghi rõ trong `cases.json`).
 3. Phạm vi P3 chính: config theo khách hàng, `dateOrder`, staff đủ bộ giấy.
 
 ## Kiểm tay để phase cuối (Liam 2026-11-06)
@@ -51,6 +53,7 @@ Liam tự chạy một lượt ở phase cuối; Claude đã tự chạy và có
 - Plan 24: `make eval-ci`.
 - Plan 25: `make eval-ci`; upload thẻ 11 bằng Maren (Sunrise) → `auto_approved`, `versions.rules` = `sunrise@1`.
 - Plan 27: `make test-int`; 2 decision song song cùng `version` → 200 + 409; preview sửa ngày → rule chấm lại.
+- Plan 29: `make report-corrections` sau khi tự duyệt vài ca trên UI; đo 30 giây/ca bằng tay.
 - Plan 26: `GET /staff/<id>/compliance` bằng reviewer sau khi upload một thẻ được tự duyệt; xem `EXPLAIN` trong evidence.
 
 ## Vướng / câu hỏi mở
