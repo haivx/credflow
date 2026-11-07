@@ -5,6 +5,7 @@
 > **Mục tiêu cá nhân:** vừa build CredFlow vừa lên mức middle–intermediate Node.js. Mỗi mục 🎓 là kiến thức gắn với phase đó, **không còn bắt buộc tự code** (từ 2026-11-05 Claude code toàn bộ plan, Liam duyệt plan và PR; xem mục "Quyết định đáng nhớ" trong `CLAUDE.md`). `docs/learning/` giữ làm lưu trữ.
 > Kiến thức vượt mức middle được ghi ở mục **Học nâng cao** cuối file, không làm trong MVP.
 > Ước lượng: 9–10 tuần, không có hạn chót. Ưu tiên hiểu chắc hơn làm nhanh.
+> **Thứ tự làm (Liam 2026-11-07):** P0 → P1 → P2 → P3 → P4 → P4.5 → **P6a (deploy)** → P5 → P6b. P6a nằm cuối file cạnh P6b cho dễ đọc.
 
 ## P0 · Nền tảng và contract (4–5 ngày)
 
@@ -119,21 +120,39 @@
   - Đo thời gian từng bước, lưu `timingMs`, tính p95 bằng SQL.
   - Mở rộng code cho loại giấy mới mà không sửa lung tung (một chỗ đăng ký loại giấy).
 - **Tiêu chí hoàn thành:** đạt chỉ số MVP ở `docs/product.md` mục 1 trên **holdout**; report có bảng theo loại giấy và theo tag; lọc log theo `documentId` thấy đủ hành trình của một document; có số liệu p95 thời gian xử lý mỗi document và chi phí trung bình mỗi document trong `docs/STATUS.md`.
-- **Phụ thuộc:** P4.5.
+- **Phụ thuộc:** P4.5, P6a.
 
-## P6 · Deploy, writeup, demo (3–4 ngày)
+## P6a · Deploy lên VPS (5–7 ngày)
 
-- **Mục tiêu:** người lạ mở link là hiểu và dùng thử được.
-- **Phạm vi:** deploy demo (dữ liệu giả lập, có giới hạn chi phí); README tiếng Anh; `docs/case-study.md` hoàn chỉnh (vấn đề → kiến trúc → trade-off → số liệu eval → giới hạn); video demo 3 phút.
+> Thêm 2026-11-07 (Liam): tách P6 làm hai, deploy làm ngay sau P4.5 (trước P5) để các phase sau deploy liên tục. Nền tảng: ADR 0013.
+
+- **Mục tiêu:** CredFlow chạy trên một VPS Liam tự quản lý, có link HTTPS, deploy tự động khi merge `main`, không mất job khi deploy lại.
+- **Phạm vi:**
+  - Đóng gói: Dockerfile multi-stage (API/worker một image, web Next standalone), `compose.prod.yml`, chạy thử bằng image trên máy local.
+  - Dựng server (Liam làm tay theo runbook `docs/ops/runbook.md`): droplet DigitalOcean Singapore, SSH key, user thường, `ufw`, cập nhật tự động, Docker; domain + DNS ở Cloudflare.
+  - Lần deploy đầu: Caddy + HTTPS, secret trong `.env` trên server, đổi mật khẩu seed, `COOKIE_SECURE=true`.
+  - Deploy tự động: GitHub Actions → GHCR → SSH; migration trước khi nhận traffic; graceful shutdown; rollback bằng tag.
+  - Bảo vệ demo: rate limit (`@nestjs/throttler`), trần chi tiêu Anthropic, tự xoá file sau N giờ, chỉ tài khoản demo seed sẵn; backup `pg_dump` lên R2 + thử khôi phục; log có giới hạn kích thước, uptime check.
 - **🎓 Học được:**
+  - SSH key, user không phải root, `ufw`, `unattended-upgrades`: tối thiểu để một server Linux an toàn.
+  - Docker khi chạy thật: multi-stage build, image nhỏ, healthcheck, restart policy, giới hạn RAM, volume.
+  - Reverse proxy và HTTPS tự động bằng Caddy; DNS trỏ về server.
   - Secrets và env khi deploy: không nằm trong repo hay image; giới hạn chi tiêu API key LLM.
-  - Dockerfile cho API và worker (multi-stage build).
-  - Chạy migration khi deploy, trước khi app mới nhận traffic.
+  - Chạy migration khi deploy, trước khi app mới nhận traffic; rollback bằng tag image.
   - Graceful shutdown: `app.enableShutdownHooks()`, `worker.close()` chờ job đang chạy xong.
   - Rate limit theo IP bằng `@nestjs/throttler`.
+  - Backup và **thử khôi phục**.
+- **Tiêu chí hoàn thành:** link demo HTTPS hoạt động; merge `main` thì tự deploy; deploy bản mới trong lúc có job đang chạy không làm mất job; demo công khai bị chặn khi vượt rate limit; có backup đã thử khôi phục; runbook đủ để dựng lại server từ đầu.
+- **Phụ thuộc:** P4 (P4.5 nên xong trước để demo có UI mới, nhưng không chặn).
+
+## P6b · Writeup, demo (2–3 ngày)
+
+- **Mục tiêu:** người lạ mở link là hiểu và dùng thử được.
+- **Phạm vi:** README tiếng Anh; `docs/case-study.md` hoàn chỉnh (vấn đề → kiến trúc → trade-off → số liệu eval → giới hạn); video demo 3 phút.
+- **🎓 Học được:**
   - Case study có mục "Quyết định backend": dual-write + sweep job, dedupe, optimistic locking, kèm giới hạn và cách nâng cấp.
-- **Tiêu chí hoàn thành:** máy mới clone, điền `.env`, `make setup && make dev` là chạy; link demo hoạt động; case study có bảng số liệu holdout; deploy bản mới trong lúc có job đang chạy không làm mất job; demo công khai bị chặn khi vượt rate limit.
-- **Phụ thuộc:** P5.
+- **Tiêu chí hoàn thành:** máy mới clone, điền `.env`, `make setup && make dev` là chạy; case study có bảng số liệu holdout; video demo trên link thật.
+- **Phụ thuộc:** P5, P6a.
 
 ## Để sau MVP
 
