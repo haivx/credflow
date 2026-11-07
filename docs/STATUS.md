@@ -37,7 +37,7 @@
 - **P4:** chia 27 (API duyệt) / 28 (UI S2, S3) / 29 (báo cáo trường hay sửa, 10 ca bằng UI). Liam chọn cả 6 câu theo khuyến nghị (2026-11-06).
 - **Plan 27 API duyệt:** merge PR #46 2026-11-06.
 - **Plan 28 UI duyệt:** merge PR #47 2026-11-06 (evidence `.verify/reports/2026-11-06-28-ui-duyet.md`, ⚠️ PDF trong khung chưa kiểm ở headless).
-- **Plan 29 báo cáo + 10 ca (đóng P4):** Liam duyệt 2026-11-07, nhánh `feat/29-bao-cao-10-ca`. Xong: evidence `.verify/reports/2026-11-07-29-bao-cao-10-ca.md` (✅, L3 10 ca, báo cáo khớp psql, test-int 196, eval-ci 0/44). Ca 05 tự duyệt đúng theo `bayleaf@1` (eval dùng default), thay bằng synth 0016. **P4 xong.** Đang mở PR.
+- **Plan 29 báo cáo + 10 ca (đóng P4):** Liam duyệt 2026-11-07, nhánh `feat/29-bao-cao-10-ca`. Xong: evidence `.verify/reports/2026-11-07-29-bao-cao-10-ca.md` (✅, L3 10 ca, báo cáo khớp psql, test-int 196, eval-ci 0/44). Ca 05 tự duyệt đúng theo `bayleaf@1` (eval dùng default), thay bằng synth 0016. **P4 xong.** PR #48, chờ CI + Liam merge.
 
 ## Tiếp theo
 
