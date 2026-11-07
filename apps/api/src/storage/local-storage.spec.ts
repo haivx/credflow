@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { buffer } from "node:stream/consumers";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { describeStorageContract } from "../../test/storage-contract.js";
 import { LocalStorage } from "./local-storage.js";
 
 describe("LocalStorage", () => {
@@ -60,3 +61,18 @@ describe("LocalStorage", () => {
     await expect(storage.openRead("../ngoai.txt")).rejects.toThrow();
   });
 });
+
+// Plan 33: cùng bộ ca với S3Storage (apps/api/test/s3-storage.int-spec.ts).
+let contractDir = "";
+describeStorageContract(
+  "LocalStorage",
+  async () => {
+    contractDir = await mkdtemp(join(tmpdir(), "credflow-storage-contract-"));
+    const storage = new LocalStorage(contractDir);
+    await storage.init();
+    return storage;
+  },
+  async () => {
+    await rm(contractDir, { recursive: true, force: true });
+  },
+);

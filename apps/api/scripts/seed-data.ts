@@ -120,11 +120,7 @@ export const seedStaff: StaffProfile[] = [
   },
 ];
 
-/**
- * Mật khẩu dev chung cho mọi user giả lập (ADR 0004). Chỉ dùng trên máy dev và demo dữ liệu giả lập;
- * deploy demo (P6) phải đổi qua env.
- */
-export const SEED_PASSWORD = "credflow-dev";
+// Mật khẩu của user seed: `resolveSeedPassword` (src/db/seed-password.ts, plan 33).
 
 interface SeedUser {
   id: string;

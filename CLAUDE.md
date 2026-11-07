@@ -79,9 +79,9 @@ make dev-api    # chỉ API (nest start --watch, SWC); make dev-worker, make dev
 make build-packages  # tsc packages/* → dist/ (test, dev, eval, synth tự chạy trước, ADR 0003)
 make db-generate # drizzle-kit: sinh migration từ apps/api/src/db/schema.ts → apps/api/drizzle/
 make db-migrate  # chạy migration chưa áp vào DATABASE_URL
-make db-seed     # seed 13 staff + 6 user đăng nhập giả lập (idempotent)
+make db-seed     # seed 13 staff + 6 user đăng nhập giả lập (idempotent); DB không ở máy local thì bắt buộc SEED_PASSWORD (plan 33)
 make test       # vitest mọi package (unit test, không cần docker)
-make test-int   # integration test apps/api: bật db-test (cổng 5433, tmpfs) + Redis, chạy migration, supertest
+make test-int   # integration test apps/api: bật db-test (cổng 5433, tmpfs) + Redis + s3-test (s3mock, cổng 9090), chạy migration, supertest
 make typecheck  # tsc mọi package
 make lint       # eslint (có type-check cho apps/api, packages; guardrail A3/A5/A9/A14) + prettier --check + test lint (tools/lint/)
 make format     # prettier --write: sửa định dạng khi make lint báo lỗi prettier

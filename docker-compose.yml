@@ -44,5 +44,13 @@ services:
       interval: 1s
       timeout: 3s
       retries: 30
+  # Bucket tương thích S3 cho integration test của S3Storage (plan 33). Dữ liệu chỉ nằm trong
+  # container, bật lại là trống. Production dùng Railway Bucket (ADR 0013).
+  s3-test:
+    image: adobe/s3mock:5.2.3
+    environment:
+      COM_ADOBE_TESTING_S3MOCK_STORE_INITIAL_BUCKETS: credflow-test
+    ports:
+      - "127.0.0.1:9090:9090"
 volumes:
   pgdata:

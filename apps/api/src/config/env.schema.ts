@@ -33,6 +33,41 @@ export const envSchema = z.object({
     .string()
     .min(1, "RULES_CONFIG_PATH must not be empty")
     .default("../../config/rules"),
+  // Nơi lưu file upload (plan 33): `local` = đĩa dưới DATA_DIR (dev); `s3` = bucket tương thích S3
+  // (Railway Bucket trên production, vì api và worker là hai container không chung đĩa).
+  STORAGE_DRIVER: z.enum(["local", "s3"]).default("local"),
+  S3_BUCKET: z.string().min(1).optional(),
+  S3_ENDPOINT: z.url("S3_ENDPOINT must be a valid URL").optional(),
+  S3_REGION: z.string().min(1).default("auto"),
+  S3_ACCESS_KEY_ID: z.string().min(1).optional(),
+  S3_SECRET_ACCESS_KEY: z.string().min(1).optional(),
+  // Bucket cũ của Railway có thể cần URL kiểu path-style (tab Credentials của bucket ghi rõ).
+  S3_FORCE_PATH_STYLE: z.stringbool().default(false),
 });
 
 export type Env = z.infer<typeof envSchema>;
+
+const S3_REQUIRED = [
+  "S3_BUCKET",
+  "S3_ENDPOINT",
+  "S3_ACCESS_KEY_ID",
+  "S3_SECRET_ACCESS_KEY",
+] as const;
+
+/**
+ * Schema ConfigModule dùng lúc khởi động: `envSchema` + kiểm chéo giữa các biến.
+ * Tách riêng vì Zod 4 không cho `.pick()` trên schema có refine, mà seed, eval, drizzle.config
+ * đang `envSchema.pick(...)`.
+ */
+export const appEnvSchema = envSchema.superRefine((env, ctx) => {
+  if (env.STORAGE_DRIVER !== "s3") return;
+  for (const key of S3_REQUIRED) {
+    if (env[key] === undefined) {
+      ctx.addIssue({
+        code: "custom",
+        path: [key],
+        message: `${key} is required when STORAGE_DRIVER=s3`,
+      });
+    }
+  }
+});

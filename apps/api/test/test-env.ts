@@ -15,6 +15,17 @@ export const testEnv = {
   UPLOAD_MAX_BYTES: "65536",
 };
 
+// Bucket S3 cục bộ cho test S3Storage (service s3-test, adobe/s3mock, plan 33). s3mock không
+// kiểm khoá, nhưng SDK bắt buộc có. Path-style vì `<bucket>.127.0.0.1` không phân giải được.
+export const testS3 = {
+  bucket: "credflow-test",
+  endpoint: "http://127.0.0.1:9090",
+  region: "auto",
+  accessKeyId: "test-key",
+  secretAccessKey: "test-secret",
+  forcePathStyle: true,
+};
+
 // Test xoá dữ liệu (TRUNCATE): chỉ cho chạy trên database tên credflow_test.
 export function assertTestDatabase(url: string) {
   const name = new URL(url).pathname.slice(1);
