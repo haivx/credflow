@@ -6,7 +6,10 @@
 //       wait:<chữ> · gone:<chữ> · url:<chuỗi con của URL> · goto:<path> · shot:<file.png>
 //       sleep:<ms> (chờ để một lệnh khác chen vào giữa, vd đổi dữ liệu qua api.sh để thử 409)
 //       mark:<nhãn> (plan 29: ghi ms kể từ lúc mở trang vào `marks`, để bấm giờ từng ca)
-// In JSON: url, status, title, consoleErrors, failedRequests, shot, steps, marks. Exit 1 khi đăng nhập lỗi,
+//       upload:<testid>=<file> (plan 30: gán file cho <input type=file>, đường dẫn tính từ thư mục chạy lệnh)
+// --viewport <rộng>x<cao> (plan 30, mặc định 1200x900; điện thoại: 390x844).
+// In JSON: url, status, title, viewport, scrollWidth (bề rộng trang thật, > rộng viewport = cuộn ngang),
+// consoleErrors, failedRequests, shot, steps, marks. Exit 1 khi đăng nhập lỗi,
 // không thấy --wait-text trong 60 giây, hoặc một bước lỗi (dừng ở bước đó; vẫn chụp ảnh để xem).
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -21,9 +24,19 @@ const { values: args } = parseArgs({
     "wait-text": { type: "string" },
     base: { type: "string", default: "http://localhost:3000" },
     step: { type: "string", multiple: true, default: [] },
+    viewport: { type: "string", default: "1200x900" },
   },
 });
 const STEP_TIMEOUT_MS = 30_000;
+const viewportMatch = /^(\d+)x(\d+)$/.exec(args.viewport);
+if (viewportMatch === null) {
+  console.error("ui.mts: --viewport phải có dạng <rộng>x<cao>, vd 390x844");
+  process.exit(2);
+}
+const viewport = {
+  width: Number(viewportMatch[1]),
+  height: Number(viewportMatch[2]),
+};
 if (args.shot === undefined) {
   console.error("ui.mts: thiếu --shot <file.png>");
   process.exit(2);
@@ -31,9 +44,7 @@ if (args.shot === undefined) {
 const password = process.env.SEED_PASSWORD ?? "credflow-dev";
 
 const browser = await chromium.launch();
-const context = await browser.newContext({
-  viewport: { width: 1200, height: 900 },
-});
+const context = await browser.newContext({ viewport });
 let exitCode = 0;
 const consoleErrors: string[] = [];
 const failedRequests: string[] = [];
@@ -101,12 +112,17 @@ try {
   }
   mkdirSync(dirname(args.shot), { recursive: true });
   await page.screenshot({ path: args.shot, fullPage: true });
+  const scrollWidth = await page.evaluate(
+    () => document.documentElement.scrollWidth,
+  );
   console.log(
     JSON.stringify(
       {
         url: page.url(),
         status: response?.status() ?? null,
         title: await page.title(),
+        viewport: args.viewport,
+        scrollWidth,
         consoleErrors,
         failedRequests,
         shot: args.shot,
@@ -171,6 +187,11 @@ async function runStep(page: Page, step: string): Promise<void> {
     case "sleep":
       await page.waitForTimeout(Number(arg));
       return;
+    case "upload": {
+      const [id, file] = splitValue();
+      await byTestId(id).setInputFiles(file, opts);
+      return;
+    }
     case "mark":
       if (arg === "") throw new Error("mark cần nhãn");
       if (arg in marks) throw new Error(`nhãn "${arg}" đã dùng`);

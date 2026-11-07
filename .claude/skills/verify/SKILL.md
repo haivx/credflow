@@ -71,7 +71,7 @@ pnpm exec tsx .claude/skills/verify/scripts/ui.mts --login reviewer@example.test
   --step url:/review/ --shot .verify/shots/approve.png
 ```
 Bước: `click:<testid>`, `fill:<testid>=<giá trị>`, `select:<testid>=<giá trị>`, `blur:<testid>`,
-`wait:<chữ>`, `gone:<chữ>`, `url:<chuỗi con>`, `goto:<path>`, `shot:<file>`, `sleep:<ms>` (chạy ui.mts nền rồi chen lệnh `api.sh` vào giữa, vd thử 409), `mark:<nhãn>` (plan 29: ghi ms vào `marks` để bấm giờ). Bước lỗi → dừng, exit 1,
+`wait:<chữ>`, `gone:<chữ>`, `url:<chuỗi con>`, `goto:<path>`, `shot:<file>`, `sleep:<ms>` (chạy ui.mts nền rồi chen lệnh `api.sh` vào giữa, vd thử 409), `mark:<nhãn>` (plan 29: ghi ms vào `marks` để bấm giờ), `upload:<testid>=<file>` (plan 30: gán file cho input). Kiểm bề ngang điện thoại: `--viewport 390x844`; JSON có `scrollWidth` để biết trang có cuộn ngang không. Bước lỗi → dừng, exit 1,
 JSON có `steps` ghi `FAIL <bước>: <lý do>`.
 
 **Bước pipeline / LLM:**

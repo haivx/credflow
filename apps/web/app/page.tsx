@@ -21,8 +21,11 @@ function HomeFor({ user }: { user: AuthUser }) {
   }, [user.role, router]);
 
   if (user.role === "staff") return <StaffHome />;
-  if (user.role === "reviewer") return <p>Đang mở hàng chờ…</p>;
+  if (user.role === "reviewer")
+    return <p className="text-muted-foreground">Đang mở hàng chờ…</p>;
   return (
-    <p data-testid="role-not-ready">Màn của vai trò {user.role} làm ở P5.</p>
+    <p data-testid="role-not-ready" className="text-muted-foreground">
+      Màn của vai trò {user.role} làm ở P5.
+    </p>
   );
 }

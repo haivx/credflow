@@ -41,7 +41,7 @@
 
 ## Tiếp theo
 
-1. Liam merge PR #48 (plan 29), rồi PR roadmap P4.5 (nhánh `docs/p4-5-ui`). Tiếp: plan 30 nền UI (Tailwind + shadcn + TanStack Query + layout chung), chờ Liam đồng ý phạm vi.
+1. Liam merge PR #48 (plan 29), rồi PR roadmap P4.5 (nhánh `docs/p4-5-ui`). Plan 30 nền UI + S1: Liam duyệt 2026-11-07, nhánh `feat/30-nen-ui-s1` (tách từ `docs/p4-5-ui`). Xong: evidence `.verify/reports/2026-11-07-30-nen-ui-s1.md` (✅, L3 9 kịch bản, hồi quy 10 ca qua, test-int 196, eval-ci 0/44), ADR 0012. PR #50 CI xanh, chờ Liam merge (sau #49). Tiếp: plan 31 (S2 + S3, bỏ `data-legacy`).
 2. Việc nhỏ ghi lại từ plan 29: màn staff hiện `LOW_CONFIDENCE` ở cột Lý do cho giấy **đã duyệt**; ca 05 trong eval dùng default còn seed Odalys thuộc Bayleaf (cân nhắc ghi rõ trong `cases.json`).
 3. Phạm vi P3 chính: config theo khách hàng, `dateOrder`, staff đủ bộ giấy.
 
