@@ -13,10 +13,13 @@ export default function ReviewDocumentPage({
   return (
     <AppShell role="reviewer" wide>
       {() => (
-        <Suspense fallback={<p>Đang tải…</p>}>
-          {/* key: sang ca khác thì dựng lại màn, không giữ chỗ sửa của ca trước. */}
-          <ReviewScreen key={params.id} documentId={params.id} />
-        </Suspense>
+        // data-legacy: style nền tạm cho màn chưa chuyển sang Tailwind (plan 30, bỏ ở plan 31).
+        <div data-legacy>
+          <Suspense fallback={<p>Đang tải…</p>}>
+            {/* key: sang ca khác thì dựng lại màn, không giữ chỗ sửa của ca trước. */}
+            <ReviewScreen key={params.id} documentId={params.id} />
+          </Suspense>
+        </div>
       )}
     </AppShell>
   );

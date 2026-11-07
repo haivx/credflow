@@ -9,10 +9,12 @@ export default function ReviewQueuePage() {
   return (
     <AppShell role="reviewer">
       {() => (
-        // useSearchParams cần Suspense trong Next 14.
-        <Suspense fallback={<p>Đang tải…</p>}>
-          <ReviewQueue />
-        </Suspense>
+        // useSearchParams cần Suspense trong Next 14. data-legacy: style nền tạm (plan 30 → 31).
+        <div data-legacy>
+          <Suspense fallback={<p>Đang tải…</p>}>
+            <ReviewQueue />
+          </Suspense>
+        </div>
       )}
     </AppShell>
   );

@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Token màu (plan 30): nền neutral của shadcn, primary teal. Giá trị là "H S% L%" cho hsl(). */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 9%;
+    --primary: 175 84% 26%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 172 40% 94%;
+    --accent-foreground: 175 84% 18%;
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 90%;
+    --input: 0 0% 85%;
+    --ring: 175 84% 26%;
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-muted/40 text-foreground antialiased;
+    font-family:
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      "Segoe UI",
+      Roboto,
+      "Helvetica Neue",
+      Arial,
+      sans-serif;
+  }
+}
+
+/*
+ * TẠM (plan 30 → xoá ở plan 31): S2, S3 vẫn style inline. Preflight của Tailwind xoá viền nút,
+ * kẻ bảng, cỡ chữ tiêu đề; khối này trả lại vừa đủ để hai màn đó dùng được.
+ */
+@layer base {
+  [data-legacy] h2 {
+    @apply mb-2 mt-4 text-xl font-semibold;
+  }
+  [data-legacy] h3 {
+    @apply mb-2 mt-4 text-lg font-semibold;
+  }
+  [data-legacy] button {
+    @apply rounded-md border border-input bg-background px-3 py-1 text-sm hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  [data-legacy] input,
+  [data-legacy] select,
+  [data-legacy] textarea {
+    @apply rounded-md border border-input bg-background px-2 py-1 text-sm;
+  }
+  [data-legacy] table {
+    @apply border-collapse text-sm;
+  }
+  [data-legacy] th,
+  [data-legacy] td {
+    @apply border border-border px-2 py-1 text-left align-top;
+  }
+  [data-legacy] a {
+    @apply text-primary underline-offset-4 hover:underline;
+  }
+  [data-legacy] ul {
+    @apply list-disc pl-6;
+  }
+  [data-legacy] p {
+    @apply my-2;
+  }
+}

@@ -1,139 +1,170 @@
 import type { DocumentView } from "@credflow/contracts";
-import { reviewerReason, statusLabel } from "../_lib/status";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  docTypeLabel,
+  reasonLabel,
+  reviewerReason,
+  statusLabel,
+  statusTone,
+} from "../_lib/status";
 
-const cell = { border: "1px solid #ccc", padding: "4px 8px" } as const;
-
-/** Kết quả thô của một giấy (P1): đủ để kiểm pipeline, chưa phải màn duyệt (P4). */
+/**
+ * Kết quả đọc một giấy cho staff (plan 17, giao diện plan 30). Thông tin cho người làm kỹ thuật
+ * (mã rule, versions, thời gian) gom vào "Chi tiết kỹ thuật", đóng sẵn.
+ */
 export function DocumentDetail({ doc }: { doc: DocumentView }) {
   const fields =
     doc.extraction === undefined ? [] : Object.entries(doc.extraction.fields);
-
   const reason = reviewerReason(doc);
 
   return (
-    <section data-testid="document-detail" style={{ marginTop: 24 }}>
-      <h3>
-        {doc.fileName}:{" "}
-        <span data-testid="detail-status">{statusLabel(doc.status)}</span>
-      </h3>
-      {reason !== null && (
-        <p
-          data-testid="detail-reviewer-reason"
-          role="status"
-          style={{ padding: 8, background: "#fff4e5" }}
-        >
-          Lý do người duyệt ghi: {reason}
-        </p>
-      )}
-
-      <dl
-        style={{
-          display: "grid",
-          gridTemplateColumns: "max-content 1fr",
-          gap: "4px 12px",
-        }}
-      >
-        <dt>Trạng thái</dt>
-        <dd>
-          <code>{doc.status}</code>
-        </dd>
-        <dt>Phân loại</dt>
-        <dd data-testid="detail-classification">
-          {doc.classification === undefined
-            ? "chưa có"
-            : `${doc.classification.docType} (confidence ${doc.classification.confidence})`}
-        </dd>
-        <dt>Routing</dt>
-        <dd data-testid="detail-routing">
-          {doc.routing === undefined
-            ? "chưa có"
-            : `${doc.routing.decision}${doc.routing.reasons.length > 0 ? `: ${doc.routing.reasons.join(", ")}` : ""}`}
-        </dd>
-        <dt>Ngày chấm hạn (asOf)</dt>
-        <dd data-testid="detail-as-of">{doc.asOf ?? "chưa có"}</dd>
-        <dt>Versions</dt>
-        <dd>
-          <code>
-            {doc.versions === undefined
-              ? "chưa có"
-              : JSON.stringify(doc.versions)}
-          </code>
-        </dd>
-        <dt>Thời gian (ms)</dt>
-        <dd>
-          <code>{JSON.stringify(doc.timingMs)}</code>
-        </dd>
-        {doc.error !== undefined && (
-          <>
-            <dt>Lỗi</dt>
-            <dd data-testid="detail-error">
-              {doc.error.step}: {doc.error.message}
-            </dd>
-          </>
+    <Card data-testid="document-detail">
+      <CardHeader>
+        <CardTitle className="flex flex-wrap items-center gap-2 text-lg">
+          <span className="break-all">{doc.fileName}</span>
+          <Badge variant={statusTone(doc.status)} data-testid="detail-status">
+            {statusLabel(doc.status)}
+          </Badge>
+        </CardTitle>
+        <CardDescription>
+          Nộp lúc {doc.createdAt.slice(0, 16).replace("T", " ")} (UTC)
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-6">
+        {reason !== null && (
+          <Alert
+            data-testid="detail-reviewer-reason"
+            role="status"
+            className="border-amber-200 bg-amber-50 text-amber-950"
+          >
+            <AlertTitle>Lý do người duyệt ghi</AlertTitle>
+            <AlertDescription>{reason}</AlertDescription>
+          </Alert>
         )}
-      </dl>
 
-      <h4>Trích xuất</h4>
-      {fields.length === 0 ? (
-        <p>Chưa có.</p>
-      ) : (
-        <table
-          data-testid="detail-fields"
-          style={{ borderCollapse: "collapse" }}
-        >
-          <thead>
-            <tr>
-              <th style={cell}>Trường</th>
-              <th style={cell}>Giá trị</th>
-              <th style={cell}>Confidence</th>
-              <th style={cell}>Chữ gốc (quote)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {fields.map(([name, field]) => (
-              <tr key={name}>
-                <td style={cell}>{name}</td>
-                <td style={cell}>
-                  {field.value === null ? "—" : String(field.value)}
-                </td>
-                <td style={cell}>{field.confidence}</td>
-                <td style={cell}>{field.evidence?.quote ?? "—"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+        <dl className="grid gap-x-6 gap-y-2 text-sm sm:grid-cols-[max-content_1fr]">
+          <dt className="text-muted-foreground">Loại giấy</dt>
+          <dd data-testid="detail-classification">
+            {doc.classification === undefined
+              ? "Đang đọc…"
+              : `${docTypeLabel[doc.classification.docType]} (độ chắc ${Math.round(doc.classification.confidence * 100)}%)`}
+          </dd>
+          <dt className="text-muted-foreground">Kết quả kiểm tự động</dt>
+          <dd data-testid="detail-routing">
+            {doc.routing === undefined
+              ? "Chưa có"
+              : doc.routing.decision === "auto_approve"
+                ? "Đạt mọi điều kiện, tự duyệt"
+                : `Chuyển người duyệt: ${doc.routing.reasons.map((c) => reasonLabel[c]).join("; ")}`}
+          </dd>
+          <dt className="text-muted-foreground">Ngày dùng để xét hạn</dt>
+          <dd data-testid="detail-as-of">{doc.asOf ?? "Chưa có"}</dd>
+          {doc.error !== undefined && (
+            <>
+              <dt className="text-muted-foreground">Lỗi</dt>
+              <dd data-testid="detail-error" className="text-destructive">
+                {doc.error.step}: {doc.error.message}
+              </dd>
+            </>
+          )}
+        </dl>
 
-      <h4>Rule</h4>
-      {doc.ruleResults.length === 0 ? (
-        <p>Chưa chấm rule nào.</p>
-      ) : (
-        <table
-          data-testid="detail-rules"
-          style={{ borderCollapse: "collapse" }}
-        >
-          <thead>
-            <tr>
-              <th style={cell}>Mã</th>
-              <th style={cell}>Mức</th>
-              <th style={cell}>Kết quả</th>
-              <th style={cell}>Ghi chú</th>
-            </tr>
-          </thead>
-          <tbody>
-            {doc.ruleResults.map((rule) => (
-              <tr key={rule.code} data-testid={`rule-${rule.code}`}>
-                <td style={cell}>
-                  <code>{rule.code}</code>
-                </td>
-                <td style={cell}>{rule.severity}</td>
-                <td style={cell}>{rule.passed ? "qua" : "không qua"}</td>
-                <td style={cell}>{rule.message}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </section>
+        <section className="grid gap-2">
+          <h3 className="text-sm font-semibold">Thông tin đọc được</h3>
+          {fields.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Chưa có.</p>
+          ) : (
+            <Table data-testid="detail-fields">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Trường</TableHead>
+                  <TableHead>Giá trị</TableHead>
+                  <TableHead>Độ chắc</TableHead>
+                  <TableHead>Chữ gốc trên giấy</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {fields.map(([name, field]) => (
+                  <TableRow key={name}>
+                    <TableCell className="font-mono text-xs">{name}</TableCell>
+                    <TableCell>
+                      {field.value === null ? "—" : String(field.value)}
+                    </TableCell>
+                    <TableCell>{Math.round(field.confidence * 100)}%</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {field.evidence?.quote ?? "—"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </section>
+
+        <details className="rounded-lg border px-4 py-3 text-sm">
+          <summary className="cursor-pointer font-medium">
+            Chi tiết kỹ thuật
+          </summary>
+          <div className="mt-3 grid gap-4">
+            {doc.ruleResults.length === 0 ? (
+              <p className="text-muted-foreground">Chưa chấm rule nào.</p>
+            ) : (
+              <Table data-testid="detail-rules">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Mã</TableHead>
+                    <TableHead>Mức</TableHead>
+                    <TableHead>Kết quả</TableHead>
+                    <TableHead>Ghi chú</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {doc.ruleResults.map((rule) => (
+                    <TableRow key={rule.code} data-testid={`rule-${rule.code}`}>
+                      <TableCell className="font-mono text-xs">
+                        {rule.code}
+                      </TableCell>
+                      <TableCell>{rule.severity}</TableCell>
+                      <TableCell>{rule.passed ? "qua" : "không qua"}</TableCell>
+                      <TableCell>{rule.message}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+            <dl className="grid gap-x-6 gap-y-1 sm:grid-cols-[max-content_1fr]">
+              <dt className="text-muted-foreground">Trạng thái</dt>
+              <dd className="font-mono text-xs">{doc.status}</dd>
+              <dt className="text-muted-foreground">Versions</dt>
+              <dd className="break-all font-mono text-xs">
+                {doc.versions === undefined
+                  ? "chưa có"
+                  : JSON.stringify(doc.versions)}
+              </dd>
+              <dt className="text-muted-foreground">Thời gian (ms)</dt>
+              <dd className="break-all font-mono text-xs">
+                {JSON.stringify(doc.timingMs)}
+              </dd>
+            </dl>
+          </div>
+        </details>
+      </CardContent>
+    </Card>
   );
 }

@@ -1,71 +1,92 @@
 "use client";
 
-import { AuthUser } from "@credflow/contracts";
 import { type FormEvent, useState } from "react";
-import { apiFetch } from "../_lib/api";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ApiRequestError, useLogin } from "../_lib/queries";
 
-export function LoginForm({ onLogin }: { onLogin: (user: AuthUser) => void }) {
+/** Đăng nhập (plan 17, giao diện plan 30). Thành công thì `useLogin` cập nhật `useMe`. */
+export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const login = useLogin();
 
-  async function submit(event: FormEvent) {
+  function submit(event: FormEvent) {
     event.preventDefault();
-    setBusy(true);
-    setError(null);
-    const res = await apiFetch("/auth/login", AuthUser, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    setBusy(false);
-    if (res.ok) onLogin(res.data);
-    else
-      setError(
-        res.status === 401
-          ? "Sai email hoặc mật khẩu."
-          : `Không đăng nhập được: ${res.error.message}`,
-      );
+    login.mutate({ email, password });
   }
 
+  const error = login.error;
+  const errorText =
+    error === null
+      ? null
+      : error instanceof ApiRequestError && error.status === 401
+        ? "Sai email hoặc mật khẩu."
+        : `Không đăng nhập được: ${error.message}`;
+
   return (
-    <form
-      onSubmit={(e) => void submit(e)}
-      data-testid="login-form"
-      style={{ display: "grid", gap: 8, maxWidth: 320 }}
-    >
-      <h2>Đăng nhập</h2>
-      <label>
-        Email
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          data-testid="login-email"
-          required
-          style={{ display: "block", width: "100%" }}
-        />
-      </label>
-      <label>
-        Mật khẩu
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          data-testid="login-password"
-          required
-          style={{ display: "block", width: "100%" }}
-        />
-      </label>
-      <button type="submit" disabled={busy} data-testid="login-submit">
-        {busy ? "Đang đăng nhập…" : "Đăng nhập"}
-      </button>
-      {error !== null && (
-        <p role="alert" data-testid="login-error" style={{ color: "#b00020" }}>
-          {error}
-        </p>
-      )}
-    </form>
+    <div className="flex justify-center pt-8 sm:pt-16">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle className="text-xl">Đăng nhập</CardTitle>
+          <CardDescription>
+            Dùng email công việc để nộp hoặc duyệt giấy tờ.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form
+            onSubmit={submit}
+            data-testid="login-form"
+            className="grid gap-4"
+          >
+            <div className="grid gap-2">
+              <Label htmlFor="login-email">Email</Label>
+              <Input
+                id="login-email"
+                type="email"
+                autoComplete="username"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                data-testid="login-email"
+                required
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="login-password">Mật khẩu</Label>
+              <Input
+                id="login-password"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                data-testid="login-password"
+                required
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={login.isPending}
+              data-testid="login-submit"
+            >
+              {login.isPending ? "Đang đăng nhập…" : "Đăng nhập"}
+            </Button>
+            {errorText !== null && (
+              <Alert variant="destructive" data-testid="login-error">
+                <AlertDescription>{errorText}</AlertDescription>
+              </Alert>
+            )}
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
