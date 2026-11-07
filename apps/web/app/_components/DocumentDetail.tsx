@@ -1,5 +1,5 @@
 import type { DocumentView } from "@credflow/contracts";
-import { statusLabel } from "../_lib/status";
+import { reviewerReason, statusLabel } from "../_lib/status";
 
 const cell = { border: "1px solid #ccc", padding: "4px 8px" } as const;
 
@@ -8,12 +8,23 @@ export function DocumentDetail({ doc }: { doc: DocumentView }) {
   const fields =
     doc.extraction === undefined ? [] : Object.entries(doc.extraction.fields);
 
+  const reason = reviewerReason(doc);
+
   return (
     <section data-testid="document-detail" style={{ marginTop: 24 }}>
       <h3>
         {doc.fileName}:{" "}
         <span data-testid="detail-status">{statusLabel(doc.status)}</span>
       </h3>
+      {reason !== null && (
+        <p
+          data-testid="detail-reviewer-reason"
+          role="status"
+          style={{ padding: 8, background: "#fff4e5" }}
+        >
+          Lý do người duyệt ghi: {reason}
+        </p>
+      )}
 
       <dl
         style={{

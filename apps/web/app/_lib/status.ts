@@ -1,4 +1,8 @@
-import type { DocumentStatus, ErrorCode } from "@credflow/contracts";
+import type {
+  DocumentStatus,
+  DocumentView,
+  ErrorCode,
+} from "@credflow/contracts";
 
 /** Nhãn trạng thái cho staff (docs/flows.md F1 bước 3). */
 const STATUS_LABEL: Record<DocumentStatus, string> = {
@@ -15,6 +19,17 @@ const STATUS_LABEL: Record<DocumentStatus, string> = {
 
 export function statusLabel(status: DocumentStatus): string {
   return STATUS_LABEL[status];
+}
+
+/**
+ * Lý do người duyệt ghi, cho staff thấy khi giấy bị từ chối hoặc phải nộp lại (plan 28).
+ * Trạng thái khác thì null: note lúc duyệt là ghi chú nội bộ.
+ */
+export function reviewerReason(doc: DocumentView): string | null {
+  if (doc.status !== "rejected" && doc.status !== "reupload_requested") {
+    return null;
+  }
+  return doc.lastReview?.note ?? null;
 }
 
 /** Còn đang chạy trong pipeline: màn hình tiếp tục hỏi lại trạng thái. */

@@ -63,6 +63,17 @@ Output JSON: url, status, title, `consoleErrors`, `failedRequests` (≥ 400), đ
 đăng nhập lỗi hoặc không thấy `--wait-text` trong 60 giây (vẫn chụp). Mở screenshot bằng tool Read
 và nhìn thật sự. Không dùng Playwright MCP nữa (nó để lại `.playwright-mcp/`).
 
+Thao tác nhiều bước (plan 28): thêm `--step` (lặp được, chạy theo thứ tự), ví dụ
+```bash
+pnpm exec tsx .claude/skills/verify/scripts/ui.mts --login reviewer@example.test --path /review \
+  --wait-text "Hàng chờ duyệt" --step click:queue-open --step fill:field-completionDate=2025-09-02 \
+  --step blur:field-completionDate --step gone:MISSING_FIELD --step click:decide-approve \
+  --step url:/review/ --shot .verify/shots/approve.png
+```
+Bước: `click:<testid>`, `fill:<testid>=<giá trị>`, `select:<testid>=<giá trị>`, `blur:<testid>`,
+`wait:<chữ>`, `gone:<chữ>`, `url:<chuỗi con>`, `goto:<path>`, `shot:<file>`, `sleep:<ms>` (chạy ui.mts nền rồi chen lệnh `api.sh` vào giữa, vd thử 409). Bước lỗi → dừng, exit 1,
+JSON có `steps` ghi `FAIL <bước>: <lý do>`.
+
 **Bước pipeline / LLM:**
 ```bash
 make eval                       # golden set qua LLM thật (cache), ghi eval/runs/ + report.md

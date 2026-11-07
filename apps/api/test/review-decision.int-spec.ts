@@ -96,6 +96,11 @@ describe("POST /review/documents/:id/decision, /preview (plan 27)", () => {
     const body = DecisionResponse.parse(res.body);
     expect(body.document.status).toBe("approved");
     expect(body.document.version).toBe(2);
+    // Plan 28: response và GET /review/documents/:id có lastReview của quyết định vừa ghi.
+    expect(body.document.lastReview).toEqual({
+      action: "approve",
+      decidedAt: body.reviewAction.createdAt,
+    });
     expect(body.reviewAction.corrections).toEqual([
       {
         fieldPath: "fields.expirationDate.value",
@@ -123,6 +128,7 @@ describe("POST /review/documents/:id/decision, /preview (plan 27)", () => {
       body.reviewAction.id,
     ]);
     expect(detail.staff.legalName).toBe("Jane Q. Doe");
+    expect(detail.document.lastReview?.action).toBe("approve");
   });
 
   it.each([

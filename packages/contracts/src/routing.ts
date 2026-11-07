@@ -80,14 +80,35 @@ export const DocumentRecord = z
   .meta({ id: "DocumentRecord" });
 export type DocumentRecord = z.infer<typeof DocumentRecord>;
 
+export const ReviewActionKind = z
+  .enum(["approve", "reject", "request_reupload"])
+  .meta({ id: "ReviewActionKind" });
+export type ReviewActionKind = z.infer<typeof ReviewActionKind>;
+
+/**
+ * Quyết định gần nhất của người duyệt, cho staff thấy lý do (plan 28). Không có `reviewerId`,
+ * `corrections`: ai duyệt và sửa gì là dữ liệu audit, chỉ người duyệt xem.
+ */
+export const ReviewSummary = z
+  .object({
+    action: ReviewActionKind,
+    note: z.string().optional(),
+    decidedAt: IsoTimestamp,
+  })
+  .meta({ id: "ReviewSummary" });
+export type ReviewSummary = z.infer<typeof ReviewSummary>;
+
 /**
  * Một giấy như staff thấy qua API đọc (plan 17). Bỏ `storageKey`, `checksum`: chi tiết lưu trữ nội bộ.
  * Zod bỏ key lạ khi parse, nên parse một dòng DB đầy đủ cũng không lộ hai trường này.
+ * `lastReview` (plan 28): vắng khi chưa có người duyệt.
  */
 export const DocumentView = DocumentRecord.omit({
   storageKey: true,
   checksum: true,
-}).meta({ id: "DocumentView" });
+})
+  .extend({ lastReview: ReviewSummary.optional() })
+  .meta({ id: "DocumentView" });
 export type DocumentView = z.infer<typeof DocumentView>;
 
 /** Response GET /documents: giấy của staff đang đăng nhập, mới nhất trước. */
@@ -117,11 +138,6 @@ export const Correction = z
   })
   .meta({ id: "Correction" });
 export type Correction = z.infer<typeof Correction>;
-
-export const ReviewActionKind = z
-  .enum(["approve", "reject", "request_reupload"])
-  .meta({ id: "ReviewActionKind" });
-export type ReviewActionKind = z.infer<typeof ReviewActionKind>;
 
 /** Hành động của người duyệt. Mọi chỗ sửa được lưu lại làm dữ liệu eval. */
 export const ReviewAction = z

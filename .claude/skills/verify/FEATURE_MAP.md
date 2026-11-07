@@ -4,7 +4,7 @@
 > Agent dùng file này để biến một báo lỗi mơ hồ ("upload hỏng rồi", một screenshot ghi "???")
 > thành một bước tái hiện cụ thể. Giữ nó luôn mới: map cũ còn tệ hơn không có map.
 >
-> Lấy từ code CredFlow ngày 2026-11-04 (sau plan 11), cập nhật tới plan 27. Chỗ chưa chắc hoặc chưa làm ghi `TODO(verify)`.
+> Lấy từ code CredFlow ngày 2026-11-04 (sau plan 11), cập nhật tới plan 28. Chỗ chưa chắc hoặc chưa làm ghi `TODO(verify)`.
 > Bật/tắt app, gọi API, chụp UI: dùng script trong `scripts/` (xem SKILL.md).
 
 ## Quy ước
@@ -69,8 +69,8 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 ## Đọc giấy của tôi (plan 17)
 - **API:** `GET /documents` → `200 DocumentList` (giấy của staff đang login, mới nhất trước, tối đa 50); `GET /documents/:id` → `200 DocumentView`
 - **Vai trò:** chỉ `staff`; chưa login → `401`; reviewer, admin → `403`; giấy người khác hoặc id không có → cùng `404 NOT_FOUND` "Không tìm thấy giấy"
-- **Kỳ vọng:** response không có `storageKey`, `checksum` (contract `DocumentView`)
-- **UI:** bảng `documents-table` (nhãn trạng thái, lý do), nút "Xem kết quả" mở `document-detail` (classification, routing, `asOf`, versions, timingMs, bảng `detail-fields` có `quote`, bảng `detail-rules`). Trạng thái tự cập nhật: polling 2 giây khi còn giấy đang xử lý, dừng sau 2 phút
+- **Kỳ vọng:** response không có `storageKey`, `checksum` (contract `DocumentView`); `lastReview {action, note?, decidedAt}` khi đã có người duyệt (plan 28), không có `reviewerId`
+- **UI:** bảng `documents-table` (nhãn trạng thái, lý do; `document-reason` là ghi chú người duyệt khi bị từ chối / phải nộp lại, `detail-reviewer-reason` trong chi tiết), nút "Xem kết quả" mở `document-detail` (classification, routing, `asOf`, versions, timingMs, bảng `detail-fields` có `quote`, bảng `detail-rules`). Trạng thái tự cập nhật: polling 2 giây khi còn giấy đang xử lý, dừng sau 2 phút
 - **Chạy:** `make dev` (API + worker + web), login `staff-marisol@example.test` / `credflow-dev`, nộp `eval/hard-cases/cpr/01-expires.png` → "Đang xử lý" rồi "Đã tự duyệt". Lỗi console lúc chưa login: `favicon.ico` 404 và `/api/auth/me` 401 (2 lần do StrictMode dev) là bình thường
 - **Kiểm sẵn có:** `apps/api/test/documents-read.int-spec.ts` (8 case)
 - **Mức rủi ro:** T2 (phân quyền đọc: kiểm như T3)
@@ -79,7 +79,7 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 - **Rule engine (plan 15, ADR 0009):** `evaluateRules` chấm 9 rule cho `cpr_card`. **Config theo khách hàng (plan 25, ADR 0011):** `config/rules/default.yaml` + `clients/<clientId>.yaml` (Sunrise `MDY`, Bayleaf chấp nhận thêm Harrowgate); chấm theo mọi khách của staff, lấy chặt nhất; `versions.rules` như `sunrise@1`, `bayleaf@1+sunrise@1`. Kiểm nhanh: upload `11-mdy-date.png` bằng `staff@example.test` (Maren, Sunrise) → `auto_approved`. `DATE_INCONSISTENT` còn đọc `evidence.quote` của ngày học/ngày hết hạn: ngày số D/M đều ≤ 12 (`10/9/2025`) hoặc chỉ tháng/năm ("Valid through 12/2027") → không qua dù LLM đã điền ngày (plan 21, `packages/rules/src/date-quote.ts`). Kiểm: `pnpm --filter @credflow/rules test`; `recorded.test.ts` chạy trên output thật của Haiku (`eval/hard-cases/cpr/recorded/`)
 - **Trạng thái:** `uploaded → processing → extracted → auto_approved | needs_review | failed`; sau duyệt: `approved | rejected | reupload_requested` (`DocumentStatus`)
 - **Hiện tại (plan 16):** upload đẩy job (`jobId = documentId`), worker gọi Claude thật (`claude-haiku-5-5`, ADR 0008): phân loại mọi file, trích xuất chỉ khi `cpr_card`. CPR đi `uploaded → processing → extracted → auto_approved | needs_review`: `RuleStep` (`apps/api/src/rules/rule-step.ts`) chấm rule với staff của document, `asOf` = ngày UTC (ADR 0010), ghi `ruleResults`, `routing`, `as_of`, `timingMs.rules`. Loại giấy khác đi thẳng `processing → needs_review`, `NO_RULES_EVALUATED`, `as_of` NULL. `versions = { pipeline: "21", prompt: "classify@1+extract-cpr@1", model: "claude-haiku-5-5", rules: "1" }`. `evidence.box` bị bỏ trong code
-- **Chạy thật end-to-end (kịch bản 7 plan 16):** `make db-migrate db-seed`, `make dev-api` + `make dev-worker`; login từng user rồi `curl -F file=@eval/hard-cases/cpr/<fixture> /documents`: 01, 03 → `staff-marisol@example.test`; 02 → `staff-tobias@`; 05 → `staff-odalys@`; 04, 06 → `staff@` (mật khẩu `credflow-dev`). Xem `psql`: `select file_name, status, routing, as_of, timing_ms from documents`. Kỳ vọng: 01, 06 `auto_approved`; 02 `MISSING_FIELD`+`EXPIRED`; 04 `NO_RULES_EVALUATED`; 05 `ISSUER_NOT_ACCEPTED`; 03 dao động quanh ngưỡng confidence (`LOW_CONFIDENCE` hoặc `auto_approved` với giá trị đúng)
+- **Chạy thật end-to-end (kịch bản 7 plan 16):** `make db-migrate db-seed`, `make dev-api` + `make dev-worker`; login từng user rồi `curl -F file=@eval/hard-cases/cpr/<fixture> /documents`: 01, 03 → `staff-marisol@example.test`; 02 → `staff-tobias@`; 05 → `staff-odalys@`; 04, 06 → `staff@` (mật khẩu `credflow-dev`). Xem `psql`: `select file_name, status, routing, as_of, timing_ms from documents`. Kỳ vọng: 01, 06 `auto_approved`; 02 `MISSING_FIELD`+`EXPIRED`; 04 `NO_RULES_EVALUATED`; 05 `ISSUER_NOT_ACCEPTED` trong eval (staff không gắn khách hàng); trên seed dev Odalys làm cho Bayleaf, config Bayleaf chấp nhận Harrowgate nên 05 `auto_approved` là đúng (plan 25, ghi lại ở plan 28); 03 dao động quanh ngưỡng confidence (`LOW_CONFIDENCE` hoặc `auto_approved` với giá trị đúng)
 - **Chạy:** `make dev-api` + `make dev-worker` (worker cần `ANTHROPIC_API_KEY`, **tốn tiền thật**). Xem trạng thái bằng `GET /documents/:id` (staff chủ giấy), màn S1, hoặc `psql`. Log worker có token từng lượt để cộng chi phí
 - **Fixture:** `eval/hard-cases/cpr/` (10 giấy SAMPLE: 9 CPR + 1 TB, nguồn HTML, đáp án `cases.json`; 07–10 thêm ở plan 22)
 - **Lỗi (ADR 0006):**
@@ -108,8 +108,12 @@ Cộng 10 hồ sơ staff giả lập (`apps/api/scripts/seed-data.ts`). Integrat
 - **Golden kỳ vọng:** `make eval` (mục Eval)
 - **Mức rủi ro:** T3 khi đổi prompt / model / rule / ngưỡng
 
-## Duyệt ca (P4, API plan 27)
-- **UI:** `TODO(verify)`: S2 hàng chờ, S3 màn duyệt (`docs/flows.md` F3), plan 28
+## Duyệt ca (P4, API plan 27, UI plan 28)
+- **UI** (reviewer; `/` tự chuyển sang `/review`; vai trò khác thấy `wrong-role`):
+  - S2 `/review?reason=&sort=`: `filter-reason`, `filter-sort`, bảng `queue-table` (`queue-row-<id>`, link `queue-open`), `queue-more` (keyset), trống `queue-empty`, xong ca cuối `queue-done`
+  - S3 `/review/<id>?<bộ lọc>`: `file-viewer` (`file-image` / `file-pdf`), `failed-rules` (`failed-rule-<CODE>`, `no-failed-rules`), `field-editor` (`field-<tên>`, hàng `field-row-<tên>` có `data-flagged`, `quote-<tên>`), rời ô → preview (`preview-error` khi 400), `decision-note`, `decide-approve` / `decide-reject` / `decide-request_reupload` (2 nút sau khoá khi ghi chú trống), 409 → `notice-conflict` + `reload`, lỗi khác `notice-error`, ca đã xử lý `read-only`, `review-history`
+  - Quyết định xong → mở ca đầu hàng chờ cùng bộ lọc; hết ca → `/review?…&done=1`
+  - **Chạy L3:** `up.sh --web`, upload thẻ như mục "Pipeline", rồi `ui.mts --login reviewer@example.test --path /review --step …` (SKILL.md)
 - **API** (chỉ `reviewer`; staff → `403`):
   - `GET /review/queue?reason=<RuleCode>&sort=due|submitted&limit=1..100&cursor=` → `200 ReviewQueuePage { items, nextCursor }`; chỉ `needs_review`; keyset, cursor sai/khác bộ lọc → `400`
   - `GET /review/documents/:id` → `200 ReviewDocumentDetail { document (có version), staff, reviewActions }`; không có → `404`

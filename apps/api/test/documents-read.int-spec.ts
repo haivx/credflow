@@ -11,7 +11,7 @@ import {
 } from "@credflow/contracts";
 import { AppModule } from "../src/app.module.js";
 import { type Db, DB } from "../src/db/db.provider.js";
-import { documents } from "../src/db/schema.js";
+import { documents, reviewActions } from "../src/db/schema.js";
 import { createUser, sessionCookie, TEST_PASSWORD } from "./auth.js";
 import { makeDocument, makeProcessedDocument, truncateAll } from "./db.js";
 
@@ -142,5 +142,48 @@ describe("GET /documents, GET /documents/:id", () => {
     expect(missing.status).toBe(404);
     expect(ApiError.parse(foreign.body).code).toBe("NOT_FOUND");
     expect(foreign.body).toEqual(missing.body);
+  });
+  it("plan 28: giấy đã có người duyệt → lastReview là quyết định mới nhất, không lộ reviewerId; chưa duyệt → vắng", async () => {
+    const { user, cookie } = await login("staff");
+    const reviewer = await createUser(db, "reviewer");
+    const reviewed = makeProcessedDocument(
+      staffIdOf(user),
+      "reupload_requested",
+    );
+    const pending = makeProcessedDocument(staffIdOf(user), "needs_review");
+    await db.insert(documents).values([reviewed, pending]);
+    // Hai lần ghi để kiểm "mới nhất": lần đầu cũ hơn, lần sau là quyết định đang có hiệu lực.
+    await db.insert(reviewActions).values([
+      {
+        id: "01TESTREVACT0001",
+        documentId: reviewed.id,
+        reviewerId: reviewer.id,
+        action: "reject",
+        note: "Lý do cũ (SAMPLE)",
+        createdAt: new Date("2026-11-01T08:00:00Z"),
+      },
+      {
+        id: "01TESTREVACT0002",
+        documentId: reviewed.id,
+        reviewerId: reviewer.id,
+        action: "request_reupload",
+        note: "Ảnh mờ, nộp lại (SAMPLE)",
+        createdAt: new Date("2026-11-02T08:00:00Z"),
+      },
+    ]);
+
+    const detail = await get(`/documents/${reviewed.id}`, cookie);
+    expect(detail.status).toBe(200);
+    expect(detail.body).toHaveProperty("lastReview", {
+      action: "request_reupload",
+      note: "Ảnh mờ, nộp lại (SAMPLE)",
+      decidedAt: "2026-11-02T08:00:00.000Z",
+    });
+    expect(JSON.stringify(detail.body)).not.toContain(reviewer.id);
+
+    const list = DocumentList.parse((await get("/documents", cookie)).body);
+    const byId = new Map(list.items.map((d) => [d.id, d]));
+    expect(byId.get(reviewed.id)?.lastReview?.action).toBe("request_reupload");
+    expect(byId.get(pending.id)).not.toHaveProperty("lastReview");
   });
 });

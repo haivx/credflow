@@ -7,7 +7,7 @@ import {
 } from "@credflow/contracts";
 import { useCallback, useEffect, useState } from "react";
 import { apiFetch } from "../_lib/api";
-import { isInProgress, statusLabel } from "../_lib/status";
+import { isInProgress, reviewerReason, statusLabel } from "../_lib/status";
 import { DocumentDetail } from "./DocumentDetail";
 import { UploadForm } from "./UploadForm";
 
@@ -91,7 +91,9 @@ export function StaffHome() {
                 <td style={cell} data-testid="document-status">
                   {statusLabel(doc.status)}
                 </td>
-                <td style={cell}>{doc.routing?.reasons.join(", ") ?? ""}</td>
+                <td style={cell} data-testid="document-reason">
+                  {reviewerReason(doc) ?? doc.routing?.reasons.join(", ") ?? ""}
+                </td>
                 <td style={cell}>
                   <button type="button" onClick={() => setSelectedId(doc.id)}>
                     Xem kết quả

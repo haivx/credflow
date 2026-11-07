@@ -9,7 +9,11 @@ import {
 import { and, asc, eq, type SQL, sql } from "drizzle-orm";
 import { type Db, DB } from "../db/db.provider.js";
 import { documents, staff } from "../db/schema.js";
-import { toView, viewColumns } from "../documents/documents-read.service.js";
+import {
+  latestReviews,
+  toView,
+  viewColumns,
+} from "../documents/documents-read.service.js";
 import { decodeCursor, encodeCursor } from "./queue-cursor.js";
 
 /**
@@ -130,7 +134,8 @@ export class ReviewReadService {
       .innerJoin(staff, eq(staff.id, documents.staffId))
       .where(eq(documents.id, id));
     if (row === undefined) return undefined;
-    return { document: toView(row.doc), staff: row.staff };
+    const reviews = await latestReviews(this.db, [id]);
+    return { document: toView(row.doc, reviews.get(id)), staff: row.staff };
   }
 
   /** Thông tin để stream file. `staffId` để route của staff kiểm chủ sở hữu. */
