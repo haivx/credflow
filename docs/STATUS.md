@@ -3,7 +3,7 @@
 > Claude Code đọc file này đầu mỗi phiên và cập nhật cuối phiên (`/wrap`). Giữ ngắn, dưới 40 dòng.
 
 **Cập nhật:** 2026-11-07
-**Phase hiện tại:** P5 · Đủ 5 loại giấy và ca khó (`docs/roadmap.md`). P0 xong 2026-11-03; P1, P2, P3 xong 2026-11-06; P4 xong 2026-11-07 (chờ merge PR plan 29).
+**Phase hiện tại:** P4.5 · Dựng UI (`docs/roadmap.md`, thêm 2026-11-07, Liam chọn cả 4 khuyến nghị). P0 xong 2026-11-03; P1, P2, P3 xong 2026-11-06; P4 xong 2026-11-07 (chờ merge PR plan 29).
 
 ## Đang làm
 
@@ -41,7 +41,7 @@
 
 ## Tiếp theo
 
-1. Liam merge PR plan 29, rồi `/next` cho P5.
+1. Liam merge PR #48 (plan 29), rồi PR roadmap P4.5 (nhánh `docs/p4-5-ui`). Tiếp: plan 30 nền UI (Tailwind + shadcn + TanStack Query + layout chung), chờ Liam đồng ý phạm vi.
 2. Việc nhỏ ghi lại từ plan 29: màn staff hiện `LOW_CONFIDENCE` ở cột Lý do cho giấy **đã duyệt**; ca 05 trong eval dùng default còn seed Odalys thuộc Bayleaf (cân nhắc ghi rõ trong `cases.json`).
 3. Phạm vi P3 chính: config theo khách hàng, `dateOrder`, staff đủ bộ giấy.
 

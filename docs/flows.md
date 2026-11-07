@@ -1,6 +1,6 @@
 # CredFlow — User Flows
 
-> Bản nháp. Màn hình chi tiết thiết kế ở P1 (upload) và P4 (duyệt).
+> Bản nháp. Màn hình chi tiết thiết kế ở P1 (upload) và P4 (duyệt); P4.5 làm lại giao diện S1–S3 (Tailwind + shadcn/ui, ADR 0001).
 
 ## Bản đồ màn hình
 

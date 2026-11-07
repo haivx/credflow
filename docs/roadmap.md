@@ -88,6 +88,27 @@
 - **Tiêu chí hoàn thành:** xử lý trọn 10 ca trong hàng chờ chỉ bằng UI; mọi chỗ sửa xuất hiện trong `review_actions`; báo cáo "trường hay bị sửa nhất" chạy được từ dữ liệu đó; test gửi 2 request duyệt cùng `version` thì đúng 1 thành công, request còn lại nhận `409`.
 - **Phụ thuộc:** P3.
 
+## P4.5 · Dựng UI (4–5 ngày)
+
+> Thêm 2026-11-07 (Liam): P1 và P4 chỉ có UI tối giản để chạy được luồng; `apps/web` chưa dùng Tailwind, shadcn/ui, TanStack Query như ADR 0001 đã chốt.
+
+- **Mục tiêu:** S1, S2, S3 đủ rõ và đẹp để người duyệt làm việc thật và để quay demo, đúng stack của ADR 0001. Không đổi API, contract, rule.
+- **Phạm vi:**
+  - Nền: Tailwind + shadcn/ui; TanStack Query thay polling và fetch viết tay; layout chung (header, điều hướng theo vai trò), badge trạng thái, toast, trạng thái đang tải / rỗng / lỗi.
+  - S1: kéo thả file, trạng thái từng giấy dễ đọc, lý do của người duyệt nổi rõ.
+  - S2, S3: ảnh bên trái, trường bên phải, chữ gốc sát giá trị, rule không qua nổi bật, loại giấy + confidence (phân biệt "không nhận ra loại giấy" với "chưa có rule cho loại này"), phím tắt duyệt nhanh.
+  - Sửa: giấy đã duyệt không còn hiện lý do vào hàng chờ (vd `LOW_CONFIDENCE`) ở màn staff.
+  - Ngoài: S4, S5 (P5, dùng lại layout của phase này); highlight `box` (P5); đổi ngôn ngữ / i18n (P6).
+- **Thiết kế:** Claude tự thiết kế bằng component shadcn, tông trung tính; mỗi plan có screenshot để Liam duyệt.
+- **🎓 Học được:**
+  - Server Component và Client Component trong App Router: phần nào chạy ở server, phần nào cần `"use client"`.
+  - TanStack Query: query key, cache, `refetchInterval` thay polling tay, mutation + invalidate sau khi duyệt.
+  - Tailwind và design token (màu, khoảng cách) dùng chung; component có biến thể (`cva` của shadcn).
+  - Form có kiểm tra phía client nhưng server vẫn là nơi quyết định (Zod của `packages/contracts` dùng ở cả hai phía).
+  - Accessibility cơ bản: label, focus, điều khiển bằng bàn phím.
+- **Tiêu chí hoàn thành:** S1, S2, S3 dùng Tailwind + shadcn, không còn style inline; screenshot desktop và bề ngang điện thoại của cả 3 màn trong evidence; lượt 10 ca bằng `ui.mts` (plan 29) chạy lại vẫn qua, testid giữ nguyên; duyệt được một ca hoàn toàn bằng bàn phím; không đổi API, contract (`git diff` không chạm `packages/contracts`, `apps/api`).
+- **Phụ thuộc:** P4.
+
 ## P5 · Đủ 5 loại giấy và ca khó (6–8 ngày)
 
 - **Mục tiêu:** phủ đủ phạm vi MVP với số liệu đáng tin.
@@ -98,7 +119,7 @@
   - Đo thời gian từng bước, lưu `timingMs`, tính p95 bằng SQL.
   - Mở rộng code cho loại giấy mới mà không sửa lung tung (một chỗ đăng ký loại giấy).
 - **Tiêu chí hoàn thành:** đạt chỉ số MVP ở `docs/product.md` mục 1 trên **holdout**; report có bảng theo loại giấy và theo tag; lọc log theo `documentId` thấy đủ hành trình của một document; có số liệu p95 thời gian xử lý mỗi document và chi phí trung bình mỗi document trong `docs/STATUS.md`.
-- **Phụ thuộc:** P4.
+- **Phụ thuộc:** P4.5.
 
 ## P6 · Deploy, writeup, demo (3–4 ngày)
 
@@ -148,6 +169,7 @@ Vượt mức middle; mỗi mục ghi chỗ trong CredFlow sẽ cần nó. Làm 
 | RFC 9457 Problem Details | `{ code, message, details? }` | Lỗi API |
 | Presigned URL | Endpoint stream file | P4, khi có S3 |
 | SSE/WebSocket đẩy trạng thái document về trình duyệt | Polling `GET /documents` 2 giây, dừng sau 2 phút | P1 màn upload (plan 17) |
+| Component test / visual regression (Storybook, Chromatic) | Screenshot `ui.mts` trong evidence, Liam nhìn | P4.5 UI |
 | E2E UI tự động trong CI (Playwright test) | Kiểm L3 tay bằng Playwright MCP, screenshot vào evidence | P1 màn upload (plan 17) |
 | Bảng append-only bằng trigger/quyền DB, hash chain | Chặn ở tầng code | Audit log |
 | Cursor phân trang có ký (HMAC) | Cursor base64 JSON không ký, kiểm bằng Zod | P4 hàng chờ (plan 27) |
