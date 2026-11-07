@@ -1,6 +1,6 @@
 # Phương án deploy CredFlow (P6a)
 
-> Viết 2026-11-07 cho Liam nghiên cứu. **Đã chốt cùng ngày: phương án D trên DigitalOcean (Singapore, 4 GB, chạy thử 1 tháng), Cloudflare cho domain/DNS/R2. Xem ADR 0013.** Phần dưới giữ nguyên để biết vì sao chọn.
+> Viết 2026-11-07 cho Liam nghiên cứu. **Đã chốt cùng ngày: Railway (phương án A), file trên Railway Bucket thay R2. Xem ADR 0013.** Trong ngày từng chọn VPS DigitalOcean (phương án D) rồi đổi vì Liam ưu tiên ít vận hành. Phần dưới giữ nguyên để biết vì sao chọn.
 > **Giá trong file này chủ yếu lấy từ trang tổng hợp của bên thứ ba, có chỗ mâu thuẫn nhau.** Mọi con số phải kiểm lại trên trang giá chính thức trước khi chốt (danh sách ở mục 6).
 
 ## 1. CredFlow cần gì khi chạy thật
