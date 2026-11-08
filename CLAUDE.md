@@ -23,7 +23,7 @@ Mỗi plan có mục **"Quyết định đáng nhớ"**, 3–5 dòng: chỗ khó
 3. **Code:** PR nhỏ, review được tại ranh giới (contract, rule engine, prompt, routing). Test đi cùng code. Chạm file trong vùng kiến trúc (`docs/agent/architecture-zones.txt`) thì phải khai trước trong plan, mục "Vùng kiến trúc bị chạm", mỗi đường dẫn hoặc glob trong backtick; ngoài plan thì dừng lại hỏi. PR không có plan mà chạm vùng thì mô tả PR có mục `## Vùng kiến trúc bị chạm` cùng cách viết. CI (`plan-zones`, plan 23) đỏ khi file vùng không được khai; sửa mô tả PR thì Re-run job. `.claude/settings.json` và `.claude/hooks/**` chỉ sửa bằng tool Edit/Write, không bằng script: chỉ tool mới hiện prompt để Liam duyệt. `main` chỉ nhận qua PR có CI xanh; **Liam tự merge**, Claude không merge.
 4. **Kiểm chứng:** thay đổi hành vi → chạy skill `verify`, viết evidence report (`docs/agent/templates/EVIDENCE_REPORT.md`), dán mục Tóm tắt vào tin nhắn cuối và PR. Chi tiết ở mục "Kiểm chứng" bên dưới.
 5. **Eval gate (từ P2):** mọi thay đổi về prompt, model, rule hoặc ngưỡng phải chạy `make eval` và dán bảng metric (so với lần trước) vào PR.
-6. **Review bằng `pr-reviewer`: TẠM TẮT từ 2026-11-05** theo quyết định của Liam, để ưu tiên ship sản phẩm. Không chạy subagent này cho tới khi Liam bảo bật lại. Evidence report, CI và Liam duyệt PR vẫn giữ nguyên. Lúc bật lại: khôi phục bước này từ git và đưa bản vá hook (nhánh `fix/12k-pr-reviewer-hook`) vào trước.
+6. **Không có bước review bằng subagent** (`pr-reviewer` đã gỡ 2026-11-08, plan 37). Lớp kiểm: evidence report, CI, Liam duyệt PR.
 7. **Cuối phiên:** cập nhật `docs/STATUS.md`. Quyết định kỹ thuật mới hoặc lệch `docs/product.md` → thêm ADR `docs/decisions/NNNN-<slug>.md`. Đổi spec sản phẩm: sửa `product.md` trước.
 
 Lệnh tắt: `/tiep` (mở lại phiên, làm tiếp chỗ đang dở), `/next` (đề xuất task tiếp theo), `/wrap` (cập nhật STATUS, ADR cuối phiên).
@@ -67,7 +67,7 @@ config/rules/        Cấu hình rule theo khách hàng (YAML, validate bằng R
 eval/                Dữ liệu eval: hard-cases/ (ca khó làm tay, giả lập, cases.json), report.md; code eval ở apps/api/src/eval + scripts/eval.ts
 tools/synth/         Bộ sinh thẻ giả lập + đáp án (Playwright, seed, bảng kịch bản src/policy.ts)
 docs/                product.md, flows.md, doc-types.md, data-policy.md, roadmap.md, STATUS.md, plans/, decisions/, research/, learning/ (lưu trữ, dừng cập nhật 2026-11-05), agent/ (rule kiểm chứng, guardrails, mẫu)
-.claude/             commands/ (/tiep, /next, /wrap), agents/ (pr-reviewer), hooks/, skills/verify/ (quy trình kiểm chứng, FEATURE_MAP.md), settings.json (deny + ask dùng chung, guardrail A8)
+.claude/             commands/ (/tiep, /next, /wrap), hooks/, skills/verify/ (quy trình kiểm chứng, FEATURE_MAP.md), settings.json (deny + ask dùng chung, guardrail A8)
 ```
 
 ## Lệnh

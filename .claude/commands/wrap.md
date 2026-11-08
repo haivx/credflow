@@ -3,7 +3,7 @@ description: Cuối phiên, cập nhật STATUS và ghi ADR nếu có quyết đ
 ---
 
 1. Tóm tắt những gì đã làm trong phiên này (dựa trên git diff và các plan đã xong).
-2. Cập nhật `docs/STATUS.md`: Đang làm, Tiếp theo, Vướng, Eval mới nhất (nếu đã chạy `make eval`), thêm một dòng Nhật ký. Giữ file dưới 40 dòng; dồn nhật ký cũ nếu cần.
+2. Cập nhật `docs/STATUS.md`: Đang làm, Tiếp theo, Vướng, Eval mới nhất (nếu đã chạy `make eval`; dòng eval cũ chuyển sang archive). Tối đa 40 dòng (`make lint` đỏ nếu vượt): việc đã xong, danh sách merge, nhật ký ghi vào cuối `docs/archive/status-2026-11.md`, không để trong STATUS.
 3. Cập nhật trạng thái plan liên quan trong `docs/plans/`.
 4. Gặp kiến thức vượt mức middle trong phiên thì thêm dòng vào "Học nâng cao" trong `docs/roadmap.md`.
 5. Nếu trong phiên có quyết định kỹ thuật mới hoặc lệch `docs/product.md`: đề xuất nội dung ADR `docs/decisions/NNNN-<slug>.md` và hỏi Liam trước khi ghi.
