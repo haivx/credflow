@@ -2,7 +2,7 @@
 
 > Claude Code đọc file này đầu mỗi phiên và cập nhật cuối phiên (`/wrap`). Giữ ngắn, dưới 40 dòng.
 
-**Cập nhật:** 2026-11-07
+**Cập nhật:** 2026-11-08
 **Phase hiện tại:** P4.5 · Dựng UI, đang làm **P6a · Deploy lên Railway** (Liam 2026-11-07: thứ tự P4.5 → P6a → P5 → P6b; ADR 0013 Railway + Bucket). P0 xong 2026-11-03; P1, P2, P3 xong 2026-11-06; P4 xong 2026-11-07.
 
 ## Đang làm
@@ -41,8 +41,8 @@
 
 ## Tiếp theo
 
-1. Liam merge PR #48 (plan 29), rồi PR roadmap P4.5 (nhánh `docs/p4-5-ui`). Plan 30 nền UI + S1: Liam duyệt 2026-11-07, nhánh `feat/30-nen-ui-s1` (tách từ `docs/p4-5-ui`). Xong: evidence `.verify/reports/2026-11-07-30-nen-ui-s1.md` (✅, L3 9 kịch bản, hồi quy 10 ca qua, test-int 196, eval-ci 0/44), ADR 0012. PR #50 CI xanh, chờ Liam merge (sau #49). Tiếp: plan 31 (S2 + S3, bỏ `data-legacy`).
-2. **P6a (ADR 0013, Railway):** Liam tự làm theo bài dạy. Xong: Bài 0–2, 5 (project, Postgres 18.6, Redis `noeviction` đã kiểm, `api` Active, migrate qua pre-deploy timeout 300 s, watch paths). Tiếp: Bài 3–4 (`worker`, `web`, Bucket), 5b (seed production). Claude: plan 33 (`S3Storage` + `SEED_PASSWORD`), worktree `../credflow-33`. Việc tồn: Postgres dev 16 vs Railway 18.6; Node dev 24 vs Railpack 22. P4.5 plan 31 (S2/S3), 32 (bàn phím) chưa làm.
+1. **P4.5:** plan 30 (nền UI + S1) merge PR #50; roadmap PR #49. Còn plan 31 (S2/S3, bỏ `data-legacy`), 32 (bàn phím) chưa làm, xếp sau P6a.
+2. **P6a (ADR 0013, Railway):** Liam tự làm theo bài dạy (memory: chế độ dạy). **App đã chạy công khai** `https://web-production-5b171.up.railway.app` (2026-11-08): web, api, worker, Postgres 18.6, Redis `noeviction`, bucket; migrate bằng pre-deploy; seed bằng `railway ssh` + `SEED_PASSWORD`; mật khẩu Postgres đã đổi (lộ trong screenshot). Kiểm thật: tự duyệt (staff-marisol), NAME_MISMATCH vào hàng chờ, reviewer xem file từ bucket. Plan 33 (`S3Storage`, `SEED_PASSWORD`) merge PR #53, evidence có phần Railway thật. Tiếp: bài bảo vệ demo (Liam: Hobby + Usage Limits, trần Anthropic, backup + thử khôi phục) + plan 34 (Claude: rate limit, tự xoá file cũ, script đặt lại mật khẩu demo, chặn khoảng trắng thừa trong `API_URL`/`API_HOST`). Việc tồn: Postgres dev 16 vs Railway 18.6; Node dev 24 vs Railpack 22.
 3. Việc nhỏ ghi lại từ plan 29: màn staff hiện `LOW_CONFIDENCE` ở cột Lý do cho giấy **đã duyệt**; ca 05 trong eval dùng default còn seed Odalys thuộc Bayleaf (cân nhắc ghi rõ trong `cases.json`).
 3. Phạm vi P3 chính: config theo khách hàng, `dateOrder`, staff đủ bộ giấy.
 
