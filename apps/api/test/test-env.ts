@@ -13,6 +13,11 @@ export const testEnv = {
   DATA_DIR: join(tmpdir(), "credflow-int-test"),
   // Giới hạn nhỏ để test 413 không phải gửi 10 MB.
   UPLOAD_MAX_BYTES: "65536",
+  // Plan 34: giới hạn rất cao để test cũ (đăng nhập, upload nhiều lần) không đụng 429.
+  // rate-limit.int-spec.ts tự đặt giới hạn thấp.
+  LOGIN_RATE_LIMIT: "100000",
+  UPLOAD_RATE_PER_HOUR: "100000",
+  DAILY_UPLOAD_CAP: "100000",
 };
 
 // Bucket S3 cục bộ cho test S3Storage (service s3-test, adobe/s3mock, plan 33). s3mock không

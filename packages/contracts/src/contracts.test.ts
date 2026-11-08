@@ -72,6 +72,12 @@ describe("DocumentRecord", () => {
 });
 
 describe("ApiError", () => {
+  it("nhận TOO_MANY_REQUESTS (429, plan 34)", () => {
+    expect(
+      ApiError.safeParse({ code: "TOO_MANY_REQUESTS", message: "x" }).success,
+    ).toBe(true);
+  });
+
   it("từ chối mã lỗi ngoài ErrorCode", () => {
     expect(ApiError.safeParse({ code: "TEAPOT", message: "x" }).success).toBe(
       false,

@@ -7,6 +7,8 @@ import {
   reasonLabel,
   staffReason,
   statusTone,
+  loginErrorText,
+  uploadErrorMessage,
 } from "./status";
 
 const review = (note?: string) => ({
@@ -97,5 +99,24 @@ describe("pollInterval", () => {
   it("không còn giấy đang xử lý hoặc chưa có dữ liệu → dừng", () => {
     expect(pollInterval(done, T0, T0)).toBe(false);
     expect(pollInterval(undefined, T0, T0)).toBe(false);
+  });
+});
+
+describe("câu báo 429 (plan 34)", () => {
+  it("upload vượt giới hạn → câu riêng, không dùng câu của server", () => {
+    expect(uploadErrorMessage("TOO_MANY_REQUESTS", "msg server")).toMatch(
+      /thử lại/,
+    );
+    expect(uploadErrorMessage("TOO_MANY_REQUESTS", "msg server")).not.toBe(
+      "msg server",
+    );
+  });
+
+  it("đăng nhập: 401 sai mật khẩu, 429 bị chặn tạm thời, mã khác kèm message", () => {
+    expect(loginErrorText(401, "x")).toBe("Sai email hoặc mật khẩu.");
+    expect(loginErrorText(429, "x")).toMatch(/quá nhiều lần/);
+    expect(loginErrorText(500, "Lỗi máy chủ")).toBe(
+      "Không đăng nhập được: Lỗi máy chủ",
+    );
   });
 });

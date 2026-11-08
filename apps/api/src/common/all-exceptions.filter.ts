@@ -18,6 +18,7 @@ const CODE_BY_STATUS: Partial<Record<number, ErrorCode>> = {
   409: "CONFLICT",
   413: "PAYLOAD_TOO_LARGE",
   415: "UNSUPPORTED_MEDIA_TYPE",
+  429: "TOO_MANY_REQUESTS",
 };
 
 /** Lỗi pg do client gây ra (trùng unique, FK không tồn tại). CHECK/NOT NULL là bug server → 500. */

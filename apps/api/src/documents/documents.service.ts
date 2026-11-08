@@ -2,6 +2,8 @@ import { open, rm } from "node:fs/promises";
 import {
   BadRequestException,
   ConflictException,
+  HttpException,
+  HttpStatus,
   Inject,
   Injectable,
   Logger,
@@ -12,7 +14,7 @@ import {
   type UploadDocumentResponse,
   UploadDocumentFields,
 } from "@credflow/contracts";
-import { eq } from "drizzle-orm";
+import { count, eq, gte } from "drizzle-orm";
 import { ulid } from "ulid";
 import { formatErrorForLog, getPgErrorCode } from "../common/pg-error.js";
 import { ZodValidationPipe } from "../common/zod-validation.pipe.js";
@@ -36,6 +38,28 @@ export class DocumentsService {
     @Inject(DOCUMENT_QUEUE) private readonly queue: DocumentQueue,
     private readonly config: ConfigService<Env, true>,
   ) {}
+
+  /**
+   * Trần số giấy mới toàn hệ thống mỗi ngày UTC (DAILY_UPLOAD_CAP, plan 34): trần tiền gọi Claude.
+   * Đếm trên `documents` (một nguồn sự thật, không lệch khi api khởi động lại). Nộp trùng không
+   * tạo dòng mới nên không bị tính. Hai upload cùng lúc ở ngưỡng có thể vượt 1: chấp nhận.
+   */
+  async assertDailyUploadQuota(now: Date): Promise<void> {
+    const startOfDay = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+    );
+    const [row] = await this.db
+      .select({ n: count() })
+      .from(documents)
+      .where(gte(documents.createdAt, startOfDay));
+    const cap = this.config.get("DAILY_UPLOAD_CAP", { infer: true });
+    if ((row?.n ?? 0) >= cap) {
+      throw new HttpException(
+        "Hệ thống demo đã nhận đủ số giấy cho hôm nay, hãy thử lại vào ngày mai.",
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
+    }
+  }
 
   uploadOptions(): { tmpDir: string; maxBytes: number } {
     return {

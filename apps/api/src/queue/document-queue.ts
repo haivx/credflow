@@ -8,6 +8,10 @@ export const SWEEP_QUEUE_NAME = "document-sweep";
 export const SWEEP_SCHEDULER_ID = "document-sweep";
 export const SWEEP_JOB = "sweep";
 export const SWEEP_EVERY_MS = 60_000;
+/** Plan 34: dọn file quá hạn, chạy trên cùng queue sweep, mỗi giờ một lần. */
+export const RETENTION_SCHEDULER_ID = "file-retention";
+export const RETENTION_JOB = "file-retention";
+export const RETENTION_EVERY_MS = 60 * 60_000;
 
 /**
  * `attempts` tính cả lần chạy đầu: tối đa 3 lần, chờ 1s rồi 2s giữa các lần.

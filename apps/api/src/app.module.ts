@@ -10,6 +10,7 @@ import { AuthModule } from "./auth/auth.module.js";
 import { AllExceptionsFilter } from "./common/all-exceptions.filter.js";
 import { DocumentsModule } from "./documents/documents.module.js";
 import { HealthModule } from "./health/health.module.js";
+import { RateLimitModule } from "./rate-limit/rate-limit.module.js";
 import { baseConfig } from "./config/config.options.js";
 import { ReviewModule } from "./review/review.module.js";
 import { StaffModule } from "./staff/staff.module.js";
@@ -20,6 +21,7 @@ import { StaffModule } from "./staff/staff.module.js";
     AuthModule,
     DocumentsModule,
     HealthModule,
+    RateLimitModule,
     ReviewModule,
     StaffModule,
   ],

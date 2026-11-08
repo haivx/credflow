@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ApiRequestError, useLogin } from "../_lib/queries";
+import { loginErrorText } from "../_lib/status";
 
 /** Đăng nhập (plan 17, giao diện plan 30). Thành công thì `useLogin` cập nhật `useMe`. */
 export function LoginForm() {
@@ -30,8 +31,8 @@ export function LoginForm() {
   const errorText =
     error === null
       ? null
-      : error instanceof ApiRequestError && error.status === 401
-        ? "Sai email hoặc mật khẩu."
+      : error instanceof ApiRequestError
+        ? loginErrorText(error.status, error.message)
         : `Không đăng nhập được: ${error.message}`;
 
   return (

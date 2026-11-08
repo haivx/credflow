@@ -14,6 +14,7 @@ import { rulesConfigProvider } from "./rules/rules-config.provider.js";
 import { StorageModule } from "./storage/storage.module.js";
 import { DocumentProcessor } from "./worker/document-processor.js";
 import { DocumentSweepService } from "./worker/document-sweep.service.js";
+import { FileRetentionService } from "./worker/file-retention.service.js";
 import { DocumentWorkerService } from "./worker/document-worker.service.js";
 
 @Module({
@@ -33,6 +34,7 @@ import { DocumentWorkerService } from "./worker/document-worker.service.js";
     { provide: PIPELINE, useClass: LlmPipeline },
     DocumentProcessor,
     DocumentSweepService,
+    FileRetentionService,
     DocumentWorkerService,
   ],
 })

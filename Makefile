@@ -1,6 +1,6 @@
 # CredFlow: lệnh phát triển. Recipe là POSIX sh.
 
-.PHONY: setup db-up db-down db-generate db-migrate db-seed build-packages dev dev-packages dev-api dev-worker dev-web test test-int typecheck lint format eval eval-ci synth report-corrections
+.PHONY: setup db-up db-down db-generate db-migrate db-seed build-packages dev dev-packages dev-api dev-worker dev-web test test-int typecheck lint format eval eval-ci synth report-corrections db-reset-demo-password
 
 # Cài deps từ lockfile, bật Postgres và Redis, chạy migration, seed staff giả lập.
 # Chạy lại an toàn: migration đã áp thì bỏ qua, seed không sinh dòng trùng.
@@ -28,6 +28,10 @@ db-migrate:
 # Seed staff giả lập; chạy lại không sinh dòng trùng.
 db-seed: build-packages
 	pnpm --filter @credflow/api db:seed
+
+# Đặt lại mật khẩu 6 tài khoản demo (plan 34). Cần SEED_PASSWORD khi DB không ở máy local.
+db-reset-demo-password: build-packages
+	pnpm --filter @credflow/api db:reset-demo-password
 
 # packages/* build bằng tsc ra dist/: lúc chạy, node/vitest/tsx đọc dist (ADR 0003).
 build-packages:
