@@ -53,6 +53,16 @@ export const envSchema = z.object({
   DAILY_UPLOAD_CAP: z.coerce.number().int().min(1).default(50),
   /** Xoá file của giấy nộp quá N ngày (giữ dòng DB). 0 = không xoá. */
   FILE_RETENTION_DAYS: z.coerce.number().int().min(0).default(3),
+  // Khoá chủ mã hoá khoá Anthropic admin lưu (plan 35, ADR 0014): base64 của đúng 32 byte
+  // (`openssl rand -base64 32`). Không đặt thì không lưu được khoá riêng, chế độ mặc định vẫn chạy.
+  // api và worker phải cùng giá trị.
+  SETTINGS_ENCRYPTION_KEY: z
+    .string()
+    .refine(
+      (v) => Buffer.from(v, "base64").length === 32,
+      "SETTINGS_ENCRYPTION_KEY phải là base64 của đúng 32 byte",
+    )
+    .optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

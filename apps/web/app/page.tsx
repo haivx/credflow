@@ -18,11 +18,14 @@ function HomeFor({ user }: { user: AuthUser }) {
   const router = useRouter();
   useEffect(() => {
     if (user.role === "reviewer") router.replace("/review");
+    if (user.role === "admin") router.replace("/settings");
   }, [user.role, router]);
 
   if (user.role === "staff") return <StaffHome />;
   if (user.role === "reviewer")
     return <p className="text-muted-foreground">Đang mở hàng chờ…</p>;
+  if (user.role === "admin")
+    return <p className="text-muted-foreground">Đang mở Cài đặt…</p>;
   return (
     <p data-testid="role-not-ready" className="text-muted-foreground">
       Màn của vai trò {user.role} làm ở P5.

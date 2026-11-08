@@ -26,7 +26,7 @@ Giảm phần lớn việc đọc và gõ tay của compliance, nhưng **không 
 | --- | --- |
 | Nhân viên (staff) | Upload giấy tờ, xem trạng thái, nộp lại khi được yêu cầu |
 | Người duyệt (reviewer, HR/compliance) | Xử lý hàng chờ: xem giấy cạnh trường đã trích xuất, sửa, duyệt, từ chối, yêu cầu nộp lại |
-| Admin | Cấu hình rule theo khách hàng, xem dashboard compliance |
+| Admin | Cấu hình rule theo khách hàng, xem dashboard compliance, cấu hình LLM (khoá API riêng, model) |
 
 MVP có đăng nhập cơ bản: email + mật khẩu, session lưu ở DB, cookie `httpOnly`; mỗi user có đúng một vai trò (ADR 0004). User là dữ liệu giả lập seed sẵn; không có đăng ký, quên mật khẩu, SSO/OIDC.
 
@@ -140,7 +140,7 @@ Xem `docs/flows.md`. Các màn chính:
 | Job queue | BullMQ + Redis 7 (`noeviction`); dual-write xử lý bằng sweep job (ADR 0001) | Chấp nhận |
 | Đăng nhập | Email + mật khẩu (scrypt), session trong Postgres, cookie `httpOnly`; guard toàn cục + `@Roles` | Chấp nhận (ADR 0004) |
 | Lưu file | Dev: file system local (`DATA_DIR`). Production: Railway Bucket (S3) qua `S3Storage`, chọn bằng `STORAGE_DRIVER` | Chấp nhận (ADR 0013) |
-| LLM | `claude-haiku-5-5`, vision + structured output (ADR 0008); đo lại bằng eval ở P2 | Chấp nhận |
+| LLM | Mặc định `claude-haiku-5-5` + khoá API của hệ thống, vision + structured output (ADR 0008). Admin có thể đặt khoá Anthropic riêng (mã hoá khi lưu) và chọn model trong danh sách **đã qua `make eval`**; hiện danh sách chỉ có Haiku 5.5 (ADR 0014) | Chấp nhận |
 | Contract | Zod 4 trong `packages/contracts` | Chấp nhận |
 | Eval | TypeScript (`eval/`) | Chấp nhận |
 | Deploy | Railway (Singapore): web, api, worker, Postgres, Redis, Bucket; chỉ web công khai; migration bằng pre-deploy | Chấp nhận (ADR 0013) |

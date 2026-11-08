@@ -18,6 +18,7 @@ import {
   ReviewQueuePage,
 } from "./review.js";
 import { RuleResult, RulesConfig } from "./rules.js";
+import { LlmSettingsView } from "./settings.js";
 import { StaffCompliance, StaffProfile } from "./staff.js";
 
 export * from "./common.js";
@@ -32,6 +33,7 @@ export * from "./error.js";
 export * from "./auth.js";
 export * from "./parse-json.js";
 export * from "./jobs.js";
+export * from "./settings.js";
 
 /** Các kiểu đi qua ranh giới I/O. Fixture trong fixtures/<Tên>.json phải parse được. */
 export const Schemas = {
@@ -57,5 +59,6 @@ export const Schemas = {
   ReviewDocumentDetail,
   PreviewResponse,
   DecisionResponse,
+  LlmSettingsView,
 } as const;
 export type SchemaName = keyof typeof Schemas;

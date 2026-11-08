@@ -1,0 +1,24 @@
+[
+  {
+    "name": "mặc định: khoá hệ thống, Haiku 5.5",
+    "data": {
+      "source": "default",
+      "model": "claude-haiku-5-5",
+      "keyLast4": null,
+      "allowedModels": ["claude-haiku-5-5"],
+      "encryptionConfigured": true,
+      "updatedAt": null
+    }
+  },
+  {
+    "name": "khoá riêng, chỉ lộ 4 ký tự cuối",
+    "data": {
+      "source": "custom",
+      "model": "claude-haiku-5-5",
+      "keyLast4": "a1b2",
+      "allowedModels": ["claude-haiku-5-5"],
+      "encryptionConfigured": true,
+      "updatedAt": "2026-11-08T04:00:00.000Z"
+    }
+  }
+]
