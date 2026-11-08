@@ -37,7 +37,7 @@ Comment khi review là dấu hiệu: người viết "đừng làm X" trên mộ
 
 ## Danh sách luật
 
-Trạng thái: ✅ đã có gờ · 🟡 có một phần · ⏳ chờ code tồn tại (ghi plan sẽ làm)
+Trạng thái: ✅ đã có gờ · 🟡 có một phần · ⏳ chờ code tồn tại (ghi plan sẽ làm) · ❌ đã gỡ (giữ dòng để biết lý do)
 
 | # | Luật | Gờ (cơ chế cứng) | Trạng thái | Làm ở |
 |---|---|---|---|---|
@@ -55,7 +55,7 @@ Trạng thái: ✅ đã có gờ · 🟡 có một phần · ⏳ chờ code tồ
 | A11 | Không tự từ chối; trạng thái chỉ đổi qua một nơi | `assertTransition` + bảng transition (`apps/api/src/documents/state-machine.ts`; `approved`, `rejected`, `reupload_requested` bắt buộc `reviewerId`; spec phủ mọi cặp trạng thái). `DocumentStatusService.transition` là nơi duy nhất ghi status, `WHERE status = from`. Lint `A11_NO_STATUS_WRITE` cấm `.set({ status })`, `.values({ status })` ở `apps/api/src` ngoài file đó. **Lint không bắt được** `const patch = { status }; .set(patch)` | 🟡 lint có lỗ đã biết | plan 12 |
 | A12 | Prompt nằm trong file có version | `loadPrompt(name, version)` (`apps/api/src/llm/prompts.ts`); `PROMPTS` là danh sách đang dùng, `prompts.spec.ts` đối chiếu với file; worker nạp lúc khởi động, thiếu file thì không chạy. **Lint không chặn** prompt viết inline | 🟡 | plan 14 |
 | A14 | Log lỗi DB chỉ gồm `PgErrorInfo` + SQL dạng `$1` + stack frames; không có message gốc, `params`, `detail`, `where`. **Giả định:** mọi query đều có tham số, nên SQL trong log không chứa giá trị (cũng là cơ sở chống SQL injection) | **Gờ chính:** `formatErrorForLog` (`apps/api/src/common/pg-error.ts`) + `apps/api/test/error-log.int-spec.ts` (lỗi thật, kiểm chuỗi thật ghi ra). **Lớp phụ (lint, `eslint.config.mjs`, block "A14"):** cấm `.stack` (miễn trừ `pg-error.ts`), cấm `sql.raw` (miễn trừ `schema.ts`: DDL không nhận `$1`, chỉ ghép hằng số từ contracts), `no-console` ở `apps/api/src` (trừ spec; `scripts/` nằm ngoài). Lint không chặn được `logger.error(err.message)` | ✅ | plan 12e |
-| A15 | Trước khi báo PR sẵn sàng, chạy `pr-reviewer` và dán kết luận vào PR. Reviewer chỉ đọc | Subagent `.claude/agents/pr-reviewer.md`; hook `.claude/hooks/pr-reviewer-bash.mjs` giới hạn Bash theo danh sách cho phép; `tools/lint/pr-reviewer-bash.test.mjs`. **Bước chạy reviewer vẫn là rule mềm** (CLAUDE.md), CI không kiểm. Reviewer cũng là Claude nên "OK" không phải bằng chứng độc lập; lệnh `make` chạy script trong repo nên diff `Makefile` phải đọc bằng mắt. **Tạm tắt từ 2026-11-05 theo quyết định của Liam (ưu tiên ship).** Hook trên `main` còn 3 lỗi đã tái hiện (`.verify/reports/2026-11-05-12i-pr-reviewer.md`, chỉ có ở máy Claude đã chạy); bản vá ở nhánh `fix/12k-pr-reviewer-hook`, chưa merge | ⏸️ | plan 12i |
+| A15 | ~~Chạy `pr-reviewer` trước khi báo PR sẵn sàng~~ | **Đã gỡ 2026-11-08 (plan 37, Liam chốt).** Reviewer cũng là Claude nên không phải bằng chứng độc lập; lớp kiểm còn lại là evidence report + CI + Liam duyệt PR. Agent, hook, test lấy lại được từ git history (plan 12i) | ❌ đã gỡ | plan 12i, 37 |
 
 Luật **giữ ở lớp mềm** (cần phán đoán, máy không bắt được): mục "Quyết định đáng nhớ" của plan,
 chọn task tiếp theo, đánh giá trade-off. Những luật này ở lại CLAUDE.md.
