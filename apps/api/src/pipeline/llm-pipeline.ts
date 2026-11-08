@@ -4,7 +4,20 @@ import { route } from "@credflow/rules";
 import { eq } from "drizzle-orm";
 import { type Db, DB } from "../db/db.provider.js";
 import { documents } from "../db/schema.js";
-import { LlmError, type LlmDocument, LlmService } from "../llm/llm.service.js";
+import {
+  LLM_CLIENT,
+  LLM_CLIENT_FACTORY,
+  type LlmClient,
+  type LlmClientFactory,
+  type LlmDocument,
+  LlmError,
+  type LlmRuntime,
+  LlmService,
+} from "../llm/llm.service.js";
+import {
+  LlmSettingsError,
+  LlmSettingsService,
+} from "../settings/llm-settings.service.js";
 import { STORAGE, type Storage } from "../storage/storage.js";
 import {
   type NeedsReviewResult,
@@ -25,6 +38,9 @@ export class LlmPipeline implements Pipeline {
     @Inject(DB) private readonly db: Db,
     @Inject(STORAGE) private readonly storage: Storage,
     private readonly llm: LlmService,
+    private readonly settings: LlmSettingsService,
+    @Inject(LLM_CLIENT) private readonly systemClient: LlmClient,
+    @Inject(LLM_CLIENT_FACTORY) private readonly clients: LlmClientFactory,
   ) {}
 
   async run(documentId: string): Promise<PipelineResult> {
@@ -33,13 +49,25 @@ export class LlmPipeline implements Pipeline {
     let classification: Classification | undefined;
     let extraction: Extraction | undefined;
 
+    const runtime = await this.resolveRuntime(documentId);
+    if (runtime === undefined) {
+      // Khoá riêng không dùng được: không quay về khoá hệ thống (ADR 0014), chuyển người duyệt.
+      return {
+        ...needsReview(undefined, undefined, timingMs),
+        error: {
+          step: "classify",
+          message: "Khoá LLM riêng không dùng được, kiểm tra trang Cài đặt",
+        },
+      };
+    }
+
     try {
       classification = await timed(timingMs, "classify", () =>
-        this.llm.classify(doc),
+        this.llm.classify(doc, runtime),
       );
       if (classification.docType === "cpr_card") {
         extraction = await timed(timingMs, "extract", () =>
-          this.llm.extractCpr(doc),
+          this.llm.extractCpr(doc, runtime),
         );
       }
     } catch (err) {
@@ -56,6 +84,29 @@ export class LlmPipeline implements Pipeline {
       return needsReview(classification, extraction, timingMs);
     }
     return { status: "extracted", classification, extraction, timingMs };
+  }
+
+  /** Khoá và model cho giấy này (plan 35). `undefined` khi khoá riêng đã lưu không giải mã được. */
+  private async resolveRuntime(
+    documentId: string,
+  ): Promise<LlmRuntime | undefined> {
+    try {
+      const resolved = await this.settings.resolve();
+      // Log nguồn khoá, không bao giờ log khoá.
+      this.logger.log(
+        `document ${documentId}: khoá ${resolved.source === "custom" ? "riêng" : "mặc định"}, model ${resolved.model}`,
+      );
+      return resolved.source === "custom"
+        ? {
+            client: this.clients.forKey(resolved.apiKey),
+            model: resolved.model,
+          }
+        : { client: this.systemClient, model: resolved.model };
+    } catch (err) {
+      if (!(err instanceof LlmSettingsError)) throw err;
+      this.logger.error(`document ${documentId}: ${err.message}`);
+      return undefined;
+    }
   }
 
   private async readDocument(documentId: string): Promise<LlmDocument> {

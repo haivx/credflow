@@ -242,3 +242,31 @@ export const reviewActions = pgTable(
     ),
   ],
 );
+
+/**
+ * Cấu hình hệ thống do admin đặt (plan 35, ADR 0014). Một dòng `id = 'llm'`: khoá Anthropic riêng
+ * (đã mã hoá AES-256-GCM, null = dùng khoá hệ thống) và model. Không bao giờ lưu khoá dạng rõ.
+ */
+export const appSettings = pgTable(
+  "app_settings",
+  {
+    id: text("id").primaryKey(),
+    llmModel: text("llm_model").notNull(),
+    apiKeyCiphertext: text("api_key_ciphertext"),
+    apiKeyLast4: text("api_key_last4"),
+    updatedBy: text("updated_by").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (t) => [
+    check("app_settings_id_check", sql`${t.id} = 'llm'`),
+    // Có bản mã thì phải có 4 ký tự cuối để hiện, và ngược lại.
+    check(
+      "app_settings_key_pair_check",
+      sql`(${t.apiKeyCiphertext} IS NULL) = (${t.apiKeyLast4} IS NULL)`,
+    ),
+  ],
+);

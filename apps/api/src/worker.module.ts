@@ -6,6 +6,7 @@ import { baseConfig } from "./config/config.options.js";
 import { DbModule } from "./db/db.module.js";
 import { DocumentStatusModule } from "./documents/document-status.module.js";
 import { LlmModule } from "./llm/llm.module.js";
+import { LlmSettingsModule } from "./settings/settings.module.js";
 import { LlmPipeline } from "./pipeline/llm-pipeline.js";
 import { PIPELINE } from "./pipeline/pipeline.js";
 import { QueueModule } from "./queue/queue.module.js";
@@ -24,6 +25,7 @@ import { DocumentWorkerService } from "./worker/document-worker.service.js";
     DbModule,
     DocumentStatusModule,
     LlmModule,
+    LlmSettingsModule,
     QueueModule,
     StorageModule,
   ],

@@ -4,7 +4,9 @@ import {
   type ApiError,
   AuthUser,
   DocumentList,
+  LlmSettingsView,
   type LoginRequest,
+  type UpdateLlmSettingsRequest,
   UploadDocumentResponse,
 } from "@credflow/contracts";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -35,6 +37,7 @@ function unwrap<T>(res: ApiResult<T>): T {
 export const queryKeys = {
   me: ["auth", "me"] as const,
   myDocuments: ["documents", "mine"] as const,
+  llmSettings: ["settings", "llm"] as const,
 };
 
 /** User đang đăng nhập; `null` = chưa đăng nhập (401 không phải lỗi). */
@@ -107,5 +110,46 @@ export function useUpload() {
       ),
     onSuccess: () =>
       client.invalidateQueries({ queryKey: queryKeys.myDocuments }),
+  });
+}
+
+/** Cấu hình LLM (plan 35, chỉ admin). Không bao giờ chứa khoá đầy đủ. */
+export function useLlmSettings() {
+  return useQuery({
+    queryKey: queryKeys.llmSettings,
+    queryFn: async () =>
+      unwrap(await apiFetch("/settings/llm", LlmSettingsView)),
+  });
+}
+
+export function useSaveLlmSettings() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (body: UpdateLlmSettingsRequest) =>
+      unwrap(
+        await apiFetch("/settings/llm", LlmSettingsView, {
+          method: "PUT",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(body),
+        }),
+      ),
+    onSuccess: (view) => {
+      client.setQueryData(queryKeys.llmSettings, view);
+    },
+  });
+}
+
+export function useClearLlmKey() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async () =>
+      unwrap(
+        await apiFetch("/settings/llm/key", LlmSettingsView, {
+          method: "DELETE",
+        }),
+      ),
+    onSuccess: (view) => {
+      client.setQueryData(queryKeys.llmSettings, view);
+    },
   });
 }

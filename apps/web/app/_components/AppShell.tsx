@@ -1,7 +1,7 @@
 "use client";
 
 import type { AuthUser, UserRole } from "@credflow/contracts";
-import { LogOut, ShieldCheck } from "lucide-react";
+import { LogOut, Settings, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -62,6 +62,20 @@ export function AppShell({
                 {user.email}
               </span>
               <Badge variant="secondary">{ROLE_LABEL[user.role]}</Badge>
+              {user.role === "admin" && (
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="sm"
+                  data-testid="nav-settings"
+                >
+                  <Link href="/settings">
+                    <Settings aria-hidden />
+                    <span className="hidden sm:inline">Cài đặt</span>
+                    <span className="sr-only sm:hidden">Cài đặt</span>
+                  </Link>
+                </Button>
+              )}
               <Button
                 type="button"
                 variant="ghost"

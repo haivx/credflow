@@ -22,6 +22,7 @@ import {
   UnreadableFileError,
 } from "../pipeline/pipeline.js";
 import { RuleStep } from "../rules/rule-step.js";
+import { LlmSettingsService } from "../settings/llm-settings.service.js";
 import { RULES_CONFIG } from "../rules/rules-config.provider.js";
 
 @Injectable()
@@ -34,6 +35,7 @@ export class DocumentProcessor {
     @Inject(RULES_CONFIG) private readonly rules: RulesConfigSet,
     private readonly status: DocumentStatusService,
     private readonly ruleStep: RuleStep,
+    private readonly llmSettings: LlmSettingsService,
   ) {}
 
   /**
@@ -78,6 +80,8 @@ export class DocumentProcessor {
       await this.status.transition(documentId, "uploaded", "processing", {
         versions: {
           ...PIPELINE_VERSIONS,
+          // Model admin đã cấu hình (plan 35); mặc định là PIPELINE_VERSIONS.model.
+          model: await this.llmSettings.currentModel(),
           // Các config sẽ dùng, theo khách hàng của staff (plan 25): "default@1", "bayleaf@1+sunrise@1".
           rules: rulesVersion(
             configsFor(this.rules, await this.readClientIds(documentId)),

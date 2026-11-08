@@ -15,6 +15,10 @@ import {
   ReviewQueueQuery,
   StaffListQuery,
   UploadDocumentFields,
+  DEFAULT_LLM_MODEL,
+  LlmModel,
+  LlmSettingsView,
+  UpdateLlmSettingsRequest,
 } from "./index.js";
 
 const FIXTURE_DIR = join(import.meta.dirname, "..", "fixtures");
@@ -251,5 +255,52 @@ describe("ReviewQueueQuery", () => {
     expect(ReviewQueueQuery.safeParse({ status: "approved" }).success).toBe(
       false,
     );
+  });
+});
+
+describe("Cài đặt LLM (plan 35)", () => {
+  it("chỉ nhận model trong danh sách đã qua eval", () => {
+    expect(LlmModel.options).toEqual(["claude-haiku-5-5"]);
+    expect(DEFAULT_LLM_MODEL).toBe("claude-haiku-5-5");
+    expect(
+      UpdateLlmSettingsRequest.safeParse({ model: "claude-opus-5-5" }).success,
+    ).toBe(false);
+  });
+
+  it("apiKey phải dạng sk-ant-…, không khoảng trắng; được phép bỏ trống", () => {
+    expect(
+      UpdateLlmSettingsRequest.safeParse({ model: "claude-haiku-5-5" }).success,
+    ).toBe(true);
+    expect(
+      UpdateLlmSettingsRequest.safeParse({
+        model: "claude-haiku-5-5",
+        apiKey: "sk-ant-api03-abcdefghijklmnopqrstuvwxyz",
+      }).success,
+    ).toBe(true);
+    for (const apiKey of [
+      "abc",
+      " sk-ant-api03-abcdefghijklmnop",
+      "sk-ant-api03 abcdefghijkl",
+    ]) {
+      expect(
+        UpdateLlmSettingsRequest.safeParse({
+          model: "claude-haiku-5-5",
+          apiKey,
+        }).success,
+      ).toBe(false);
+    }
+  });
+
+  it("view không có chỗ chứa khoá đầy đủ: key lạ bị loại khi parse", () => {
+    const parsed = LlmSettingsView.parse({
+      source: "custom",
+      model: "claude-haiku-5-5",
+      keyLast4: "a1b2",
+      allowedModels: ["claude-haiku-5-5"],
+      encryptionConfigured: true,
+      updatedAt: null,
+      apiKey: "sk-ant-lot-ra",
+    });
+    expect(JSON.stringify(parsed)).not.toContain("sk-ant");
   });
 });

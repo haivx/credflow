@@ -13,6 +13,7 @@ import { HealthModule } from "./health/health.module.js";
 import { RateLimitModule } from "./rate-limit/rate-limit.module.js";
 import { baseConfig } from "./config/config.options.js";
 import { ReviewModule } from "./review/review.module.js";
+import { SettingsModule } from "./settings/settings.module.js";
 import { StaffModule } from "./staff/staff.module.js";
 
 @Module({
@@ -23,6 +24,7 @@ import { StaffModule } from "./staff/staff.module.js";
     HealthModule,
     RateLimitModule,
     ReviewModule,
+    SettingsModule,
     StaffModule,
   ],
   // Đăng ký ở module (không phải main.ts) để integration test dựng từ AppModule cũng có filter.

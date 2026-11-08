@@ -197,3 +197,25 @@ describe("envSchema: giới hạn demo (plan 34)", () => {
     }
   });
 });
+
+describe("envSchema: SETTINGS_ENCRYPTION_KEY (plan 35)", () => {
+  it("không đặt → hợp lệ (chưa lưu được khoá riêng)", () => {
+    expect(envSchema.safeParse(baseValidEnv).success).toBe(true);
+  });
+
+  it("base64 đúng 32 byte → hợp lệ; sai độ dài → lỗi nêu tên biến", () => {
+    const ok = Buffer.alloc(32, 7).toString("base64");
+    expect(
+      envSchema.safeParse({ ...baseValidEnv, SETTINGS_ENCRYPTION_KEY: ok })
+        .success,
+    ).toBe(true);
+    const bad = envSchema.safeParse({
+      ...baseValidEnv,
+      SETTINGS_ENCRYPTION_KEY: Buffer.alloc(16).toString("base64"),
+    });
+    expect(bad.success).toBe(false);
+    expect(bad.error?.issues.map((i) => i.path)).toEqual([
+      ["SETTINGS_ENCRYPTION_KEY"],
+    ]);
+  });
+});

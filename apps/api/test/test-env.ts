@@ -18,6 +18,8 @@ export const testEnv = {
   LOGIN_RATE_LIMIT: "100000",
   UPLOAD_RATE_PER_HOUR: "100000",
   DAILY_UPLOAD_CAP: "100000",
+  // Plan 35: khoá chủ cố định cho test (32 byte), không dùng ở đâu khác.
+  SETTINGS_ENCRYPTION_KEY: Buffer.alloc(32, 0x5a).toString("base64"),
 };
 
 // Bucket S3 cục bộ cho test S3Storage (service s3-test, adobe/s3mock, plan 33). s3mock không

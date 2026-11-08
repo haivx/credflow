@@ -4,15 +4,36 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import {
   Classification,
   CprCardFields,
+  DEFAULT_LLM_MODEL,
   type Extraction,
+  type LlmModel,
   parseJson,
 } from "@credflow/contracts";
 import type * as z from "zod";
 import type { PromptTexts } from "./prompts.js";
 
-/** Model chốt ở ADR 0008. Đổi model phải qua Liam và ghi vào `versions.model`. */
-export const LLM_MODEL = "claude-haiku-5-5";
+/**
+ * Model mặc định (ADR 0008). Model thật của từng giấy do admin cấu hình (plan 35, ADR 0014),
+ * trong danh sách `LlmModel` đã qua eval. Eval dùng hằng này.
+ */
+export const LLM_MODEL: LlmModel = DEFAULT_LLM_MODEL;
+/** Client gọi bằng khoá hệ thống (`ANTHROPIC_API_KEY`). */
 export const LLM_CLIENT = Symbol("LLM_CLIENT");
+/** Tạo client theo khoá riêng admin đã lưu (plan 35). */
+export const LLM_CLIENT_FACTORY = Symbol("LLM_CLIENT_FACTORY");
+
+/** Phần của SDK mà module này dùng; test thay bằng bản giả. */
+export type LlmClient = Pick<Anthropic, "messages">;
+
+export interface LlmClientFactory {
+  forKey(apiKey: string): LlmClient;
+}
+
+/** Client và model cho một giấy. Không truyền thì dùng khoá hệ thống + model mặc định. */
+export interface LlmRuntime {
+  client: LlmClient;
+  model: LlmModel;
+}
 export const LLM_PROMPTS = Symbol("LLM_PROMPTS");
 
 const CLASSIFY_MAX_TOKENS = 1024;
@@ -55,27 +76,32 @@ export class LlmService {
   private readonly logger = new Logger("Llm");
 
   constructor(
-    @Inject(LLM_CLIENT) private readonly client: Anthropic,
+    @Inject(LLM_CLIENT) private readonly client: LlmClient,
     @Inject(LLM_PROMPTS) private readonly prompts: PromptTexts,
   ) {}
 
-  classify(doc: LlmDocument): Promise<Classification> {
+  classify(doc: LlmDocument, runtime?: LlmRuntime): Promise<Classification> {
     return this.callStructured(
       "classify",
       Classification,
       this.prompts.classify,
       CLASSIFY_MAX_TOKENS,
       doc,
+      runtime,
     );
   }
 
-  async extractCpr(doc: LlmDocument): Promise<CprExtraction> {
+  async extractCpr(
+    doc: LlmDocument,
+    runtime?: LlmRuntime,
+  ): Promise<CprExtraction> {
     const fields = await this.callStructured(
       "extract",
       CprCardFields,
       this.prompts.extractCpr,
       EXTRACT_MAX_TOKENS,
       doc,
+      runtime,
     );
     return { docType: "cpr_card", fields: withoutBoxes(fields) };
   }
@@ -87,9 +113,17 @@ export class LlmService {
     system: string,
     maxTokens: number,
     doc: LlmDocument,
+    runtime: LlmRuntime | undefined,
   ): Promise<z.output<S>> {
     for (let call = 1; call <= MAX_CALLS_PER_STEP; call++) {
-      const text = await this.request(step, schema, system, maxTokens, doc);
+      const text = await this.request(
+        step,
+        schema,
+        system,
+        maxTokens,
+        doc,
+        runtime ?? { client: this.client, model: LLM_MODEL },
+      );
       if (text === undefined) continue;
       try {
         return parseJson(schema, text);
@@ -109,12 +143,13 @@ export class LlmService {
     system: string,
     maxTokens: number,
     doc: LlmDocument,
+    runtime: LlmRuntime,
   ): Promise<string | undefined> {
     const startedAt = performance.now();
     let response: Anthropic.Message;
     try {
-      response = await this.client.messages.create({
-        model: LLM_MODEL,
+      response = await runtime.client.messages.create({
+        model: runtime.model,
         max_tokens: maxTokens,
         system,
         output_config: { effort: "low", format: zodOutputFormat(schema) },

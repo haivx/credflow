@@ -24,7 +24,7 @@ export function createTestDb(): { db: Db; close: () => Promise<void> } {
  */
 export async function truncateAll(db: Db) {
   await db.execute(
-    sql`TRUNCATE sessions, review_actions, documents, users, staff`,
+    sql`TRUNCATE app_settings, sessions, review_actions, documents, users, staff`,
   );
 }
 
