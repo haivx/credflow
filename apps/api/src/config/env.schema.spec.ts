@@ -43,6 +43,7 @@ describe("envSchema", () => {
       UPLOAD_RATE_PER_HOUR: 10,
       DAILY_UPLOAD_CAP: 50,
       FILE_RETENTION_DAYS: 3,
+      SIGNUP_DAILY_CAP: 20,
     });
   });
 
@@ -217,5 +218,47 @@ describe("envSchema: SETTINGS_ENCRYPTION_KEY (plan 35)", () => {
     expect(bad.error?.issues.map((i) => i.path)).toEqual([
       ["SETTINGS_ENCRYPTION_KEY"],
     ]);
+  });
+});
+
+describe("appEnvSchema: Google OAuth (plan 36)", () => {
+  const google = {
+    GOOGLE_CLIENT_ID: "123.apps.googleusercontent.com",
+    GOOGLE_CLIENT_SECRET: "GOCSPX-secret",
+    GOOGLE_REDIRECT_URL: "http://localhost:3000/api/auth/google/callback",
+    OAUTH_STATE_SECRET: "a".repeat(32),
+  };
+
+  it("không đặt biến nào → hợp lệ (tắt Google), trần đăng ký mặc định 20", () => {
+    const result = appEnvSchema.safeParse(baseValidEnv);
+    expect(result.success).toBe(true);
+    expect(result.data?.SIGNUP_DAILY_CAP).toBe(20);
+  });
+
+  it("đủ 4 biến → hợp lệ", () => {
+    expect(appEnvSchema.safeParse({ ...baseValidEnv, ...google }).success).toBe(
+      true,
+    );
+  });
+
+  it("thiếu một biến trong nhóm → lỗi nêu đúng biến thiếu", () => {
+    const result = appEnvSchema.safeParse({
+      ...baseValidEnv,
+      ...google,
+      GOOGLE_CLIENT_SECRET: undefined,
+    });
+    expect(result.success).toBe(false);
+    expect(result.error?.issues.map((i) => i.path.join("."))).toEqual([
+      "GOOGLE_CLIENT_SECRET",
+    ]);
+  });
+
+  it("OAUTH_STATE_SECRET ngắn hơn 32 ký tự → lỗi", () => {
+    const result = appEnvSchema.safeParse({
+      ...baseValidEnv,
+      ...google,
+      OAUTH_STATE_SECRET: "ngan",
+    });
+    expect(result.success).toBe(false);
   });
 });

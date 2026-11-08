@@ -63,9 +63,31 @@ export const envSchema = z.object({
       "SETTINGS_ENCRYPTION_KEY phải là base64 của đúng 32 byte",
     )
     .optional(),
+  // Đăng ký bằng Google (plan 36, ADR 0015). Đặt cả 4 hoặc không đặt biến nào (tắt tính năng).
+  GOOGLE_CLIENT_ID: z.string().min(1).optional(),
+  GOOGLE_CLIENT_SECRET: z.string().min(1).optional(),
+  // Phải trùng "Authorized redirect URI" trên Google Cloud Console; đi qua rewrite `/api` của web,
+  // vd `https://<web>/api/auth/google/callback`, để cookie nằm cùng domain web.
+  GOOGLE_REDIRECT_URL: z
+    .url("GOOGLE_REDIRECT_URL must be a valid URL")
+    .optional(),
+  // Khoá HMAC ký cookie state/PKCE (`openssl rand -base64 32`).
+  OAUTH_STATE_SECRET: z
+    .string()
+    .min(32, "OAUTH_STATE_SECRET phải dài ít nhất 32 ký tự")
+    .optional(),
+  /** Số tài khoản Google mới tối đa mỗi ngày (UTC). */
+  SIGNUP_DAILY_CAP: z.coerce.number().int().min(1).default(20),
 });
 
 export type Env = z.infer<typeof envSchema>;
+
+const GOOGLE_VARS = [
+  "GOOGLE_CLIENT_ID",
+  "GOOGLE_CLIENT_SECRET",
+  "GOOGLE_REDIRECT_URL",
+  "OAUTH_STATE_SECRET",
+] as const;
 
 const S3_REQUIRED = [
   "S3_BUCKET",
@@ -89,6 +111,19 @@ export const appEnvSchema = envSchema.superRefine((env, ctx) => {
         path: [key],
         message: `${key} có khoảng trắng ở đầu hoặc cuối giá trị`,
       });
+    }
+  }
+  // Đặt một phần nhóm Google thường là quên một biến: báo ngay thay vì tắt tính năng lặng lẽ.
+  const googleSet = GOOGLE_VARS.filter((key) => env[key] !== undefined);
+  if (googleSet.length > 0) {
+    for (const key of GOOGLE_VARS) {
+      if (env[key] === undefined) {
+        ctx.addIssue({
+          code: "custom",
+          path: [key],
+          message: `${key} is required when any GOOGLE_* variable is set`,
+        });
+      }
     }
   }
   if (env.STORAGE_DRIVER !== "s3") return;

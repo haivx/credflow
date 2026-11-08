@@ -1,4 +1,4 @@
-import { AuthUser } from "./auth.js";
+import { AuthProviders, AuthUser } from "./auth.js";
 import { Classification, DocType } from "./document.js";
 import { ApiError } from "./error.js";
 import { Extraction } from "./extraction.js";
@@ -54,6 +54,7 @@ export const Schemas = {
   EvalCaseResult,
   ApiError,
   AuthUser,
+  AuthProviders,
   UploadDocumentResponse,
   ReviewQueuePage,
   ReviewDocumentDetail,

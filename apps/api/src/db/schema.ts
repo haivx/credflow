@@ -52,7 +52,10 @@ export const users = pgTable(
     id: text("id").primaryKey(),
     email: text("email").notNull(),
     // Dạng `scrypt$N$r$p$<salt>$<hash>` (apps/api/src/auth/password.ts), không bao giờ là mật khẩu thô.
-    passwordHash: text("password_hash").notNull(),
+    // Null = tài khoản chỉ đăng nhập bằng Google (plan 36).
+    passwordHash: text("password_hash"),
+    // `sub` trong id_token của Google (plan 36, ADR 0015): định danh bền, không dùng email.
+    googleSub: text("google_sub"),
     role: text("role").$type<UserRole>().notNull(),
     staffId: text("staff_id").references(() => staff.id, {
       onDelete: "restrict",
@@ -70,6 +73,17 @@ export const users = pgTable(
     check(
       "users_staff_id_check",
       sql`(${t.role} = 'staff') = (${t.staffId} IS NOT NULL)`,
+    ),
+    uniqueIndex("users_google_sub_unique").on(t.googleSub),
+    // Mỗi tài khoản có ít nhất một cách đăng nhập.
+    check(
+      "users_login_method_check",
+      sql`${t.passwordHash} IS NOT NULL OR ${t.googleSub} IS NOT NULL`,
+    ),
+    // Reviewer và admin không bao giờ vào bằng Google (ADR 0015).
+    check(
+      "users_google_staff_check",
+      sql`${t.googleSub} IS NULL OR ${t.role} = 'staff'`,
     ),
   ],
 );

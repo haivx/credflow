@@ -29,3 +29,17 @@ export const AuthUser = z
   })
   .meta({ id: "AuthUser" });
 export type AuthUser = z.infer<typeof AuthUser>;
+
+// Plan 36, ADR 0015: staff tự đăng ký bằng Google.
+
+/** Response của GET /auth/providers: web biết có hiện nút Google không. */
+export const AuthProviders = z
+  .strictObject({ google: z.boolean() })
+  .meta({ id: "AuthProviders" });
+export type AuthProviders = z.infer<typeof AuthProviders>;
+
+/** Mã lỗi callback Google gửi về web qua `/login?error=<mã>`. Không mang chi tiết kỹ thuật. */
+export const GoogleLoginError = z
+  .enum(["google_failed", "email_exists", "signup_closed"])
+  .meta({ id: "GoogleLoginError" });
+export type GoogleLoginError = z.infer<typeof GoogleLoginError>;

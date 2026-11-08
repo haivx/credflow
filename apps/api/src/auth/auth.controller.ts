@@ -13,12 +13,16 @@ import {
 import { SkipThrottle, ThrottlerGuard } from "@nestjs/throttler";
 import { ConfigService } from "@nestjs/config";
 import { AuthUser, LoginRequest } from "@credflow/contracts";
-import type { CookieOptions, Request, Response } from "express";
+import type { Request, Response } from "express";
 import { ZodValidationPipe } from "../common/zod-validation.pipe.js";
 import type { Env } from "../config/env.schema.js";
 import { AuthService } from "./auth.service.js";
 import { CurrentUser, Public } from "./decorators.js";
-import { readSessionToken, SESSION_COOKIE } from "./session-token.js";
+import {
+  authCookieOptions,
+  readSessionToken,
+  SESSION_COOKIE,
+} from "./session-token.js";
 import { UPLOAD_THROTTLER } from "../rate-limit/rate-limit.module.js";
 
 @Controller("auth")
@@ -67,15 +71,7 @@ export class AuthController {
     return AuthUser.parse(user);
   }
 
-  private cookieOptions(): CookieOptions {
-    return {
-      // JS trên trang không đọc được cookie: XSS không lấy trộm được token.
-      httpOnly: true,
-      // Trình duyệt không gửi cookie trong POST từ site khác: chặn phần lớn CSRF.
-      sameSite: "lax",
-      // Chỉ gửi qua HTTPS. Dev chạy http nên tắt bằng env.
-      secure: this.config.get("COOKIE_SECURE", { infer: true }),
-      path: "/",
-    };
+  private cookieOptions() {
+    return authCookieOptions(this.config.get("COOKIE_SECURE", { infer: true }));
   }
 }

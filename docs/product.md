@@ -28,7 +28,7 @@ Giảm phần lớn việc đọc và gõ tay của compliance, nhưng **không 
 | Người duyệt (reviewer, HR/compliance) | Xử lý hàng chờ: xem giấy cạnh trường đã trích xuất, sửa, duyệt, từ chối, yêu cầu nộp lại |
 | Admin | Cấu hình rule theo khách hàng, xem dashboard compliance, cấu hình LLM (khoá API riêng, model) |
 
-MVP có đăng nhập cơ bản: email + mật khẩu, session lưu ở DB, cookie `httpOnly`; mỗi user có đúng một vai trò (ADR 0004). User là dữ liệu giả lập seed sẵn; không có đăng ký, quên mật khẩu, SSO/OIDC.
+MVP có đăng nhập cơ bản: email + mật khẩu, session lưu ở DB, cookie `httpOnly`; mỗi user có đúng một vai trò (ADR 0004). Reviewer và admin là dữ liệu giả lập seed sẵn. Ai có tài khoản Google đều tự đăng ký được một tài khoản **staff** (hồ sơ staff mới, vai trò `caregiver`, không thuộc khách hàng nào → config `default`), tối đa `SIGNUP_DAILY_CAP` tài khoản mới mỗi ngày (ADR 0015). Không có quên mật khẩu, không liên kết Google vào tài khoản mật khẩu có sẵn.
 
 ### Nguyên tắc sản phẩm
 
@@ -42,7 +42,7 @@ MVP có đăng nhập cơ bản: email + mật khẩu, session lưu ở DB, cook
 
 **Trong:** 5 loại giấy (CPR, giấy phép hành nghề, xét nghiệm TB, kiểm tra lý lịch, tiêm chủng); upload PDF/ảnh; phân loại; trích xuất kèm bằng chứng; rule engine; routing; hàng chờ và màn duyệt; lưu chỗ sửa; dashboard hết hạn; bộ sinh dữ liệu giả lập; eval harness; deploy demo.
 
-**Ngoài:** SSO/OIDC, đăng ký tài khoản, quên mật khẩu, nhiều tenant, gửi email/SMS thật, tích hợp HRIS, xác minh trực tiếp với tổ chức cấp, giấy tờ tuỳ thân (bằng lái, ID), agent (xem mục 9), mobile app.
+**Ngoài:** SSO doanh nghiệp (SAML, Google cho reviewer/admin), quên mật khẩu, nhiều tenant, gửi email/SMS thật, tích hợp HRIS, xác minh trực tiếp với tổ chức cấp, giấy tờ tuỳ thân (bằng lái, ID), agent (xem mục 9), mobile app.
 
 ### Chỉ số thành công (trên golden set holdout)
 
@@ -138,7 +138,7 @@ Xem `docs/flows.md`. Các màn chính:
 | API | NestJS trên Node; HTTP và worker là hai entrypoint | Chấp nhận |
 | DB | Postgres 16 (docker compose), Drizzle ORM; nguồn sự thật cho trạng thái | Chấp nhận |
 | Job queue | BullMQ + Redis 7 (`noeviction`); dual-write xử lý bằng sweep job (ADR 0001) | Chấp nhận |
-| Đăng nhập | Email + mật khẩu (scrypt), session trong Postgres, cookie `httpOnly`; guard toàn cục + `@Roles` | Chấp nhận (ADR 0004) |
+| Đăng nhập | Email + mật khẩu (scrypt), session trong Postgres, cookie `httpOnly`; guard toàn cục + `@Roles`. Staff tự đăng ký bằng Google (OAuth authorization code + PKCE, `google-auth-library`) | Chấp nhận (ADR 0004, 0015) |
 | Lưu file | Dev: file system local (`DATA_DIR`). Production: Railway Bucket (S3) qua `S3Storage`, chọn bằng `STORAGE_DRIVER` | Chấp nhận (ADR 0013) |
 | LLM | Mặc định `claude-haiku-5-5` + khoá API của hệ thống, vision + structured output (ADR 0008). Admin có thể đặt khoá Anthropic riêng (mã hoá khi lưu) và chọn model trong danh sách **đã qua `make eval`**; hiện danh sách chỉ có Haiku 5.5 (ADR 0014) | Chấp nhận |
 | Contract | Zod 4 trong `packages/contracts` | Chấp nhận |

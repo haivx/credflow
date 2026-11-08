@@ -1,9 +1,10 @@
-import type {
-  DocType,
-  DocumentStatus,
-  DocumentView,
-  ErrorCode,
-  RuleCode,
+import {
+  type DocType,
+  type DocumentStatus,
+  type DocumentView,
+  type ErrorCode,
+  GoogleLoginError,
+  type RuleCode,
 } from "@credflow/contracts";
 
 /** Tên loại giấy cho người đọc (chuyển từ UploadForm ở plan 30, dùng ở nhiều màn). */
@@ -77,6 +78,20 @@ export function loginErrorText(status: number, message: string): string {
   if (status === 429)
     return "Đăng nhập sai quá nhiều lần. Hãy đợi khoảng 15 phút rồi thử lại.";
   return `Không đăng nhập được: ${message}`;
+}
+
+const googleErrorLabel: Record<GoogleLoginError, string> = {
+  google_failed: "Không đăng nhập được bằng Google. Hãy thử lại.",
+  email_exists:
+    "Email này đã có tài khoản đăng nhập bằng mật khẩu. Hãy đăng nhập bằng email và mật khẩu.",
+  signup_closed:
+    "Bản demo đã nhận đủ tài khoản mới cho hôm nay. Hãy thử lại vào ngày mai.",
+};
+
+/** Câu cho `?google_error=<mã>` (plan 36). Mã lạ thì bỏ qua, không hiện chuỗi trên URL. */
+export function googleErrorText(code: string | null): string | null {
+  const parsed = GoogleLoginError.safeParse(code);
+  return parsed.success ? googleErrorLabel[parsed.data] : null;
 }
 
 /**

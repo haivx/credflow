@@ -2,6 +2,7 @@
 
 import {
   type ApiError,
+  AuthProviders,
   AuthUser,
   DocumentList,
   LlmSettingsView,
@@ -38,6 +39,7 @@ export const queryKeys = {
   me: ["auth", "me"] as const,
   myDocuments: ["documents", "mine"] as const,
   llmSettings: ["settings", "llm"] as const,
+  authProviders: ["auth", "providers"] as const,
 };
 
 /** User đang đăng nhập; `null` = chưa đăng nhập (401 không phải lỗi). */
@@ -50,6 +52,18 @@ export function useMe() {
       return unwrap(res);
     },
     staleTime: 60_000,
+  });
+}
+
+/** Cách đăng nhập server đang bật (plan 36). Lỗi thì coi như chỉ có mật khẩu. */
+export function useAuthProviders() {
+  return useQuery({
+    queryKey: queryKeys.authProviders,
+    queryFn: async (): Promise<AuthProviders> => {
+      const res = await apiFetch("/auth/providers", AuthProviders);
+      return res.ok ? res.data : { google: false };
+    },
+    staleTime: Infinity,
   });
 }
 

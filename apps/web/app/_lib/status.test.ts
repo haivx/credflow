@@ -7,6 +7,7 @@ import {
   reasonLabel,
   staffReason,
   statusTone,
+  googleErrorText,
   loginErrorText,
   uploadErrorMessage,
 } from "./status";
@@ -118,5 +119,15 @@ describe("câu báo 429 (plan 34)", () => {
     expect(loginErrorText(500, "Lỗi máy chủ")).toBe(
       "Không đăng nhập được: Lỗi máy chủ",
     );
+  });
+});
+
+describe("googleErrorText (plan 36)", () => {
+  it("mã đã biết → câu tiếng Việt; không có hoặc mã lạ → null", () => {
+    expect(googleErrorText("email_exists")).toMatch(/mật khẩu/);
+    expect(googleErrorText("signup_closed")).toMatch(/ngày mai/);
+    expect(googleErrorText("google_failed")).toMatch(/Google/);
+    expect(googleErrorText(null)).toBeNull();
+    expect(googleErrorText("<script>")).toBeNull();
   });
 });

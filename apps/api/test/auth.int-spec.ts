@@ -38,6 +38,21 @@ describe("đăng nhập (integration)", () => {
     return request(app.getHttpServer()).post("/auth/login").send(body);
   }
 
+  // Plan 36: test-env không đặt biến GOOGLE_* nên tính năng tắt (CI không có .env).
+  describe("Google tắt khi thiếu env", () => {
+    it("GET /auth/providers → google: false; /auth/google và callback → 404", async () => {
+      const server = app.getHttpServer();
+      const providers = await request(server).get("/auth/providers");
+      expect(providers.status).toBe(200);
+      expect(providers.body).toEqual({ google: false });
+      expect((await request(server).get("/auth/google")).status).toBe(404);
+      expect(
+        (await request(server).get("/auth/google/callback?code=x&state=y"))
+          .status,
+      ).toBe(404);
+    });
+  });
+
   describe("POST /auth/login", () => {
     it("đúng mật khẩu → 200, trả AuthUser, set cookie httpOnly + SameSite=Lax", async () => {
       const res = await login({
