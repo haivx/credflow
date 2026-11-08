@@ -38,6 +38,11 @@ describe("envSchema", () => {
       STORAGE_DRIVER: "local",
       S3_REGION: "auto",
       S3_FORCE_PATH_STYLE: false,
+      LOGIN_RATE_LIMIT: 5,
+      LOGIN_RATE_WINDOW_MIN: 15,
+      UPLOAD_RATE_PER_HOUR: 10,
+      DAILY_UPLOAD_CAP: 50,
+      FILE_RETENTION_DAYS: 3,
     });
   });
 
@@ -149,5 +154,46 @@ describe("appEnvSchema: storage", () => {
     expect(result.error?.issues.map((i) => i.path)).toEqual([
       ["STORAGE_DRIVER"],
     ]);
+  });
+});
+
+// Plan 34: dán biến trên dashboard hay kéo theo khoảng trắng (đã gặp 4 lần khi dựng Railway).
+describe("appEnvSchema: khoảng trắng thừa", () => {
+  it.each([
+    ["API_HOST", " ::"],
+    ["ANTHROPIC_API_KEY", "sk-test "],
+    ["DATA_DIR", "./data\n"],
+  ])("%s=%j → lỗi nêu đúng tên biến", (key, value) => {
+    const result = appEnvSchema.safeParse({ ...baseValidEnv, [key]: value });
+    expect(result.success).toBe(false);
+    const issue = result.error?.issues.find((i) => i.path[0] === key);
+    expect(issue?.message).toMatch(/khoảng trắng/);
+  });
+
+  it("giá trị sạch → hợp lệ", () => {
+    expect(
+      appEnvSchema.safeParse({ ...baseValidEnv, API_HOST: "::" }).success,
+    ).toBe(true);
+  });
+});
+
+describe("envSchema: giới hạn demo (plan 34)", () => {
+  it("FILE_RETENTION_DAYS=0 nghĩa là tắt, vẫn hợp lệ", () => {
+    expect(
+      envSchema.safeParse({ ...baseValidEnv, FILE_RETENTION_DAYS: "0" }).data
+        ?.FILE_RETENTION_DAYS,
+    ).toBe(0);
+  });
+
+  it("giới hạn âm hoặc 0 (trừ retention) → lỗi", () => {
+    for (const key of [
+      "LOGIN_RATE_LIMIT",
+      "UPLOAD_RATE_PER_HOUR",
+      "DAILY_UPLOAD_CAP",
+    ]) {
+      expect(envSchema.safeParse({ ...baseValidEnv, [key]: "0" }).success).toBe(
+        false,
+      );
+    }
   });
 });

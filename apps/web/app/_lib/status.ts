@@ -64,9 +64,19 @@ export function uploadErrorMessage(code: ErrorCode, fallback: string): string {
       return "Phiên đăng nhập đã hết, hãy đăng nhập lại.";
     case "VALIDATION_FAILED":
       return "Thiếu file hoặc dữ liệu không hợp lệ.";
+    case "TOO_MANY_REQUESTS":
+      return "Bạn đã nộp quá nhiều giấy trong thời gian ngắn, hoặc hệ thống demo đã đủ giấy cho hôm nay. Hãy thử lại sau.";
     default:
       return fallback;
   }
+}
+
+/** Câu báo lỗi đăng nhập theo HTTP status (plan 34 thêm 429). */
+export function loginErrorText(status: number, message: string): string {
+  if (status === 401) return "Sai email hoặc mật khẩu.";
+  if (status === 429)
+    return "Đăng nhập sai quá nhiều lần. Hãy đợi khoảng 15 phút rồi thử lại.";
+  return `Không đăng nhập được: ${message}`;
 }
 
 /**

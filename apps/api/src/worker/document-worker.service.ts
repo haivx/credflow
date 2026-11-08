@@ -11,6 +11,9 @@ import { formatErrorForLog } from "../common/pg-error.js";
 import type { Env } from "../config/env.schema.js";
 import {
   DOCUMENT_QUEUE_NAME,
+  RETENTION_EVERY_MS,
+  RETENTION_JOB,
+  RETENTION_SCHEDULER_ID,
   SWEEP_EVERY_MS,
   SWEEP_JOB,
   SWEEP_QUEUE_NAME,
@@ -18,6 +21,7 @@ import {
 } from "../queue/document-queue.js";
 import { DocumentProcessor } from "./document-processor.js";
 import { DocumentSweepService } from "./document-sweep.service.js";
+import { FileRetentionService } from "./file-retention.service.js";
 
 /** Số job chạy song song trong một process. Stub chưa có việc nặng; chỉnh lại khi có LLM. */
 const CONCURRENCY = 5;
@@ -33,6 +37,7 @@ export class DocumentWorkerService implements OnModuleInit, OnModuleDestroy {
   constructor(
     private readonly processor: DocumentProcessor,
     private readonly sweep: DocumentSweepService,
+    private readonly retention: FileRetentionService,
     private readonly config: ConfigService<Env, true>,
   ) {}
 
@@ -55,10 +60,16 @@ export class DocumentWorkerService implements OnModuleInit, OnModuleDestroy {
       connection: this.connection,
     });
     this.sweepQueue.on("error", this.logError);
-    this.sweepWorker = new Worker(SWEEP_QUEUE_NAME, () => this.sweep.run(), {
-      connection: this.connection,
-      concurrency: 1,
-    });
+    // Cùng queue cho hai việc định kỳ, phân theo tên job (plan 34 thêm dọn file).
+    this.sweepWorker = new Worker(
+      SWEEP_QUEUE_NAME,
+      (job) =>
+        job.name === RETENTION_JOB ? this.retention.run() : this.sweep.run(),
+      {
+        connection: this.connection,
+        concurrency: 1,
+      },
+    );
     this.sweepWorker.on("error", this.logError);
 
     // Đăng ký ở `ready`, không chỉ lúc khởi động: Redis không bật AOF nên restart có thể mất cả lịch,
@@ -86,6 +97,19 @@ export class DocumentWorkerService implements OnModuleInit, OnModuleDestroy {
         { every: SWEEP_EVERY_MS },
         {
           name: SWEEP_JOB,
+          opts: {
+            removeOnComplete: { count: 10 },
+            removeOnFail: { count: 50 },
+          },
+        },
+      )
+      .catch(this.logError);
+    this.sweepQueue
+      ?.upsertJobScheduler(
+        RETENTION_SCHEDULER_ID,
+        { every: RETENTION_EVERY_MS },
+        {
+          name: RETENTION_JOB,
           opts: {
             removeOnComplete: { count: 10 },
             removeOnFail: { count: 50 },

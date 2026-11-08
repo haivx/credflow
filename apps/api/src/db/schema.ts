@@ -137,6 +137,9 @@ export const documents = pgTable(
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
+    // Plan 34: file trên storage đã bị xoá theo chính sách lưu giữ của demo (FILE_RETENTION_DAYS).
+    // Dòng, kết quả đọc, lịch sử duyệt giữ nguyên. Null = file còn.
+    fileDeletedAt: timestamp("file_deleted_at", { withTimezone: true }),
   },
   (t) => [
     uniqueIndex("documents_checksum_unique").on(t.checksum),

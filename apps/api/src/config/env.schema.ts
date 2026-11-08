@@ -43,6 +43,16 @@ export const envSchema = z.object({
   S3_SECRET_ACCESS_KEY: z.string().min(1).optional(),
   // Bucket cũ của Railway có thể cần URL kiểu path-style (tab Credentials của bucket ghi rõ).
   S3_FORCE_PATH_STYLE: z.stringbool().default(false),
+  // Bảo vệ demo công khai (plan 34). Mặc định mức "chặt" Liam chọn 2026-11-08.
+  /** Số lần đăng nhập tối đa mỗi email trong một cửa sổ. */
+  LOGIN_RATE_LIMIT: z.coerce.number().int().min(1).default(5),
+  LOGIN_RATE_WINDOW_MIN: z.coerce.number().int().min(1).default(15),
+  /** Số upload tối đa mỗi user trong một giờ. */
+  UPLOAD_RATE_PER_HOUR: z.coerce.number().int().min(1).default(10),
+  /** Số giấy mới tối đa toàn hệ thống mỗi ngày (UTC): trần tiền gọi Claude. */
+  DAILY_UPLOAD_CAP: z.coerce.number().int().min(1).default(50),
+  /** Xoá file của giấy nộp quá N ngày (giữ dòng DB). 0 = không xoá. */
+  FILE_RETENTION_DAYS: z.coerce.number().int().min(0).default(3),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -60,6 +70,17 @@ const S3_REQUIRED = [
  * đang `envSchema.pick(...)`.
  */
 export const appEnvSchema = envSchema.superRefine((env, ctx) => {
+  // Plan 34: giá trị dán vào dashboard hay kéo theo khoảng trắng; lỗi gốc lộ ra rất khó hiểu
+  // (vd `getaddrinfo ENOTFOUND  ::`). Chặn ngay lúc khởi động, nêu tên biến.
+  for (const [key, value] of Object.entries(env)) {
+    if (typeof value === "string" && value !== value.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        path: [key],
+        message: `${key} có khoảng trắng ở đầu hoặc cuối giá trị`,
+      });
+    }
+  }
   if (env.STORAGE_DRIVER !== "s3") return;
   for (const key of S3_REQUIRED) {
     if (env[key] === undefined) {

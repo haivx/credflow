@@ -14,6 +14,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx scripts/seed.ts",
+    "db:reset-demo-password": "tsx scripts/reset-demo-password.ts",
     "eval": "tsx scripts/eval.ts",
     "report:corrections": "tsx scripts/report-corrections.ts"
   },
@@ -26,6 +27,7 @@
     "@nestjs/config": "^12.0.1",
     "@nestjs/core": "^12.3.2",
     "@nestjs/platform-express": "^12.3.2",
+    "@nestjs/throttler": "6.7.1",
     "bullmq": "^6.5.4",
     "busboy": "^1.6.0",
     "cookie-parser": "^1.4.7",

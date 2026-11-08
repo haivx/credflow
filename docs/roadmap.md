@@ -187,6 +187,7 @@ Vượt mức middle; mỗi mục ghi chỗ trong CredFlow sẽ cần nó. Làm 
 | SSE/WebSocket đẩy trạng thái document về trình duyệt | Polling `GET /documents` 2 giây, dừng sau 2 phút | P1 màn upload (plan 17) |
 | Component test / visual regression (Storybook, Chromatic) | Screenshot `ui.mts` trong evidence, Liam nhìn | P4.5 UI |
 | Optimistic update, prefetch ở server (`HydrationBoundary`) của TanStack Query | Mutation xong thì invalidate, fetch ở client | P4.5 UI (plan 30) |
+| Bộ đếm rate limit lưu ở Redis (`ThrottlerStorage` riêng) khi chạy nhiều replica; IP thật sau nhiều lớp proxy (`trust proxy`, chuỗi `X-Forwarded-For`) | Bộ đếm trong bộ nhớ process `api` (1 replica), đăng nhập đếm theo email | P6a bảo vệ demo (plan 34) |
 | E2E UI tự động trong CI (Playwright test) | Kiểm L3 tay bằng Playwright MCP, screenshot vào evidence | P1 màn upload (plan 17) |
 | Bảng append-only bằng trigger/quyền DB, hash chain | Chặn ở tầng code | Audit log |
 | Cursor phân trang có ký (HMAC) | Cursor base64 JSON không ký, kiểm bằng Zod | P4 hàng chờ (plan 27) |

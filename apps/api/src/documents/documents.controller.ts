@@ -8,7 +8,9 @@ import {
   Post,
   Req,
   Res,
+  UseGuards,
 } from "@nestjs/common";
+import { SkipThrottle, ThrottlerGuard } from "@nestjs/throttler";
 import {
   type AuthUser,
   DocumentList,
@@ -24,6 +26,7 @@ import { STORAGE, type Storage } from "../storage/storage.js";
 import { DocumentsReadService } from "./documents-read.service.js";
 import { DocumentsService } from "./documents.service.js";
 import { parseUpload } from "./upload-parser.js";
+import { LOGIN_THROTTLER } from "../rate-limit/rate-limit.module.js";
 
 @Controller("documents")
 export class DocumentsController {
@@ -38,12 +41,17 @@ export class DocumentsController {
    * staffId lấy từ session, không nhận từ form. 201 = tạo mới, 200 = đã nộp file này rồi.
    */
   @Roles("staff")
+  // Plan 34: tối đa UPLOAD_RATE_PER_HOUR lần mỗi user mỗi giờ → 429.
+  @UseGuards(ThrottlerGuard)
+  @SkipThrottle({ [LOGIN_THROTTLER]: true })
   @Post()
   async upload(
     @Req() req: Request,
     @CurrentUser() user: AuthUser,
     @Res({ passthrough: true }) res: Response,
   ) {
+    // Kiểm trần ngày trước khi nhận file: vượt trần thì không ghi gì xuống đĩa tạm.
+    await this.documentsService.assertDailyUploadQuota(new Date());
     const upload = await parseUpload(
       req,
       this.documentsService.uploadOptions(),
