@@ -48,7 +48,7 @@ Commit chỉ kích deploy service nào có file khớp. Bốn nhóm cần có: c
 | Service | Watch paths |
 | --- | --- |
 | `web` | `/apps/web/**`, `/packages/contracts/**`, `/package.json`, `/pnpm-workspace.yaml`, `/pnpm-lock.yaml` |
-| `api`, `worker` | `/apps/api/**`, `/packages/**`, `/config/rules/**`, `/package.json`, `/pnpm-workspace.yaml`, `/pnpm-lock.yaml` (đối chiếu Settings) |
+| `api`, `worker` | `/apps/api/**`, `/config/rules/**`, `/packages/**`, `/pnpm-workspace.yaml`, `/pnpm-lock.yaml`, `/package.json` |
 
 ![Watch paths của web](images/railway-web-watch-paths.png)
 
@@ -68,7 +68,12 @@ Chỉ ghi tên; giá trị nằm trên Railway. Giá trị dùng chung lấy b�
 | `ANTHROPIC_API_KEY` | | | ✓ | khoá hệ thống |
 | `SETTINGS_ENCRYPTION_KEY` | | ✓ | ✓ | `${{shared.SETTINGS_ENCRYPTION_KEY}}`, hai bên phải cùng giá trị (plan 35) |
 | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URL`, `OAUTH_STATE_SECRET` | | ✓ | | đủ cả 4 hoặc không đặt (plan 36) |
-| `LOGIN_RATE_LIMIT`, `UPLOAD_RATE_PER_HOUR`, `DAILY_UPLOAD_CAP`, `FILE_RETENTION_DAYS`, `SIGNUP_DAILY_CAP` | | ✓ | ✓ | bỏ trống thì dùng mặc định (plan 34, 36) |
+| `LOGIN_RATE_LIMIT`, `UPLOAD_RATE_PER_HOUR`, `DAILY_UPLOAD_CAP`, `SIGNUP_DAILY_CAP` | | ✓ | | tuỳ chọn, bỏ trống thì dùng mặc định (plan 34, 36) |
+| `FILE_RETENTION_DAYS` | | | ✓ | tuỳ chọn, mặc định 3 ngày; job xoá file chạy ở `worker` |
+
+`worker` hiện có 10 biến: `ANTHROPIC_API_KEY`, `DATABASE_URL`, `REDIS_URL`, `STORAGE_DRIVER`, 5 biến `S3_*` (`ACCESS_KEY_ID`, `BUCKET`, `ENDPOINT`, `REGION`, `SECRET_ACCESS_KEY`) và `SETTINGS_ENCRYPTION_KEY` (biểu tượng quả địa cầu = shared variable). Railway tự thêm 7 biến `RAILWAY_*`.
+
+![Biến của worker (đã che giá trị)](images/railway-worker-variables.png)
 
 Đổi biến xong phải bấm **Deploy** trên thanh tím: Railway gom thay đổi lại, chưa bấm thì chưa có hiệu lực. App kiểm env lúc khởi động (fail-fast), sai thì log nêu tên biến và bản cũ chạy tiếp.
 
