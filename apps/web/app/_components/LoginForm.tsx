@@ -1,7 +1,7 @@
 "use client";
 
 import { Bot, FileUp, UserCheck } from "lucide-react";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,14 +13,16 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ApiRequestError, useLogin } from "../_lib/queries";
-import { loginErrorText } from "../_lib/status";
+import { ApiRequestError, useAuthProviders, useLogin } from "../_lib/queries";
+import { googleErrorText, loginErrorText } from "../_lib/status";
 
 /** Đăng nhập (plan 17, giao diện plan 30). Thành công thì `useLogin` cập nhật `useMe`. */
 export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const login = useLogin();
+  const providers = useAuthProviders();
+  const googleError = useGoogleError();
 
   function submit(event: FormEvent) {
     event.preventDefault();
@@ -88,9 +90,80 @@ export function LoginForm() {
               </Alert>
             )}
           </form>
+          {providers.data?.google === true && (
+            <div className="mt-4 grid gap-3" data-testid="google-login">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <span className="h-px flex-1 bg-border" />
+                hoặc
+                <span className="h-px flex-1 bg-border" />
+              </div>
+              {/* Link thường, không fetch: trình duyệt phải tự đi sang Google rồi quay về. */}
+              <Button asChild variant="outline">
+                <a href="/api/auth/google" data-testid="google-login-button">
+                  <GoogleMark />
+                  Tiếp tục với Google
+                </a>
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                Lần đầu đăng nhập bằng Google sẽ tạo một tài khoản nhân viên
+                demo mang tên Google của bạn. Thẻ giả lập in tên khác thì giấy
+                sẽ chuyển người duyệt vì tên không khớp.
+              </p>
+            </div>
+          )}
+          {googleError !== null && (
+            <Alert
+              variant="destructive"
+              className="mt-4"
+              data-testid="google-error"
+            >
+              <AlertDescription>{googleError}</AlertDescription>
+            </Alert>
+          )}
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+/**
+ * Đọc `?google_error=<mã>` callback Google gửi về (plan 36) rồi xoá khỏi URL, để tải lại trang
+ * không hiện lỗi cũ. Đọc trong effect: trang render ở client, tránh `useSearchParams` cần Suspense.
+ */
+function useGoogleError(): string | null {
+  const [text, setText] = useState<string | null>(null);
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const code = url.searchParams.get("google_error");
+    if (code === null) return;
+    setText(googleErrorText(code));
+    url.searchParams.delete("google_error");
+    window.history.replaceState(null, "", url.pathname + url.search);
+  }, []);
+  return text;
+}
+
+/** Chữ G nhiều màu của Google (logo chính thức theo hướng dẫn nút đăng nhập). */
+function GoogleMark() {
+  return (
+    <svg viewBox="0 0 48 48" className="size-4" aria-hidden>
+      <path
+        fill="#EA4335"
+        d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+      />
+      <path
+        fill="#4285F4"
+        d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
+      />
+      <path
+        fill="#34A853"
+        d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+      />
+    </svg>
   );
 }
 

@@ -43,7 +43,9 @@ export class AuthService {
       .from(users)
       .where(eq(users.email, email));
 
-    if (row === undefined) {
+    // Không có user, hoặc user chỉ đăng nhập bằng Google (plan 36): vẫn chạy scrypt trên hash giả
+    // để thời gian phản hồi không lộ email nào có tài khoản, email nào là tài khoản Google.
+    if (row?.passwordHash == null) {
       await verifyPassword(input.password, await this.dummyHash);
       return null;
     }
@@ -51,23 +53,29 @@ export class AuthService {
       return null;
     }
 
-    const token = newSessionToken();
-    const ttlDays = this.config.get("SESSION_TTL_DAYS", { infer: true });
-    const expiresAt = new Date(Date.now() + ttlDays * DAY_MS);
-    await this.db.insert(sessions).values({
-      id: ulid(),
-      userId: row.id,
-      tokenHash: hashSessionToken(token),
-      expiresAt,
-    });
-
     const user: AuthUser = {
       id: row.id,
       email: row.email,
       role: row.role,
       staffId: row.staffId,
     };
-    return { user, token, expiresAt };
+    return { user, ...(await this.createSession(user.id)) };
+  }
+
+  /** Tạo session mới cho user; dùng chung cho đăng nhập mật khẩu và Google. */
+  async createSession(
+    userId: string,
+  ): Promise<{ token: string; expiresAt: Date }> {
+    const token = newSessionToken();
+    const ttlDays = this.config.get("SESSION_TTL_DAYS", { infer: true });
+    const expiresAt = new Date(Date.now() + ttlDays * DAY_MS);
+    await this.db.insert(sessions).values({
+      id: ulid(),
+      userId,
+      tokenHash: hashSessionToken(token),
+      expiresAt,
+    });
+    return { token, expiresAt };
   }
 
   /** Xoá session: cookie cũ hết hiệu lực ngay, kể cả khi trình duyệt chưa xoá cookie. */

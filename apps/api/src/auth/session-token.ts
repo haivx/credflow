@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
-import type { Request } from "express";
+import type { CookieOptions, Request } from "express";
 import * as z from "zod";
 
 export const SESSION_COOKIE = "credflow_session";
@@ -23,4 +23,18 @@ export function hashSessionToken(token: string): string {
 export function readSessionToken(req: Request): string | undefined {
   // @types/cookie-parser khai báo req.cookies là any; đây là dữ liệu từ client nên parse bằng Zod.
   return SessionCookies.safeParse(req.cookies).data?.[SESSION_COOKIE];
+}
+
+/** Tuỳ chọn cookie dùng chung cho mọi cookie đăng nhập (session, state OAuth của plan 36). */
+export function authCookieOptions(secure: boolean): CookieOptions {
+  return {
+    // JS trên trang không đọc được cookie: XSS không lấy trộm được token.
+    httpOnly: true,
+    // Trình duyệt không gửi cookie trong POST từ site khác: chặn phần lớn CSRF. Vẫn gửi khi
+    // Google chuyển hướng về (điều hướng GET cấp cao nhất), nên callback OAuth đọc được cookie.
+    sameSite: "lax",
+    // Chỉ gửi qua HTTPS. Dev chạy http nên tắt bằng env.
+    secure,
+    path: "/",
+  };
 }

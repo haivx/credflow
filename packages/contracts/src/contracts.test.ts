@@ -4,6 +4,8 @@ import { describe, expect, it } from "vitest";
 import {
   ApiError,
   AuthUser,
+  AuthProviders,
+  GoogleLoginError,
   DecisionRequest,
   DocumentRecord,
   DocumentView,
@@ -139,6 +141,24 @@ describe("AuthUser", () => {
         staffId: null,
       }).success,
     ).toBe(false);
+  });
+});
+
+describe("AuthProviders / GoogleLoginError (plan 36)", () => {
+  it("AuthProviders chỉ có cờ google", () => {
+    expect(AuthProviders.safeParse({ google: true, token: "x" }).success).toBe(
+      false,
+    );
+    expect(AuthProviders.safeParse({}).success).toBe(false);
+  });
+
+  it("GoogleLoginError chỉ nhận mã đã biết", () => {
+    expect(GoogleLoginError.options).toEqual([
+      "google_failed",
+      "email_exists",
+      "signup_closed",
+    ]);
+    expect(GoogleLoginError.safeParse("boom").success).toBe(false);
   });
 });
 

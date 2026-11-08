@@ -1,0 +1,4 @@
+[
+  { "name": "bật Google", "data": { "google": true } },
+  { "name": "tắt Google", "data": { "google": false } }
+]
